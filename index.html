@@ -310,7 +310,7 @@
     .chat-input input:focus { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
     .chat-input input::placeholder { color: #888; }
     .chat-input label { margin-right: 10px; cursor: pointer; font-size: 18px; color: #888; transition: color 0.3s, text-shadow 0.3s; }
-    .chat-input label:hover { color: var(--neon-blue); text-shadow: 0 0 8px rgba(0, 242, 255, 0.7); }
+    .chat-input label:hover { color: var(--neon-blue); text-shadow: 0 0 8px rgba(0, 242, 255, 0.8); }
 
     #voiceBtn {
       padding: 10px;
@@ -407,8 +407,8 @@
 
   <!-- Main App Content -->
   <div class="intro">
-    <h1>Hi, I'm Umer</h1>
-    <h2>Your AI Study Assistant<br>How can I help you today?</h2>
+    <h1 id="mainGreeting">Hi, I'm Umer</h1>
+    <h2 id="mainSubtitle">Your AI Study Assistant<br>How can I help you today?</h2>
   </div>
   <div class="chat-container">
     <div class="chat-header">
@@ -488,6 +488,8 @@
   const showSignupBtn = document.getElementById('showSignupBtn');
   const logoutBtn = document.getElementById('logoutBtn');
   const userGreeting = document.getElementById('userGreeting');
+  const mainGreeting = document.getElementById('mainGreeting');
+  const mainSubtitle = document.getElementById('mainSubtitle');
   const formContainer = document.getElementById('formContainer');
   const showSignupLink = document.getElementById('showSignup');
   const showLoginLink = document.getElementById('showLogin');
@@ -505,9 +507,14 @@
 
   // --- UI Update Functions ---
   async function updateUiForAuthState(user, username = null) {
+    // Reset potential error state first
+    mainSubtitle.style.color = '#ccc';
+    mainSubtitle.innerHTML = 'Your AI Study Assistant<br>How can I help you today?';
+    
     if (user) {
       currentUserId = user.uid;
       let displayName = username;
+      let profileError = false;
 
       if (!displayName) {
           try {
@@ -515,13 +522,19 @@
             const userDocSnap = await getDoc(userDocRef);
             if (userDocSnap.exists()) {
                 displayName = userDocSnap.data().username;
+            } else {
+                displayName = "there"; 
+                console.warn("User document not found for uid:", user.uid);
             }
           } catch (error) {
-            console.warn("Could not fetch user profile, proceeding with offline data. Error:", error.message);
+            console.error("CRITICAL: Could not fetch user profile.", error);
+            profileError = true;
+            displayName = "there";
           }
       }
 
-      userGreeting.textContent = `Hi, ${displayName || 'there'}`;
+      userGreeting.textContent = `Hi, ${displayName} 👋`;
+      mainGreeting.textContent = "Hi, I'm Umer"; // <-- CHANGE: This is now static
       userGreeting.style.display = 'inline';
       showLoginBtn.style.display = 'none';
       showSignupBtn.style.display = 'none';
@@ -530,9 +543,16 @@
       userInput.placeholder = "Type your question here...";
       sendBtn.disabled = false;
       loadMessages(currentUserId);
+
+      if(profileError) {
+          mainSubtitle.innerHTML = "Your profile could not be loaded. <br> Please update your Firebase Security Rules.";
+          mainSubtitle.style.color = "#ff9494";
+      }
+
     } else {
       currentUserId = null;
       userGreeting.style.display = 'none';
+      mainGreeting.textContent = "Hi, I'm Umer";
       showLoginBtn.style.display = 'block';
       showSignupBtn.style.display = 'block';
       logoutBtn.style.display = 'none';
