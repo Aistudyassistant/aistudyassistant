@@ -39,10 +39,19 @@
       right: 20px;
       z-index: 100;
       display: flex;
+      align-items: center;
       gap: 10px;
     }
 
-    #showLoginBtn, #showSignupBtn {
+    #userGreeting {
+        display: none;
+        align-self: center;
+        margin-right: 15px;
+        color: var(--neon-blue);
+        text-shadow: 0 0 5px rgba(0, 242, 255, 0.7);
+    }
+
+    #showLoginBtn, #showSignupBtn, #logoutBtn {
       padding: 10px 20px;
       border: 1px solid var(--neon-blue);
       background: rgba(13, 17, 23, 0.5);
@@ -56,8 +65,12 @@
       font-size: 0.9rem;
       text-shadow: 0 0 5px rgba(0, 242, 255, 0.7);
     }
+    
+    #logoutBtn {
+        display: none; /* Hidden by default */
+    }
 
-    #showLoginBtn:hover, #showSignupBtn:hover {
+    #showLoginBtn:hover, #showSignupBtn:hover, #logoutBtn:hover {
       background: var(--neon-blue);
       color: var(--dark-bg);
       box-shadow: 0 0 20px var(--neon-blue);
@@ -91,7 +104,7 @@
       perspective: 1000px;
       width: 90%;
       max-width: 400px;
-      height: 500px;
+      height: 520px; /* Increased height for error messages */
       position: relative;
     }
 
@@ -156,6 +169,15 @@
     }
     .input-group input:focus { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
     .input-group input::placeholder { color: #888; }
+    
+    .error-message {
+      color: #ff5555;
+      text-align: center;
+      font-size: 0.9rem;
+      margin-top: -10px;
+      margin-bottom: 15px;
+      height: 1em; /* Reserve space to prevent layout shift */
+    }
 
     .form-btn {
       width: 100%;
@@ -173,6 +195,10 @@
       text-shadow: 0 0 5px rgba(0, 242, 255, 0.7);
     }
     .form-btn:hover { background: var(--neon-blue); color: var(--dark-bg); box-shadow: 0 0 20px var(--neon-blue); text-shadow: none; }
+    .form-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
 
     .toggle-link { text-align: center; margin-top: 20px; color: #ccc; }
     .toggle-link a { color: var(--neon-blue); text-decoration: none; font-weight: 500; cursor: pointer; transition: text-shadow 0.3s; }
@@ -255,6 +281,29 @@
     .chat-input input::placeholder { color: #888; }
     .chat-input label { margin-right: 10px; cursor: pointer; font-size: 18px; color: #888; transition: color 0.3s, text-shadow 0.3s; }
     .chat-input label:hover { color: var(--neon-blue); text-shadow: 0 0 8px rgba(0, 242, 255, 0.7); }
+
+    #voiceBtn {
+      padding: 10px;
+      border: none;
+      background: transparent;
+      color: #888;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1.2rem;
+      margin-right: 5px;
+    }
+
+    #voiceBtn:hover {
+      color: var(--neon-blue);
+      text-shadow: 0 0 8px rgba(0, 242, 255, 0.7);
+    }
+
+    #voiceBtn.is-listening {
+      color: var(--neon-blue);
+      animation: pulse 1.5s infinite;
+    }
+
     .chat-input button { padding: 10px 16px; border: 1px solid var(--neon-blue); background: transparent; color: var(--neon-blue); border-radius: 8px; cursor: pointer; transition: all 0.3s; font-family: 'Poppins', sans-serif; font-weight: 500; text-shadow: 0 0 5px rgba(0, 242, 255, 0.7); }
     .chat-input button:hover { background: var(--neon-blue); color: var(--dark-bg); box-shadow: 0 0 20px var(--neon-blue); text-shadow: none; }
 
@@ -262,13 +311,20 @@
     @keyframes gradient-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     @keyframes fadeIn { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
     @keyframes slideUpFadeIn { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+    @keyframes pulse {
+      0% { transform: scale(1); text-shadow: 0 0 5px rgba(0, 242, 255, 0.7); }
+      50% { transform: scale(1.1); text-shadow: 0 0 15px rgba(0, 242, 255, 1); }
+      100% { transform: scale(1); text-shadow: 0 0 5px rgba(0, 242, 255, 0.7); }
+    }
   </style>
 </head>
 <body>
 
   <header class="site-header">
+    <span id="userGreeting"></span>
     <button id="showLoginBtn">Login</button>
     <button id="showSignupBtn">Sign Up</button>
+    <button id="logoutBtn">Logout</button>
   </header>
   
   <!-- Authentication Modal -->
@@ -278,8 +334,9 @@
         <div class="form-face login-form">
           <h2>Login</h2>
           <form id="loginForm">
-            <div class="input-group"><input type="email" placeholder="Email" required></div>
-            <div class="input-group"><input type="password" placeholder="Password" required></div>
+            <div class="input-group"><input type="email" placeholder="Email" required name="email"></div>
+            <div class="input-group"><input type="password" placeholder="Password" required name="password"></div>
+            <p class="error-message" id="loginError"></p>
             <button type="submit" class="form-btn">Login</button>
             <p class="toggle-link">No account? <a id="showSignup">Sign Up</a></p>
           </form>
@@ -287,9 +344,10 @@
         <div class="form-face signup-form">
           <h2>Sign Up</h2>
           <form id="signupForm">
-            <div class="input-group"><input type="text" placeholder="Username" required></div>
-            <div class="input-group"><input type="email" placeholder="Email" required></div>
-            <div class="input-group"><input type="password" placeholder="Password" required></div>
+            <div class="input-group"><input type="text" placeholder="Username" required name="username"></div>
+            <div class="input-group"><input type="email" placeholder="Email" required name="email"></div>
+            <div class="input-group"><input type="password" placeholder="Password" required name="password"></div>
+            <p class="error-message" id="signupError"></p>
             <button type="submit" class="form-btn">Sign Up</button>
             <p class="toggle-link">Already have an account? <a id="showLogin">Login</a></p>
           </form>
@@ -309,27 +367,143 @@
       <input type="text" id="userInput" placeholder="Type your question here...">
       <label for="fileUpload">📎</label>
       <input type="file" id="fileUpload" style="display:none;">
-      <button onclick="sendMessage()">Send</button>
+      <button id="voiceBtn" title="Use Voice">🎤</button>
+      <button onclick="sendMessage()" id="sendBtn">Send</button>
     </div>
   </div>
 
-<script>
+<!-- Firebase SDK -->
+<script type="module">
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnE7ZDKMlBi4WmbRS4U1HyQ9A8YEsmbKQ",
+    authDomain: "data-base-of-study-assitant.firebaseapp.com",
+    projectId: "data-base-of-study-assitant",
+    storageBucket: "data-base-of-study-assitant.appspot.com",
+    messagingSenderId: "614569134909",
+    appId: "1:614569134909:web:553a92a01a37724edd9354",
+    measurementId: "G-WVJSQWC6BG"
+  };
+
+  // Import Firebase modules
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
+  import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    onAuthStateChanged, 
+    signOut 
+  } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+  import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    query, 
+    orderBy, 
+    onSnapshot,
+    serverTimestamp,
+    doc,
+    setDoc,
+    getDoc,
+    enableIndexedDbPersistence // Import offline persistence
+  } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // --- Enable Offline Persistence ---
+  enableIndexedDbPersistence(db)
+    .catch((err) => {
+        if (err.code == 'failed-precondition') {
+            console.warn("Firestore persistence failed, likely due to multiple tabs open.");
+        } else if (err.code == 'unimplemented') {
+            console.warn("Firestore persistence is not available in this browser.");
+        }
+    });
+
+  // --- Global State ---
+  let currentUserId = null;
+  let unsubscribeMessages = null; 
+
   // --- Element Selectors ---
   const authModal = document.getElementById('auth-modal');
   const showLoginBtn = document.getElementById('showLoginBtn');
   const showSignupBtn = document.getElementById('showSignupBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const userGreeting = document.getElementById('userGreeting');
   const formContainer = document.getElementById('formContainer');
   const showSignupLink = document.getElementById('showSignup');
   const showLoginLink = document.getElementById('showLogin');
   const loginForm = document.getElementById('loginForm');
   const signupForm = document.getElementById('signupForm');
+  const loginError = document.getElementById('loginError');
+  const signupError = document.getElementById('signupError');
   const userInput = document.getElementById("userInput");
   const chatBox = document.getElementById("chatBox");
   const chatContainer = document.querySelector(".chat-container");
   const fileUpload = document.getElementById("fileUpload");
+  const voiceBtn = document.getElementById('voiceBtn');
+  const sendBtn = document.getElementById('sendBtn');
 
+  // --- UI Update Functions ---
+  async function updateUiForAuthState(user) {
+    if (user) {
+      currentUserId = user.uid;
+      
+      try {
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        
+        if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            userGreeting.textContent = `Hi, ${userData.username}`;
+            userGreeting.style.display = 'inline';
+        } else {
+            userGreeting.textContent = `Hi, there`; // Fallback greeting
+            userGreeting.style.display = 'inline';
+        }
+      } catch (error) {
+        console.error("Could not fetch user profile (client may be offline):", error);
+        loginError.textContent = "Could not fetch profile. Check connection.";
+        userGreeting.textContent = `Hi, there`; // Fallback greeting
+        userGreeting.style.display = 'inline';
+      }
+
+      showLoginBtn.style.display = 'none';
+      showSignupBtn.style.display = 'none';
+      logoutBtn.style.display = 'block';
+      authModal.classList.remove('visible');
+      userInput.placeholder = "Type your question here...";
+      sendBtn.disabled = false;
+      loadMessages(currentUserId);
+    } else {
+      currentUserId = null;
+      userGreeting.style.display = 'none';
+      showLoginBtn.style.display = 'block';
+      showSignupBtn.style.display = 'block';
+      logoutBtn.style.display = 'none';
+      chatBox.innerHTML = '<div class="message bot-message">Please log in to see your chat history.</div>';
+      userInput.placeholder = "Please log in to chat...";
+      sendBtn.disabled = true;
+      if (unsubscribeMessages) {
+        unsubscribeMessages();
+      }
+    }
+  }
+
+  // --- Firebase Auth State Listener ---
+  onAuthStateChanged(auth, (user) => {
+    updateUiForAuthState(user);
+  });
+  
   // --- Authentication Modal Logic ---
   showLoginBtn.addEventListener('click', () => {
+    loginError.textContent = '';
+    signupError.textContent = '';
     if (formContainer.classList.contains('flipped')) {
       formContainer.classList.remove('flipped');
     }
@@ -337,77 +511,151 @@
   });
 
   showSignupBtn.addEventListener('click', () => {
+    loginError.textContent = '';
+    signupError.textContent = '';
     if (!formContainer.classList.contains('flipped')) {
       formContainer.classList.add('flipped');
     }
     authModal.classList.add('visible');
   });
-
-  // Close modal by clicking on the background
-  authModal.addEventListener('click', (e) => {
-    if (e.target === authModal) {
-      authModal.classList.remove('visible');
+  
+  logoutBtn.addEventListener('click', async () => {
+    try {
+        await signOut(auth);
+    } catch (error) {
+        console.error("Error signing out: ", error);
     }
   });
 
-  showSignupLink.addEventListener('click', (e) => {
+  authModal.addEventListener('click', (e) => { if (e.target === authModal) authModal.classList.remove('visible'); });
+  showSignupLink.addEventListener('click', (e) => { e.preventDefault(); formContainer.classList.add('flipped'); });
+  showLoginLink.addEventListener('click', (e) => { e.preventDefault(); formContainer.classList.remove('flipped'); });
+
+  // --- Auth Form Submissions ---
+  signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    formContainer.classList.add('flipped');
+    const submitBtn = signupForm.querySelector('.form-btn');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Signing Up...';
+
+    const username = signupForm.username.value;
+    const email = signupForm.email.value;
+    const password = signupForm.password.value;
+    signupError.textContent = '';
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      await setDoc(doc(db, "users", user.uid), {
+          username: username,
+          email: email
+      });
+      updateUiForAuthState(user);
+    } catch (error) {
+      signupError.textContent = error.message;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+    }
   });
 
-  showLoginLink.addEventListener('click', (e) => {
+  loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    formContainer.classList.remove('flipped');
+    const submitBtn = loginForm.querySelector('.form-btn');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Logging In...';
+
+    const email = loginForm.email.value;
+    const password = loginForm.password.value;
+    loginError.textContent = '';
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      updateUiForAuthState(userCredential.user);
+    } catch (error) {
+      loginError.textContent = error.message;
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+    }
   });
 
-  function handleAuthSuccess(e) {
-    e.preventDefault();
-    authModal.classList.remove('visible');
+  // --- Firestore & Chat Logic ---
+  function loadMessages(uid) {
+    const messagesRef = collection(db, 'chats', uid, 'messages');
+    const q = query(messagesRef, orderBy('timestamp'));
+
+    unsubscribeMessages = onSnapshot(q, (snapshot) => {
+      chatBox.innerHTML = '';
+      if (snapshot.empty) {
+         chatBox.innerHTML = '<div class="message bot-message">Ask me anything to start the conversation!</div>';
+      } else {
+        snapshot.forEach(doc => {
+            const msg = doc.data();
+            appendMessage(msg.text, msg.sender);
+        });
+      }
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
   }
 
-  loginForm.addEventListener('submit', handleAuthSuccess);
-  signupForm.addEventListener('submit', handleAuthSuccess);
+  window.sendMessage = async function() {
+    if (!currentUserId) {
+        appendMessage("Please log in to send a message.", "bot");
+        return;
+    }
 
-  // --- Chat Logic ---
-  let selectedFile = null;
-  fileUpload.addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      selectedFile = file;
-      userInput.value = file.name;
-    }
-  });
+    const messageText = userInput.value.trim();
+    const selectedFile = fileUpload.files[0];
 
-  async function sendMessage() {
-    const message = userInput.value.trim();
-    if (message === "" && !selectedFile) return;
-    if (!chatContainer.classList.contains("chat-active")) {
-      chatContainer.classList.add("chat-active");
-    }
-    if (chatContainer.classList.contains("is-collapsed")) {
-      chatContainer.classList.remove("is-collapsed");
-    }
-    appendMessage(message || selectedFile.name, "user");
+    if (messageText === "" && !selectedFile) return;
+    
+    appendMessage(messageText || selectedFile.name, "user");
     userInput.value = "";
-    chatBox.scrollTop = chatBox.scrollHeight;
+    fileUpload.value = ""; 
+
+    const userMessage = {
+        text: messageText || selectedFile.name,
+        sender: 'user',
+        timestamp: serverTimestamp()
+    };
+    const messagesRef = collection(db, 'chats', currentUserId, 'messages');
+    try {
+        await addDoc(messagesRef, userMessage);
+    } catch (error) {
+        console.error("Error saving user message:", error);
+        appendMessage("Error: Could not save your message.", "bot");
+        return;
+    }
+
     try {
       let res;
+      const webhookUrl = "https://umernaveed.app.n8n.cloud/webhook/aistudy"; // Corrected URL
+
       if (selectedFile) {
         const formData = new FormData();
         formData.append("file", selectedFile);
-        formData.append("text", message || "");
-        res = await fetch("https://umernaveed.app.n8n.cloud/webhook/Della", { method: "POST", body: formData });
-        selectedFile = null;
+        formData.append("text", messageText);
+        res = await fetch(webhookUrl, { method: "POST", body: formData });
       } else {
-        res = await fetch("https://umernaveed.app.n8n.cloud/webhook/Della", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: message }) });
+         res = await fetch(webhookUrl, { 
+            method: "POST", 
+            headers: { "Content-Type": "application/json" }, 
+            body: JSON.stringify({ question: messageText }) 
+        });
       }
+      
       if (!res.ok) throw new Error(`Server responded with status: ${res.status}`);
       const data = await res.json();
-      const botReply = data.answer || "Sorry, I didn't get a response.";
-      appendMessage(botReply, "bot");
+      const botReply = data.answer || "Sorry, I couldn't get a response.";
+      
+      const botMessage = { text: botReply, sender: 'bot', timestamp: serverTimestamp() };
+      await addDoc(messagesRef, botMessage);
+
     } catch (err) {
-      console.error("Error:", err);
-      appendMessage("Error: Could not connect to the AI assistant.", "bot");
+      console.error("Error connecting to webhook:", err);
+      const errorMessage = { text: "Error: Could not connect to the AI assistant.", sender: 'bot', timestamp: serverTimestamp() };
+      await addDoc(messagesRef, errorMessage);
     }
   }
 
@@ -418,17 +666,41 @@
     chatBox.appendChild(messageElement);
     chatBox.scrollTop = chatBox.scrollHeight;
   }
+  
+  // --- Voice Input Logic ---
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+    recognition.interimResults = true;
+    let isListening = false;
+    voiceBtn.addEventListener('click', () => {
+      if (!currentUserId) { return; }
+      isListening ? recognition.stop() : recognition.start();
+    });
+    recognition.onstart = () => { isListening = true; voiceBtn.classList.add('is-listening'); userInput.placeholder = 'Listening...'; };
+    recognition.onend = () => { isListening = false; voiceBtn.classList.remove('is-listening'); userInput.placeholder = 'Type your question here...'; };
+    recognition.onresult = (event) => {
+      userInput.value = Array.from(event.results).map(r => r[0]).map(r => r.transcript).join('');
+    };
+    recognition.onerror = (e) => { console.error('Speech recognition error:', e.error); appendMessage(`Speech error: ${e.error}`, 'bot'); };
+  } else {
+    voiceBtn.style.display = 'none';
+  }
 
+  // --- General Event Listeners ---
   userInput.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); sendMessage(); } });
   userInput.addEventListener("focus", () => { if (chatContainer.classList.contains("is-collapsed")) { chatContainer.classList.remove("is-collapsed"); } });
   document.addEventListener("click", (e) => {
     const isChatActive = chatContainer.classList.contains("chat-active");
     const isCollapsed = chatContainer.classList.contains("is-collapsed");
-    const isClickOutside = !chatContainer.contains(e.target) && !authModal.contains(e.target) && e.target !== showLoginBtn && e.target !== showSignupBtn;
+    const isClickOutside = !chatContainer.contains(e.target) && !authModal.contains(e.target) && e.target !== showLoginBtn && e.target !== showSignupBtn && e.target !== logoutBtn;
     if (isChatActive && !isCollapsed && isClickOutside) {
       chatContainer.classList.add("is-collapsed");
     }
   });
+
 </script>
 
 </body>
