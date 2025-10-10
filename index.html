@@ -345,6 +345,8 @@
             padding: 10px;
             top: 0;
             right: 0;
+            left: 0;
+            justify-content: flex-end;
         }
 
         .chat-container.mobile-fullscreen {
@@ -352,6 +354,7 @@
             height: 100%;
             bottom: 0;
             left: 0;
+            top: 0;
             border-radius: 0;
             transform: none;
         }
@@ -534,7 +537,7 @@
       }
 
       userGreeting.textContent = `Hi, ${displayName} 👋`;
-      mainGreeting.textContent = "Hi, I'm Umer"; // <-- CHANGE: This is now static
+      mainGreeting.textContent = "Hi, I'm Umer"; // <-- This is now static
       userGreeting.style.display = 'inline';
       showLoginBtn.style.display = 'none';
       showSignupBtn.style.display = 'none';
