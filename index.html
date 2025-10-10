@@ -358,8 +358,8 @@
 
   <!-- Main App Content -->
   <div class="intro">
-    <h1>Hi Dear I'm Umer</h1>
-    <h2>Your's AI Study Assistant!<br>How Can I Help You Today?</h2>
+    <h1>Hi, I'm Umer</h1>
+    <h2>Your AI Study Assistant<br>How can I help you today?</h2>
   </div>
   <div class="chat-container">
     <div class="chat-box" id="chatBox"></div>
@@ -450,29 +450,25 @@
   const sendBtn = document.getElementById('sendBtn');
 
   // --- UI Update Functions ---
-  async function updateUiForAuthState(user) {
+  async function updateUiForAuthState(user, username = null) {
     if (user) {
       currentUserId = user.uid;
-      
-      try {
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        
-        if (userDocSnap.exists()) {
-            const userData = userDocSnap.data();
-            userGreeting.textContent = `Hi, ${userData.username}`;
-            userGreeting.style.display = 'inline';
-        } else {
-            userGreeting.textContent = `Hi, there`; // Fallback greeting
-            userGreeting.style.display = 'inline';
-        }
-      } catch (error) {
-        console.error("Could not fetch user profile (client may be offline):", error);
-        loginError.textContent = "Could not fetch profile. Check connection.";
-        userGreeting.textContent = `Hi, there`; // Fallback greeting
-        userGreeting.style.display = 'inline';
+      let displayName = username;
+
+      if (!displayName) {
+          try {
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+            if (userDocSnap.exists()) {
+                displayName = userDocSnap.data().username;
+            }
+          } catch (error) {
+            console.warn("Could not fetch user profile, proceeding with offline data. Error:", error.message);
+          }
       }
 
+      userGreeting.textContent = `Hi, ${displayName || 'there'}`;
+      userGreeting.style.display = 'inline';
       showLoginBtn.style.display = 'none';
       showSignupBtn.style.display = 'none';
       logoutBtn.style.display = 'block';
@@ -550,7 +546,8 @@
           username: username,
           email: email
       });
-      updateUiForAuthState(user);
+      // Pass the username directly to avoid a refetch
+      updateUiForAuthState(user, username);
     } catch (error) {
       signupError.textContent = error.message;
     } finally {
@@ -582,6 +579,14 @@
 
   // --- Firestore & Chat Logic ---
   function loadMessages(uid) {
+    if (unsubscribeMessages) {
+        unsubscribeMessages(); 
+    }
+    
+    if (!auth.currentUser || auth.currentUser.uid !== uid) {
+        return;
+    }
+
     const messagesRef = collection(db, 'chats', uid, 'messages');
     const q = query(messagesRef, orderBy('timestamp'));
 
@@ -596,6 +601,13 @@
         });
       }
       chatBox.scrollTop = chatBox.scrollHeight;
+    }, (error) => {
+        console.error("Error loading messages:", error);
+        if (error.code === 'permission-denied') {
+             chatBox.innerHTML = '<div class="message bot-message">Error: You do not have permission to view these messages. Please check security rules in your Firebase project.</div>';
+        } else {
+             chatBox.innerHTML = '<div class="message bot-message">Could not load chat history. Check your connection.</div>';
+        }
     });
   }
 
@@ -610,12 +622,12 @@
 
     if (messageText === "" && !selectedFile) return;
     
-    appendMessage(messageText || selectedFile.name, "user");
+    const tempMessage = messageText || selectedFile.name;
     userInput.value = "";
     fileUpload.value = ""; 
 
     const userMessage = {
-        text: messageText || selectedFile.name,
+        text: tempMessage,
         sender: 'user',
         timestamp: serverTimestamp()
     };
@@ -624,24 +636,26 @@
         await addDoc(messagesRef, userMessage);
     } catch (error) {
         console.error("Error saving user message:", error);
+        userInput.value = tempMessage;
         appendMessage("Error: Could not save your message.", "bot");
         return;
     }
 
     try {
       let res;
-      const webhookUrl = "https://umernaveed.app.n8n.cloud/webhook/aistudy"; // Corrected URL
+      const webhookUrl = "https://umernaveed.app.n8n.cloud/webhook/aistudy";
 
       if (selectedFile) {
         const formData = new FormData();
         formData.append("file", selectedFile);
         formData.append("text", messageText);
+        formData.append("userId", currentUserId); // <-- ADDED USER ID
         res = await fetch(webhookUrl, { method: "POST", body: formData });
       } else {
          res = await fetch(webhookUrl, { 
             method: "POST", 
             headers: { "Content-Type": "application/json" }, 
-            body: JSON.stringify({ question: messageText }) 
+            body: JSON.stringify({ question: tempMessage, userId: currentUserId }) // <-- ADDED USER ID
         });
       }
       
@@ -691,11 +705,19 @@
 
   // --- General Event Listeners ---
   userInput.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); sendMessage(); } });
-  userInput.addEventListener("focus", () => { if (chatContainer.classList.contains("is-collapsed")) { chatContainer.classList.remove("is-collapsed"); } });
+  
+  userInput.addEventListener("focus", () => { 
+    chatContainer.classList.add("chat-active");
+    if (chatContainer.classList.contains("is-collapsed")) { 
+      chatContainer.classList.remove("is-collapsed"); 
+    } 
+  });
+
   document.addEventListener("click", (e) => {
     const isChatActive = chatContainer.classList.contains("chat-active");
     const isCollapsed = chatContainer.classList.contains("is-collapsed");
-    const isClickOutside = !chatContainer.contains(e.target) && !authModal.contains(e.target) && e.target !== showLoginBtn && e.target !== showSignupBtn && e.target !== logoutBtn;
+    const isClickOutside = !chatContainer.contains(e.target) && !authModal.contains(e.target) && e.target !== showLoginBtn && e.target !== showSignupBtn && e.target !== logoutBtn && !e.target.closest('.site-header');
+    
     if (isChatActive && !isCollapsed && isClickOutside) {
       chatContainer.classList.add("is-collapsed");
     }
