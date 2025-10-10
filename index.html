@@ -783,6 +783,13 @@
   // --- General Event Listeners ---
   userInput.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); sendMessage(); } });
   
+  fileUpload.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      userInput.value = file.name;
+    }
+  });
+
   userInput.addEventListener("focus", () => { 
     chatContainer.classList.add("chat-active");
     if (window.innerWidth <= 768) {
