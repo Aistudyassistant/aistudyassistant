@@ -209,6 +209,7 @@
       text-align: center;
       margin-bottom: 15vh;
       animation: fadeIn 2s ease-in-out;
+      width: 90%;
     }
 
     .intro h1 {
@@ -233,6 +234,7 @@
       text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
     }
 
+    /* --- Chat Container --- */
     .chat-container {
       width: 90%;
       max-width: 700px;
@@ -250,6 +252,33 @@
       transform: translateX(-50%);
       opacity: 0;
       animation: slideUpFadeIn 0.7s ease-out 1s forwards;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      z-index: 200;
+    }
+
+    .chat-header {
+      display: none; /* Hidden on desktop */
+      padding: 10px 15px;
+      text-align: center;
+      position: relative;
+      border-bottom: 1px solid var(--neon-blue);
+    }
+    .chat-header h3 {
+        margin: 0;
+        font-weight: 500;
+        color: var(--neon-blue);
+    }
+    #closeChatBtn {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        line-height: 1;
     }
 
     .chat-box {
@@ -259,6 +288,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      flex-grow: 1;
       max-height: 50vh; 
       transition: all 0.3s ease-in-out;
     }
@@ -293,16 +323,8 @@
       font-size: 1.2rem;
       margin-right: 5px;
     }
-
-    #voiceBtn:hover {
-      color: var(--neon-blue);
-      text-shadow: 0 0 8px rgba(0, 242, 255, 0.7);
-    }
-
-    #voiceBtn.is-listening {
-      color: var(--neon-blue);
-      animation: pulse 1.5s infinite;
-    }
+    #voiceBtn:hover { color: var(--neon-blue); text-shadow: 0 0 8px rgba(0, 242, 255, 0.7); }
+    #voiceBtn.is-listening { color: var(--neon-blue); animation: pulse 1.5s infinite; }
 
     .chat-input button { padding: 10px 16px; border: 1px solid var(--neon-blue); background: transparent; color: var(--neon-blue); border-radius: 8px; cursor: pointer; transition: all 0.3s; font-family: 'Poppins', sans-serif; font-weight: 500; text-shadow: 0 0 5px rgba(0, 242, 255, 0.7); }
     .chat-input button:hover { background: var(--neon-blue); color: var(--dark-bg); box-shadow: 0 0 20px var(--neon-blue); text-shadow: none; }
@@ -316,6 +338,33 @@
       50% { transform: scale(1.1); text-shadow: 0 0 15px rgba(0, 242, 255, 1); }
       100% { transform: scale(1); text-shadow: 0 0 5px rgba(0, 242, 255, 0.7); }
     }
+
+    /* --- Mobile Responsive Styles --- */
+    @media (max-width: 768px) {
+        .site-header {
+            padding: 10px;
+            top: 0;
+            right: 0;
+        }
+
+        .chat-container.mobile-fullscreen {
+            width: 100%;
+            height: 100%;
+            bottom: 0;
+            left: 0;
+            border-radius: 0;
+            transform: none;
+        }
+
+        .chat-container.mobile-fullscreen .chat-header {
+            display: block;
+        }
+
+        .chat-container.mobile-fullscreen .chat-box {
+            max-height: none;
+        }
+    }
+
   </style>
 </head>
 <body>
@@ -362,6 +411,10 @@
     <h2>Your AI Study Assistant<br>How can I help you today?</h2>
   </div>
   <div class="chat-container">
+    <div class="chat-header">
+        <h3>AI Assistant</h3>
+        <button id="closeChatBtn">&times;</button>
+    </div>
     <div class="chat-box" id="chatBox"></div>
     <div class="chat-input">
       <input type="text" id="userInput" placeholder="Type your question here...">
@@ -445,6 +498,7 @@
   const userInput = document.getElementById("userInput");
   const chatBox = document.getElementById("chatBox");
   const chatContainer = document.querySelector(".chat-container");
+  const closeChatBtn = document.getElementById('closeChatBtn');
   const fileUpload = document.getElementById("fileUpload");
   const voiceBtn = document.getElementById('voiceBtn');
   const sendBtn = document.getElementById('sendBtn');
@@ -649,13 +703,13 @@
         const formData = new FormData();
         formData.append("file", selectedFile);
         formData.append("text", messageText);
-        formData.append("userId", currentUserId); // <-- ADDED USER ID
+        formData.append("userId", currentUserId);
         res = await fetch(webhookUrl, { method: "POST", body: formData });
       } else {
          res = await fetch(webhookUrl, { 
             method: "POST", 
             headers: { "Content-Type": "application/json" }, 
-            body: JSON.stringify({ question: tempMessage, userId: currentUserId }) // <-- ADDED USER ID
+            body: JSON.stringify({ question: tempMessage, userId: currentUserId })
         });
       }
       
@@ -708,18 +762,30 @@
   
   userInput.addEventListener("focus", () => { 
     chatContainer.classList.add("chat-active");
+    if (window.innerWidth <= 768) {
+        chatContainer.classList.add('mobile-fullscreen');
+    }
     if (chatContainer.classList.contains("is-collapsed")) { 
       chatContainer.classList.remove("is-collapsed"); 
     } 
   });
+  
+  function closeChat() {
+      chatContainer.classList.add("is-collapsed");
+      if (window.innerWidth <= 768) {
+        chatContainer.classList.remove('mobile-fullscreen');
+      }
+  }
+  
+  closeChatBtn.addEventListener('click', closeChat);
 
   document.addEventListener("click", (e) => {
     const isChatActive = chatContainer.classList.contains("chat-active");
     const isCollapsed = chatContainer.classList.contains("is-collapsed");
-    const isClickOutside = !chatContainer.contains(e.target) && !authModal.contains(e.target) && e.target !== showLoginBtn && e.target !== showSignupBtn && e.target !== logoutBtn && !e.target.closest('.site-header');
+    const isClickOutside = !chatContainer.contains(e.target) && !authModal.contains(e.target) && !e.target.closest('.site-header');
     
     if (isChatActive && !isCollapsed && isClickOutside) {
-      chatContainer.classList.add("is-collapsed");
+        closeChat();
     }
   });
 
