@@ -510,9 +510,6 @@
 
   // --- UI Update Functions ---
   async function updateUiForAuthState(user, username = null) {
-    // Reset potential error state first
-    mainSubtitle.style.color = '#ccc';
-    mainSubtitle.innerHTML = 'Your AI Study Assistant<br>How can I help you today?';
     
     if (user) {
       currentUserId = user.uid;
@@ -537,7 +534,9 @@
       }
 
       userGreeting.textContent = `Hi, ${displayName} 👋`;
-      mainGreeting.textContent = "Hi, I'm Umer"; // <-- This is now static
+      mainGreeting.textContent = `Hi, ${displayName}`;
+      mainSubtitle.innerHTML = "I'm Your Study AI Assistant<br>How can I help you today?";
+      
       userGreeting.style.display = 'inline';
       showLoginBtn.style.display = 'none';
       showSignupBtn.style.display = 'none';
@@ -556,6 +555,7 @@
       currentUserId = null;
       userGreeting.style.display = 'none';
       mainGreeting.textContent = "Hi, I'm Umer";
+      mainSubtitle.innerHTML = 'Your AI Study Assistant<br>How can I help you today?';
       showLoginBtn.style.display = 'block';
       showSignupBtn.style.display = 'block';
       logoutBtn.style.display = 'none';
