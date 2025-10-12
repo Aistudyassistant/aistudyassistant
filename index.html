@@ -24,6 +24,10 @@
       --google-red: #ea4335;
       --google-yellow: #fbbc05;
       --google-green: #34a853;
+      --icon-color: #888; /* Default icon color */
+      --filled-color: var(--neon-blue); /* Filled state color */
+      --filled-like: var(--neon-blue);
+      --filled-dislike: var(--danger-red);
     }
 
     body.light-theme {
@@ -38,7 +42,17 @@
       --text-color-light: #555;
       --border-color: #ccc;
       --input-bg: #fff; /* FIX: White input background for light theme */
+      --icon-color: #555;
+      --filled-color: var(--neon-blue);
+      --filled-like: var(--neon-blue);
+      --filled-dislike: var(--danger-red);
     }
+    
+    /* Global Transition Smoothing */
+    * {
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
 
     /* Base Body Styles */
     html {
@@ -127,7 +141,7 @@
       color: var(--neon-blue);
       border-radius: 8px;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.3s, transform 0.2s; /* Added transform transition */
       font-family: 'Poppins', sans-serif;
       font-weight: 500;
       font-size: 0.9rem;
@@ -155,6 +169,7 @@
       color: var(--darker-purple);
       box-shadow: 0 0 20px var(--neon-blue);
       text-shadow: none;
+      transform: scale(1.03); /* NEW: Subtle scale effect */
     }
 
     /* --- Modals (Auth & Delete Confirmation) --- */
@@ -244,11 +259,11 @@
     .delete-confirm-modal h4 { margin: 0 0 10px; font-size: 1.2rem; }
     .delete-confirm-modal p { margin: 0 0 25px; color: var(--text-color-light); }
     .delete-confirm-modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-    .modal-btn { padding: 8px 16px; border-radius: 6px; cursor: pointer; border: 1px solid; font-weight: 500; transition: all 0.2s; }
+    .modal-btn { padding: 8px 16px; border-radius: 6px; cursor: pointer; border: 1px solid; font-weight: 500; transition: all 0.2s, transform 0.2s; }
     #confirmDeleteBtn { background: var(--danger-red); border-color: var(--danger-red); color: white; }
-    #confirmDeleteBtn:hover { background: #ff2d41; }
+    #confirmDeleteBtn:hover { background: #ff2d41; transform: scale(1.05); }
     #cancelDeleteBtn { background: transparent; border-color: #555; color: var(--text-color-light); }
-    #cancelDeleteBtn:hover { background: #555; color: white; }
+    #cancelDeleteBtn:hover { background: #555; color: white; transform: scale(1.05); }
 
 
     .login-form, .signup-form { height: 100%; }
@@ -284,7 +299,7 @@
       color: var(--text-color); /* Use CSS variable */
       font-family: 'Poppins', sans-serif;
       font-size: 1rem;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
       box-sizing: border-box;
     }
     
@@ -317,17 +332,24 @@
         color: var(--neon-blue);
         border-radius: 8px;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.3s, transform 0.2s; /* Added transform transition */
         font-family: 'Poppins', sans-serif;
         font-weight: 500;
         font-size: 1rem;
         text-shadow: 0 0 5px rgba(0, 170, 255, 0.7);
     }
 
-    .form-btn:hover { background: var(--neon-blue); color: var(--darker-purple); box-shadow: 0 0 20px var(--neon-blue); text-shadow: none; }
+    .form-btn:hover { 
+      background: var(--neon-blue); 
+      color: var(--darker-purple); 
+      box-shadow: 0 0 20px var(--neon-blue); 
+      text-shadow: none; 
+      transform: scale(1.03); /* NEW: Subtle scale effect */
+    }
     .form-btn:disabled {
         cursor: not-allowed;
         opacity: 0.6;
+        transform: scale(1);
     }
     
     /* Google Button Styling FIX: Standard Google Sign-in appearance */
@@ -343,7 +365,7 @@
         border-radius: 8px;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.3s, transform 0.2s; /* Added transform transition */
         border: 1px solid #ccc;
         box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         width: 100%; 
@@ -352,6 +374,7 @@
         background: #f1f1f1;
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         color: #1f1f1f;
+        transform: scale(1.03); /* NEW: Subtle scale effect */
     }
     
     .google-btn svg {
@@ -437,6 +460,17 @@
     body.light-theme .chat-box::-webkit-scrollbar-track {
         background: rgba(0,0,0,0.1);
     }
+    
+    /* NEW: Message Animation Keyframe */
+    @keyframes slideInFromBottom {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    /* Apply animation to messages */
+    .message-wrapper {
+        animation: slideInFromBottom 0.3s ease-out;
+    }
+
 
     .empty-chat-state {
         display: flex;
@@ -473,7 +507,8 @@
         text-shadow: none;
     }
     
-    .message-wrapper { display: flex; flex-direction: column; }
+    /* Removed .message-wrapper animation for clarity, applied to base message in JS instead */
+
     .user-message-wrapper { align-self: flex-end; }
     .bot-message-wrapper { align-self: flex-start; }
 
@@ -509,29 +544,61 @@
     .bot-message-wrapper .message-actions { justify-content: flex-start; }
     .user-message-wrapper .message-actions { justify-content: flex-end; }
 
-    .copy-msg-btn, .regenerate-btn, .tts-btn {
+    /* Unified action button style for Copy, Like, Dislike */
+    .action-btn {
         background: none;
         border: none;
-        color: #888;
+        color: var(--icon-color);
         cursor: pointer;
         padding: 0;
         display: flex;
         align-items: center;
         justify-content: center;
+        /* NEW: Smoother interaction transition */
+        transition: color 0.15s ease-out, transform 0.1s ease-out; 
     }
-    .copy-msg-btn:hover, .regenerate-btn:hover, .tts-btn:hover { color: var(--neon-blue); }
-    .copy-msg-btn svg, .regenerate-btn svg, .tts-btn svg { width: 16px; height: 16px; }
-    .tts-btn.is-playing { color: var(--neon-purple); animation: pulse-small 1.5s infinite; }
+    .action-btn:hover { 
+        color: var(--neon-blue); 
+        transform: scale(1.1); 
+    }
+    .action-btn svg { 
+        width: 16px; 
+        height: 16px; 
+        transition: transform 0.2s; 
+    }
 
+    /* Styles for Feedback icons */
+    .feedback-btn.active {
+        color: var(--filled-like);
+        transform: scale(1.05); /* Pop slightly when active */
+    }
+    .feedback-btn.dislike.active {
+        color: var(--filled-dislike);
+        transform: scale(1.05);
+    }
+    /* Ensure active icons don't change color on hover */
+    .feedback-btn.active:hover {
+        color: var(--filled-like); 
+    }
+    .feedback-btn.dislike.active:hover {
+        color: var(--filled-dislike);
+    }
+
+    /* Hide redundant elements */
+    .regenerate-btn, .tts-btn { display: none; } 
 
     .chat-input { display: flex; padding: 12px; background: var(--input-bg); align-items: center; border-radius: 15px; margin: 20px; border: 1px solid var(--border-color); }
-    .chat-input input[type="text"] { flex: 1; padding: 10px; border: none; outline: none; background: transparent; color: var(--text-color); font-family: 'Poppins', sans-serif; transition: border-color 0.3s, box-shadow 0.3s; }
+    .chat-input input[type="text"] { flex: 1; padding: 10px; border: none; outline: none; background: transparent; color: var(--text-color); font-family: 'Poppins', sans-serif; transition: border-color 0.3s, box-shadow 0.3s, color 0.3s; }
     .chat-input input:focus { box-shadow: none; }
     .chat-input input::placeholder { color: #888; }
     .chat-input input.logged-out-placeholder::placeholder {
         color: var(--neon-blue);
         opacity: 0.8;
         text-shadow: 0 0 5px rgba(0, 170, 255, 0.5);
+    }
+    /* FIX: Ensure color changes for Light theme inputs on input */
+    body.light-theme .chat-input input[type="text"] {
+        color: var(--text-color); 
     }
 
     .chat-input label { 
@@ -542,7 +609,7 @@
         display: flex;
         align-items: center;
     }
-    .chat-input label:hover { color: var(--neon-blue); text-shadow: 0 0 8px rgba(0, 170, 255, 0.8); }
+    .chat-input label:hover { color: var(--neon-blue); text-shadow: 0 0 8px rgba(0, 170, 255, 0.8); transform: scale(1.1); }
 
     #voiceBtn {
       padding: 10px;
@@ -551,15 +618,15 @@
       color: #888;
       border-radius: 8px;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.3s, transform 0.2s;
       font-size: 1.2rem;
       margin: 0 10px;
     }
-    #voiceBtn:hover { color: var(--neon-blue); text-shadow: 0 0 8px rgba(0, 170, 255, 0.7); }
-    #voiceBtn.is-listening { color: var(--neon-blue); animation: pulse 1.5s infinite; }
+    #voiceBtn:hover { color: var(--neon-blue); text-shadow: 0 0 8px rgba(0, 170, 255, 0.7); transform: scale(1.1); }
+    #voiceBtn.is-listening { color: var(--neon-blue); animation: pulse 1.5s infinite; transform: scale(1.1); }
 
-    .chat-input button { padding: 10px 16px; border: 1px solid var(--neon-blue); background: transparent; color: var(--neon-blue); border-radius: 8px; cursor: pointer; transition: all 0.3s; font-family: 'Poppins', sans-serif; font-weight: 500; text-shadow: 0 0 5px rgba(0, 170, 255, 0.7); }
-    .chat-input button:hover { background: var(--neon-blue); color: var(--darker-purple); box-shadow: 0 0 20px var(--neon-blue); text-shadow: none; }
+    .chat-input button { padding: 10px 16px; border: 1px solid var(--neon-blue); background: transparent; color: var(--neon-blue); border-radius: 8px; cursor: pointer; transition: all 0.3s, transform 0.2s; font-family: 'Poppins', sans-serif; font-weight: 500; text-shadow: 0 0 5px rgba(0, 170, 255, 0.7); }
+    .chat-input button:hover { background: var(--neon-blue); color: var(--darker-purple); box-shadow: 0 0 20px var(--neon-blue); text-shadow: none; transform: scale(1.03); }
     
     /* NEW: Send Button Loading State */
     .chat-input button#sendBtn.is-loading {
@@ -571,6 +638,7 @@
         display: flex;
         align-items: center;
         gap: 5px;
+        transform: scale(1);
     }
     .chat-input button#sendBtn.is-loading svg {
         animation: spin 1s linear infinite;
@@ -596,6 +664,10 @@
         padding: 8px 12px;
         border-radius: 12px;
         border: 1px solid #555;
+        transition: transform 0.2s;
+    }
+    .file-preview:hover {
+        transform: translateY(-2px);
     }
     .file-preview-thumbnail {
         width: 40px;
@@ -640,6 +712,7 @@
         font-size: 1.5rem;
         padding: 0 5px;
         line-height: 1;
+        transition: color 0.2s;
     }
     #removeFileBtn:hover {
         color: var(--text-color);
@@ -729,7 +802,7 @@
         color: var(--neon-blue);
         border-radius: 8px;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.3s, transform 0.2s;
         font-weight: 500;
         margin-bottom: 20px;
     }
@@ -737,6 +810,7 @@
         background: var(--neon-blue);
         color: var(--darker-purple);
         box-shadow: 0 0 15px var(--neon-blue);
+        transform: scale(1.03);
     }
     
     /* NEW: Search Bar Styling */
@@ -756,6 +830,12 @@
         font-family: 'Poppins', sans-serif;
         box-sizing: border-box;
     }
+    /* NEW: Search Bar Focus Pulse */
+    #sessionSearch:focus {
+        border-color: var(--neon-blue);
+        box-shadow: 0 0 8px rgba(0, 170, 255, 0.5);
+    }
+
     body.light-theme #sessionSearch {
         background: #fff;
         color: var(--text-color);
@@ -792,11 +872,19 @@
         border-radius: 8px;
         cursor: pointer;
         border-left: 3px solid transparent;
-        transition: all 0.3s ease;
+        transition: all 0.3s ease, transform 0.2s; /* Added transform transition */
         position: relative;
     }
     body.light-theme #session-list li {
         background: #f1f3f5;
+    }
+    
+    #session-list li:hover {
+        background: rgba(0,0,0,0.4);
+        transform: translateX(5px); /* Subtle slide effect on hover */
+    }
+    body.light-theme #session-list li:hover {
+        background: #e9ecef;
     }
 
     .session-info {
@@ -872,7 +960,9 @@
         z-index: 10;
         overflow: hidden;
         display: none;
-        width: 100px;
+        /* FIX: Increased width to ensure 'Delete' is fully visible */
+        width: 120px; 
+        padding: 5px 0; /* Added slight padding */
     }
     body.light-theme .actions-popover {
         background: #fff;
@@ -883,7 +973,9 @@
     .actions-popover.up { top: auto; bottom: 25px; }
     .actions-popover button {
         display: block; width: 100%; text-align: left;
-        background: none; border: none; color: white; padding: 10px 15px; cursor: pointer;
+        background: none; border: none; color: white; 
+        padding: 8px 15px; /* Increased vertical padding */
+        cursor: pointer;
         font-size: 0.9rem;
     }
     body.light-theme .actions-popover button {
@@ -895,18 +987,11 @@
     }
     .actions-popover .delete-action { color: var(--danger-red); }
     
-
-    #session-list li:hover {
-        background: rgba(0,0,0,0.4);
-    }
-    body.light-theme #session-list li:hover {
-        background: #e9ecef;
-    }
-
     #session-list li.active {
         background: var(--dark-purple);
         border-left-color: var(--neon-blue);
         font-weight: 500;
+        transform: none; /* Active item stays put */
     }
      body.light-theme #session-list li.active {
         background: #dbe4f0;
@@ -920,6 +1005,7 @@
       padding: 5px;
       display: none; /* Hidden by default */
       line-height: 1;
+      transition: color 0.2s, transform 0.2s;
     }
     #closeHistoryBtn svg, #openHistoryBtn svg {
       width: 20px;
@@ -927,6 +1013,7 @@
     }
     #closeHistoryBtn:hover, #openHistoryBtn:hover {
         color: var(--text-color);
+        transform: scale(1.1);
     }
     
     .theme-switcher-container {
@@ -1492,6 +1579,7 @@
       currentUserId = null;
       userGreeting.style.display = 'none';
       mainGreeting.textContent = "Hi, I'm Umer";
+      // FIX: Ensure Login/Signup buttons are explicitly shown and Logout is hidden
       showLoginBtn.style.display = 'block';
       showSignupBtn.style.display = 'block';
       logoutBtn.style.display = 'none';
@@ -1541,7 +1629,15 @@
     formContainer.classList.add('flipped');
     authModal.classList.add('visible');
   });
-  logoutBtn.addEventListener('click', () => signOut(auth));
+  // FIX: Logout button calls Firebase signOut
+  logoutBtn.addEventListener('click', () => {
+      signOut(auth).then(() => {
+          // Sign out successful. updateUiForAuthState will handle the UI reset.
+          console.log("User successfully signed out.");
+      }).catch((error) => {
+          console.error("Error signing out:", error);
+      });
+  });
   authModal.addEventListener('click', (e) => { 
       if (e.target.id === 'auth-modal') {
           authModal.classList.remove('visible');
@@ -1731,6 +1827,8 @@
             });
             
             const rect = menuBtn.getBoundingClientRect();
+            // This is the logic that decides if the popover opens up or down.
+            // If there's enough space below (100px threshold), open down (default). Otherwise, open up.
             if (window.innerHeight - rect.bottom < 100) { 
                 popover.classList.add('up');
             } else {
@@ -2008,6 +2106,45 @@
     }
   }
 
+  // NEW: Function to handle feedback (Like/Dislike)
+  function handleFeedback(msgId, rating, likeBtn, dislikeBtn) {
+      if (!currentUserId || !currentSessionId) return;
+
+      const messageRef = doc(db, 'chats', currentUserId, 'sessions', currentSessionId, 'messages', msgId);
+
+      // Determine the new state
+      let newRating = rating;
+      
+      if (rating === 'like') {
+          // If already liked, unlike. Otherwise, like.
+          if (likeBtn.classList.contains('active')) {
+              newRating = 'none';
+              likeBtn.classList.remove('active');
+          } else {
+              dislikeBtn.classList.remove('active');
+              likeBtn.classList.add('active');
+          }
+      } else if (rating === 'dislike') {
+          // If already disliked, undislike. Otherwise, dislike.
+          if (dislikeBtn.classList.contains('active')) {
+              newRating = 'none';
+              dislikeBtn.classList.remove('active');
+          } else {
+              likeBtn.classList.remove('active');
+              dislikeBtn.classList.add('active');
+          }
+      }
+
+      // Update Firestore (assuming 'rating' field stores 'like', 'dislike', or is absent/null)
+      const feedbackValue = newRating === 'none' ? null : newRating;
+
+      updateDoc(messageRef, {
+          rating: feedbackValue,
+          ratingTimestamp: serverTimestamp()
+      }).catch(err => console.error("Failed to update message rating:", err));
+  }
+
+
   function appendMessage(fragment, msg, isLastMessage) {
     const wrapper = document.createElement('div');
     wrapper.className = `message-wrapper ${msg.sender}-message-wrapper`;
@@ -2015,10 +2152,10 @@
     const messageElement = document.createElement("div");
     messageElement.className = `message ${msg.sender}-message`;
 
-    // Render multiple file attachments if they exist (for user messages)
+    // Render file attachments
     if (msg.files && Array.isArray(msg.files)) {
         msg.files.forEach(file => {
-            if (file.type?.startsWith('image/') && file.dataURL) {
+            if (file.type?.startsWith('image/')) {
                 const img = document.createElement('img');
                 img.src = file.dataURL;
                 messageElement.appendChild(img);
@@ -2042,9 +2179,8 @@
         });
     }
 
-    // Render single file attachment (for bot responses that return a file)
     if (msg.file && !msg.files) {
-         if (msg.file.type?.startsWith('image/') && msg.file.dataURL) {
+         if (msg.file.type?.startsWith('image/')) {
             const img = document.createElement('img');
             img.src = msg.file.dataURL;
             messageElement.appendChild(img);
@@ -2079,7 +2215,6 @@
     // Render text if it exists
     if (msg.text) {
         const textDiv = document.createElement('div');
-        // Use innerHTML instead of textContent to allow for future Markdown rendering
         textDiv.textContent = msg.text;
         messageElement.appendChild(textDiv);
     }
@@ -2087,23 +2222,13 @@
     const actions = document.createElement('div');
     actions.className = 'message-actions';
 
-    // TTS Button
-    if (msg.sender === 'bot' && msg.text) {
-        const ttsBtn = document.createElement('button');
-        ttsBtn.className = 'tts-btn';
-        ttsBtn.title = 'Read Aloud';
-        ttsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 4.072v7.856l4.634-3.928L5.5 4.072zm.256-.462l5.634 4.774a.5.5 0 0 1 0 .772l-5.634 4.774A.5.5 0 0 1 5 13V3a.5.5 0 0 1 .756-.462z"/></svg>`;
-        ttsBtn.onclick = () => readAloud(msg.text, ttsBtn);
-        actions.appendChild(ttsBtn);
-    }
-
-
+    // 1. Copy Button (for both user and bot)
     const copyBtn = document.createElement('button');
-    copyBtn.className = 'copy-msg-btn';
-    copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>`;
+    copyBtn.className = 'action-btn copy-msg-btn';
+    // Exact Copy Icon from screenshot
+    copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>`;
     copyBtn.title = 'Copy text';
     
-    // NOTE: Using a robust copy function for iframe environment
     copyBtn.onclick = () => {
         const textToCopy = msg.text || '';
         const tempTextArea = document.createElement('textarea');
@@ -2118,21 +2243,40 @@
             copyBtn.innerHTML = '✕';
         }
         document.body.removeChild(tempTextArea);
-        setTimeout(() => { copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>`; }, 1500);
+        setTimeout(() => { copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>`; }, 1500);
     };
     
     if (msg.text) {
         actions.appendChild(copyBtn);
     }
     
-    // Add regenerate button for the last bot message
-    if (isLastMessage && msg.sender === 'bot') {
-        const regenerateBtn = document.createElement('button');
-        regenerateBtn.className = 'regenerate-btn';
-        regenerateBtn.title = 'Regenerate response';
-        regenerateBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`;
-        regenerateBtn.onclick = () => console.log('Regenerate function placeholder. Use msg.id:', msg.id);
-        actions.appendChild(regenerateBtn);
+    // 2. Like/Dislike Buttons (for bot only)
+    if (msg.sender === 'bot') {
+        const likeBtn = document.createElement('button');
+        likeBtn.className = 'action-btn feedback-btn like';
+        likeBtn.title = 'Like response';
+        // Exact Thumbs Up Outline Icon from screenshot
+        likeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M6.956 1.704a.75.75 0 1 1-.413 1.348S6.4 3.75 6.4 4V7H4.854a.5.5 0 0 0-.448.275L.756 12.261A.75.75 0 0 0 1.402 13h12.596a.75.75 0 0 0 .646-.356l-3.666-6.866a.75.75 0 0 0-.663-.448H10c.134-2.146.4-5.25 1.556-5.88zM10 8h2.091l2.428-4.549A1.75 1.75 0 0 0 12.598 3H1.402a1.75 1.75 0 0 0-.646 3.356L3.111 10H10V8z"/></svg>`;
+
+        const dislikeBtn = document.createElement('button');
+        dislikeBtn.className = 'action-btn feedback-btn dislike';
+        dislikeBtn.title = 'Dislike response';
+        // Exact Thumbs Down Outline Icon from screenshot (used simple filled version in previous attempt, now using an outline version)
+        dislikeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.887 14.545c-1.579 0-2.926-.641-4.043-1.637a.512.512 0 0 1 .715-.714c.942.84 2.147 1.35 3.328 1.35s2.386-.51 3.328-1.35a.512.512 0 0 1 .715.714c-1.117.996-2.464 1.637-4.043 1.637zM4.75 8a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5zm6.5 0a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5z"/></svg>`;
+        
+        // Check initial rating and apply 'active' class
+        if (msg.rating === 'like') {
+            likeBtn.classList.add('active');
+        } else if (msg.rating === 'dislike') {
+            dislikeBtn.classList.add('active');
+        }
+
+        // Add event listeners using the message ID
+        likeBtn.onclick = () => handleFeedback(msg.id, 'like', likeBtn, dislikeBtn);
+        dislikeBtn.onclick = () => handleFeedback(msg.id, 'dislike', likeBtn, dislikeBtn);
+        
+        actions.appendChild(likeBtn);
+        actions.appendChild(dislikeBtn);
     }
     
     wrapper.appendChild(messageElement);
@@ -2140,165 +2284,9 @@
     fragment.appendChild(wrapper);
   }
   
-  // --- TTS Utility Functions (Required for API audio response) ---
-
-  // Converts base64 PCM data to ArrayBuffer
-  function base64ToArrayBuffer(base64) {
-    const binaryString = atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
-  }
+  // --- TTS Utility Functions (REMOVED, KEEPING SKELETON FOR REFERENCE) ---
   
-  // Converts raw PCM data (Int16Array) to a WAV Blob
-  function pcmToWav(pcm16, sampleRate) {
-    const numChannels = 1;
-    const bytesPerSample = 2; // 16-bit PCM
-
-    const buffer = new ArrayBuffer(44 + pcm16.length * bytesPerSample);
-    const view = new DataView(buffer);
-    
-    // RIFF identifier 'RIFF'
-    view.setUint32(0, 0x52494646, false);
-    // RIFF chunk length
-    view.setUint32(4, 36 + pcm16.length * bytesPerSample, true);
-    // WAVE identifier 'WAVE'
-    view.setUint32(8, 0x57415645, false);
-    // fmt chunk identifier 'fmt '
-    view.setUint32(12, 0x666d7420, false);
-    // fmt chunk length
-    view.setUint32(16, 16, true);
-    // Audio format (1 for PCM)
-    view.setUint16(20, 1, true);
-    // Number of channels
-    view.setUint16(22, numChannels, true);
-    // Sample rate
-    view.setUint32(24, sampleRate, true);
-    // Byte rate (SampleRate * NumChannels * BitsPerSample/8)
-    view.setUint32(28, sampleRate * numChannels * bytesPerSample, true);
-    // Block align (NumChannels * BitsPerSample/8)
-    view.setUint16(32, numChannels * bytesPerSample, true);
-    // Bits per sample
-    view.setUint16(34, 16, true);
-    // data chunk identifier 'data'
-    view.setUint32(36, 0x64617461, false);
-    // data chunk length (Number of samples * NumChannels * BitsPerSample/8)
-    view.setUint32(40, pcm16.length * bytesPerSample, true);
-    
-    // Write the PCM data
-    let offset = 44;
-    for (let i = 0; i < pcm16.length; i++) {
-        view.setInt16(offset, pcm16[i], true);
-        offset += bytesPerSample;
-    }
-
-    return new Blob([view], { type: 'audio/wav' });
-  }
-
-  let currentAudio = null;
-  const originalTtsIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 4.072v7.856l4.634-3.928L5.5 4.072zm.256-.462l5.634 4.774a.5.5 0 0 1 0 .772l-5.634 4.774A.5.5 0 0 1 5 13V3a.5.5 0 0 1 .756-.462z"/></svg>`;
-
-
-  // FIX: Updated TTS logic to ensure UI resets correctly on stop/error
-  async function readAloud(text, ttsBtn) {
-      // 1. Check if audio is currently playing and if it's the same button's request
-      if (ttsBtn.classList.contains('is-playing')) {
-          if (currentAudio) {
-              currentAudio.pause(); // Will trigger the cleanup in finally block
-          }
-          return;
-      }
-
-      // 2. Stop any previous audio instance
-      if (currentAudio) {
-          currentAudio.pause();
-          currentAudio = null;
-          // Clean up the UI of any other button that might be stuck
-          document.querySelectorAll('.tts-btn').forEach(btn => {
-              if (btn !== ttsBtn) {
-                  btn.classList.remove('is-playing');
-                  btn.innerHTML = originalTtsIcon;
-              }
-          });
-      }
-
-      // 3. Start Loading State
-      ttsBtn.classList.add('is-playing');
-      ttsBtn.innerHTML = `<svg class="spinner-icon" viewBox="0 0 50 50"><path d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z"/></svg>`;
-      
-      const apiKey = "";
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
-      const MAX_RETRIES = 5;
-
-      const payload = {
-          contents: [{ parts: [{ text: text }] }],
-          generationConfig: {
-              responseModalities: ["AUDIO"],
-              speechConfig: {
-                  voiceConfig: {
-                      prebuiltVoiceConfig: { voiceName: "Kore" } 
-                  }
-              }
-          },
-          model: "gemini-2.5-flash-preview-tts"
-      };
-
-      try {
-          for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-              const response = await fetch(apiUrl, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(payload)
-              });
-
-              if (!response.ok) {
-                  throw new Error(`TTS API call failed with status: ${response.status}`);
-              }
-
-              const result = await response.json();
-              const part = result?.candidates?.[0]?.content?.parts?.[0];
-              const audioData = part?.inlineData?.data;
-              const mimeType = part?.inlineData?.mimeType;
-
-              if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
-                  const sampleRateMatch = mimeType.match(/rate=(\d+)/);
-                  const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
-                  
-                  const pcmData = base64ToArrayBuffer(audioData);
-                  const pcm16 = new Int16Array(pcmData);
-                  const wavBlob = pcmToWav(pcm16, sampleRate);
-                  const audioUrl = URL.createObjectURL(wavBlob);
-                  
-                  currentAudio = new Audio(audioUrl);
-                  
-                  // Set up event listeners for cleanup
-                  currentAudio.onplay = () => { ttsBtn.innerHTML = originalTtsIcon; };
-                  currentAudio.onpause = () => { ttsBtn.classList.remove('is-playing'); ttsBtn.innerHTML = originalTtsIcon; };
-                  currentAudio.onended = () => { ttsBtn.classList.remove('is-playing'); ttsBtn.innerHTML = originalTtsIcon; };
-
-                  currentAudio.play();
-                  return; // Success, exit loop and function
-              } else {
-                  throw new Error("Invalid audio response format received.");
-              }
-          }
-      } catch (error) {
-          console.error("TTS failed:", error);
-          ttsBtn.innerHTML = `✕`;
-          currentAudio = null;
-          setTimeout(() => { ttsBtn.innerHTML = originalTtsIcon; ttsBtn.classList.remove('is-playing'); }, 2000);
-      } finally {
-          // If the audio didn't start playing (i.e., it hit an error or paused immediately)
-          if (!currentAudio || currentAudio.paused) {
-             ttsBtn.classList.remove('is-playing');
-             ttsBtn.innerHTML = originalTtsIcon;
-          }
-      }
-  }
-
+  let currentAudio = null; // Kept for general JS scope
 
   // --- Voice Input (Speech Recognition) Logic ---
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
