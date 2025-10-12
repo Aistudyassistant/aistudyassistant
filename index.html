@@ -178,7 +178,7 @@
       perspective: 1000px;
       width: 90%;
       max-width: 400px;
-      height: 520px;
+      height: 600px; /* Increased height to accommodate Google button */
       position: relative;
     }
 
@@ -288,6 +288,66 @@
         cursor: not-allowed;
         opacity: 0.6;
     }
+    
+    /* Google Button and Separator Styles */
+    .separator {
+      text-align: center;
+      margin: 20px 0;
+      color: #888;
+      position: relative;
+      font-size: 0.9rem;
+    }
+    .separator::before, .separator::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: #444;
+    }
+    body.light-theme .separator::before, body.light-theme .separator::after {
+        background: #ccc;
+    }
+    .separator::before { left: 0; }
+    .separator::after { right: 0; }
+    
+    .google-btn {
+      background: #4285F4; /* Google Blue */
+      border: 1px solid #4285F4;
+      color: white;
+      text-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 5px;
+      transition: all 0.3s; /* Added transition for hover effect */
+    }
+    
+    /* Style for the embedded Google SVG icon */
+    .google-icon-svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+
+    .google-btn:hover {
+      background: #357ae8;
+      box-shadow: 0 0 20px rgba(66, 133, 244, 0.5);
+      color: white;
+    }
+    body.light-theme .google-btn {
+        background: white;
+        color: #444;
+        border-color: #ccc;
+    }
+    body.light-theme .google-btn:hover {
+        background: #f1f1f1;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        color: #222;
+        border-color: #ddd;
+    }
+    /* END NEW STYLES */
 
     .toggle-link { text-align: center; margin-top: 20px; color: var(--text-color-light); }
     .toggle-link a { color: var(--neon-blue); text-decoration: none; font-weight: 500; cursor: pointer; transition: text-shadow 0.3s; }
@@ -1044,6 +1104,19 @@
             </div>
             <p class="error-message" id="loginError"></p>
             <button type="submit" class="form-btn">Login</button>
+            
+            <div class="separator">OR</div>
+            <button type="button" class="form-btn google-btn" onclick="signInWithGoogle()">
+                <!-- Google Icon SVG -->
+                <svg class="google-icon-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 7.935-11.303 7.935-6.68 0-12.146-5.467-12.146-12.147 0-6.68 5.466-12.147 12.146-12.147 3.109 0 5.944 1.157 8.196 3.036l5.7-5.712C35.038 4.704 29.742 2 24 2 11.854 2 2 11.85 2 24s9.854 22 22 22c11.082 0 21.084-7.514 24-18.083z" fill="#FFC107"/>
+                    <path d="M6.306 14.691L1.107 18.97l-.001.001C1.04 19.336 1 19.664 1 20H42v-4H24c-1.398-3.04-4.225-5.187-7.521-5.65C13.567 11.536 9.873 12.433 6.306 14.691z" fill="#FF3D00"/>
+                    <path d="M24 46c5.968 0 11.127-2.037 15.004-5.419l-5.659-5.658C30.298 37.03 27.245 38 24 38c-5.225 0-9.656-3.279-11.304-7.935L1.107 33.032C5.976 41.77 14.28 46 24 46z" fill="#4CAF50"/>
+                    <path d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.08 5.59l5.658 5.659C40.672 34.015 42.748 29.687 43.611 24z" fill="#1976D2"/>
+                </svg>
+                Sign in with Google
+            </button>
+            
             <p class="toggle-link">No account? <a id="showSignup">Sign Up</a></p>
           </form>
         </div>
@@ -1057,6 +1130,19 @@
             </div>
             <p class="error-message" id="signupError"></p>
             <button type="submit" class="form-btn">Sign Up</button>
+            
+            <div class="separator">OR</div>
+            <button type="button" class="form-btn google-btn" onclick="signInWithGoogle()">
+                <!-- Google Icon SVG -->
+                <svg class="google-icon-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 7.935-11.303 7.935-6.68 0-12.146-5.467-12.146-12.147 0-6.68 5.466-12.147 12.146-12.147 3.109 0 5.944 1.157 8.196 3.036l5.7-5.712C35.038 4.704 29.742 2 24 2 11.854 2 2 11.85 2 24s9.854 22 22 22c11.082 0 21.084-7.514 24-18.083z" fill="#FFC107"/>
+                    <path d="M6.306 14.691L1.107 18.97l-.001.001C1.04 19.336 1 19.664 1 20H42v-4H24c-1.398-3.04-4.225-5.187-7.521-5.65C13.567 11.536 9.873 12.433 6.306 14.691z" fill="#FF3D00"/>
+                    <path d="M24 46c5.968 0 11.127-2.037 15.004-5.419l-5.659-5.658C30.298 37.03 27.245 38 24 38c-5.225 0-9.656-3.279-11.304-7.935L1.107 33.032C5.976 41.77 14.28 46 24 46z" fill="#4CAF50"/>
+                    <path d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.08 5.59l5.658 5.659C40.672 34.015 42.748 29.687 43.611 24z" fill="#1976D2"/>
+                </svg>
+                Sign up with Google
+            </button>
+            
             <p class="toggle-link">Already have an account? <a id="showLogin">Login</a></p>
           </form>
         </div>
@@ -1090,13 +1176,16 @@
   };
 
   // Import Firebase modules
+  // NOTE: Using Firebase JS SDK v10.7.1 imports for consistency
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { 
     getAuth, 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
     onAuthStateChanged, 
-    signOut 
+    signOut,
+    GoogleAuthProvider,
+    signInWithPopup 
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import { 
     getFirestore, 
@@ -1182,6 +1271,9 @@
   const filePreviewContainer = document.getElementById('filePreviewContainer');
   const themeToggle = document.getElementById('themeToggle');
   const themeLabel = document.querySelector('.theme-label');
+  
+  // --- Google Sign-In Provider setup ---
+  const googleProvider = new GoogleAuthProvider();
 
   // --- Animation ---
   function startIntroAnimation() {
@@ -1217,12 +1309,22 @@
             const userDocSnap = await getDoc(doc(db, 'users', user.uid));
             if (userDocSnap.exists()) {
                 displayName = userDocSnap.data().username;
+            } else if (user.displayName) {
+                // Use display name from Google/other provider if available
+                displayName = user.displayName;
             }
           } catch (error) {
             console.error("Could not fetch user profile.", error);
             displayName = "there";
           }
+      } else if (user.displayName) {
+           // If username was passed as null but user object has one (e.g., from Google auth)
+           displayName = user.displayName;
       }
+      
+      // Fallback for display name
+      displayName = displayName || user.email.split('@')[0] || "there";
+
 
       userGreeting.textContent = `Hi, ${displayName} 👋`;
       mainGreeting.textContent = `Hi, ${displayName}`;
@@ -1271,21 +1373,27 @@
   });
   
   // --- Authentication Modal Logic ---
-  showLoginBtn.addEventListener('click', () => authModal.classList.add('visible'));
+  showLoginBtn.addEventListener('click', () => {
+      authModal.classList.add('visible');
+      formContainer.classList.remove('flipped');
+      loginError.textContent = ''; // Clear errors when opening
+  });
   showSignupBtn.addEventListener('click', () => {
     formContainer.classList.add('flipped');
     authModal.classList.add('visible');
+    signupError.textContent = ''; // Clear errors when opening
   });
   logoutBtn.addEventListener('click', () => signOut(auth));
   authModal.addEventListener('click', (e) => { if (e.target.id === 'auth-modal') authModal.classList.remove('visible'); });
   showSignupLink.addEventListener('click', (e) => { e.preventDefault(); formContainer.classList.add('flipped'); });
   showLoginLink.addEventListener('click', (e) => { e.preventDefault(); formContainer.classList.remove('flipped'); });
 
-  // --- Auth Form Submissions ---
+  // --- Auth Form Submissions (Email/Password) ---
   signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = e.target.querySelector('button');
+    const btn = e.target.querySelector('button[type="submit"]');
     btn.textContent = 'Signing Up...'; btn.disabled = true;
+    signupError.textContent = '';
     const { username, email, password } = e.target.elements;
     try {
       const cred = await createUserWithEmailAndPassword(auth, email.value, password.value);
@@ -1300,8 +1408,9 @@
 
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = e.target.querySelector('button');
+    const btn = e.target.querySelector('button[type="submit"]');
     btn.textContent = 'Logging In...'; btn.disabled = true;
+    loginError.textContent = '';
     const { email, password } = e.target.elements;
     try {
       await signInWithEmailAndPassword(auth, email.value, password.value);
@@ -1312,6 +1421,61 @@
     }
   });
   
+  // --- Google Sign-In Logic (FIXED) ---
+  window.signInWithGoogle = async function() {
+      // Determine which error element is currently visible
+      const isSignupView = formContainer.classList.contains('flipped');
+      const currentErrorElement = isSignupView ? signupError : loginError;
+      
+      // Temporarily disable buttons and show loading status
+      const authButtons = document.querySelectorAll('.form-btn');
+      authButtons.forEach(btn => btn.disabled = true);
+      currentErrorElement.textContent = "Connecting with Google...";
+      
+      try {
+          const result = await signInWithPopup(auth, googleProvider);
+          const user = result.user;
+
+          // Clear error/status message
+          currentErrorElement.textContent = "";
+
+          // Check if user exists in 'users' collection, if not, create a basic record
+          const userDocRef = doc(db, "users", user.uid);
+          const userDocSnap = await getDoc(userDocRef);
+
+          if (!userDocSnap.exists()) {
+              // Extract a default username from Google profile or email
+              const username = user.displayName || user.email.split('@')[0];
+              await setDoc(userDocRef, { username: username });
+              updateUiForAuthState(user, username);
+          } else {
+              updateUiForAuthState(user, userDocSnap.data().username);
+          }
+          
+      } catch (error) {
+          console.error("Google Sign-In Error:", error);
+          
+          let errorMessage = "An unknown error occurred during Google sign-in. Please try again.";
+          if (error.code === 'auth/popup-closed-by-user') {
+              errorMessage = "The sign-in window was closed by the user.";
+          } else if (error.code === 'auth/cancelled-popup-request') {
+              errorMessage = "Sign-in already in progress or blocked by browser.";
+          } else if (error.code === 'auth/account-exists-with-different-credential') {
+             errorMessage = `The email ${error.email} is already linked to another sign-in method. Please use that method to login.`;
+          } else if (error.message) {
+              // Firebase error format usually includes 'Firebase: Error (auth/unauthorized-domain).', which is what we target.
+              errorMessage = error.message;
+          }
+          
+          // Display error on the currently visible form
+          currentErrorElement.textContent = errorMessage;
+      } finally {
+          // Re-enable buttons
+          authButtons.forEach(btn => btn.disabled = false);
+      }
+  };
+
+
   // --- Helpers ---
   function formatDate(timestamp) {
     if (!timestamp || typeof timestamp.toDate !== 'function') return '';
@@ -1947,4 +2111,3 @@
 
 </body>
 </html>
-
