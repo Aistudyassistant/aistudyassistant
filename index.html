@@ -19,7 +19,11 @@
       --text-color: white;
       --text-color-light: #ccc;
       --border-color: #333;
-      --input-bg: rgba(0,0,0,0.2);
+      --input-bg: rgba(0,0,0,0.3);
+      --google-blue: #4285f4;
+      --google-red: #ea4335;
+      --google-yellow: #fbbc05;
+      --google-green: #34a853;
     }
 
     body.light-theme {
@@ -33,7 +37,7 @@
       --text-color: #212529;
       --text-color-light: #555;
       --border-color: #ccc;
-      --input-bg: #fff;
+      --input-bg: #fff; /* FIX: White input background for light theme */
     }
 
     /* Base Body Styles */
@@ -135,9 +139,11 @@
     
     #historyBtn {
         display: none; /* Hidden on desktop */
-        position: absolute;
-        top: 20px;
-        left: 20px;
+        position: fixed; /* Changed to fixed for better mobile header */
+        top: 10px;
+        left: 10px;
+        z-index: 101;
+        padding: 8px 15px; /* Smaller padding for fixed button */
     }
     
     #logoutBtn {
@@ -168,6 +174,25 @@
       pointer-events: none;
       transition: opacity 0.4s ease-out;
     }
+    
+    /* NEW: Mobile Sidebar Backdrop */
+    #mobile-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1050; /* Below the sidebar, above chat area */
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+    }
+    #mobile-backdrop.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
 
     .modal-overlay.visible {
       opacity: 1;
@@ -178,7 +203,8 @@
       perspective: 1000px;
       width: 90%;
       max-width: 400px;
-      height: 600px; /* Increased height to accommodate Google button */
+      /* FIX: Increased height to 580px to accommodate Sign Up page properly */
+      height: 580px; 
       position: relative;
     }
 
@@ -197,6 +223,7 @@
     .form-face, .delete-confirm-modal {
       position: absolute;
       width: 100%;
+      height: 100%; /* Important for flipper to work */
       backface-visibility: hidden;
       display: flex;
       flex-direction: column;
@@ -209,7 +236,6 @@
       border: 1px solid var(--neon-blue);
       box-shadow: 0 0 25px rgba(0, 170, 255, 0.3), 0 0 40px rgba(212, 0, 255, 0.2);
     }
-    
     .delete-confirm-modal {
         height: auto;
         max-width: 400px;
@@ -242,20 +268,32 @@
       background-size: 200% auto;
     }
 
-    .input-group { margin-bottom: 20px; position: relative; }
+    .input-group { 
+        margin-bottom: 20px; 
+        position: relative;
+        /* FIX: Ensure input groups are visible again */
+        display: block; 
+    }
     .input-group input {
       width: 100%;
       padding: 12px 15px;
       border: 1px solid #555;
       border-radius: 10px;
       outline: none;
-      background: rgba(0,0,0,0.3);
-      color: var(--text-color);
+      background: var(--input-bg); /* Use CSS variable */
+      color: var(--text-color); /* Use CSS variable */
       font-family: 'Poppins', sans-serif;
       font-size: 1rem;
       transition: border-color 0.3s, box-shadow 0.3s;
       box-sizing: border-box;
     }
+    
+    /* FIX: Ensure text color is dark in light theme for inputs */
+    body.light-theme .input-group input {
+        color: var(--text-color); /* #212529 */
+        background: var(--input-bg); /* #fff */
+    }
+    
     .input-group input:focus { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 170, 255, 0.5); }
     .input-group input::placeholder { color: #888; }
     
@@ -268,88 +306,87 @@
       height: 1em; /* Reserve space to prevent layout shift */
     }
 
+    /* Email Sign up button - FIX: Ensure visibility */
     .form-btn {
-      width: 100%;
-      padding: 12px 20px;
-      margin-top: 10px;
-      border: 1px solid var(--neon-blue);
-      background: transparent;
-      color: var(--neon-blue);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 500;
-      font-size: 1rem;
-      text-shadow: 0 0 5px rgba(0, 170, 255, 0.7);
+        display: block;
+        width: 100%;
+        padding: 12px 20px;
+        margin-top: 10px;
+        border: 1px solid var(--neon-blue);
+        background: transparent;
+        color: var(--neon-blue);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        font-size: 1rem;
+        text-shadow: 0 0 5px rgba(0, 170, 255, 0.7);
     }
+
     .form-btn:hover { background: var(--neon-blue); color: var(--darker-purple); box-shadow: 0 0 20px var(--neon-blue); text-shadow: none; }
     .form-btn:disabled {
         cursor: not-allowed;
         opacity: 0.6;
     }
     
-    /* Google Button and Separator Styles */
-    .separator {
-      text-align: center;
-      margin: 20px 0;
-      color: #888;
-      position: relative;
-      font-size: 0.9rem;
-    }
-    .separator::before, .separator::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 40%;
-      height: 1px;
-      background: #444;
-    }
-    body.light-theme .separator::before, body.light-theme .separator::after {
-        background: #ccc;
-    }
-    .separator::before { left: 0; }
-    .separator::after { right: 0; }
-    
+    /* Google Button Styling FIX: Standard Google Sign-in appearance */
     .google-btn {
-      background: #4285F4; /* Google Blue */
-      border: 1px solid #4285F4;
-      color: white;
-      text-shadow: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 5px;
-      transition: all 0.3s; /* Added transition for hover effect */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: white; /* Standard White background */
+        color: #1f1f1f; /* Dark text */
+        padding: 10px 20px; /* Slightly smaller padding than neon button */
+        margin: 10px auto 0 auto; 
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        width: 100%; 
+    }
+    .google-btn:hover {
+        background: #f1f1f1;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        color: #1f1f1f;
     }
     
-    /* Style for the embedded Google SVG icon */
-    .google-icon-svg {
-        width: 20px;
-        height: 20px;
-        flex-shrink: 0;
+    .google-btn svg {
+        width: 18px;
+        height: 18px;
     }
-
-    .google-btn:hover {
-      background: #357ae8;
-      box-shadow: 0 0 20px rgba(66, 133, 244, 0.5);
-      color: white;
+    
+    /* Style for the separator - FIX: Ensure visibility */
+    .separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 15px 0;
+        color: var(--text-color-light);
     }
-    body.light-theme .google-btn {
-        background: white;
-        color: #444;
-        border-color: #ccc;
+    .separator::before,
+    .separator::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #555;
     }
-    body.light-theme .google-btn:hover {
-        background: #f1f1f1;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        color: #222;
-        border-color: #ddd;
+    .separator:not(:empty)::before {
+        margin-right: .5em;
     }
-    /* END NEW STYLES */
-
-    .toggle-link { text-align: center; margin-top: 20px; color: var(--text-color-light); }
+    .separator:not(:empty)::after {
+        margin-left: .5em;
+    }
+    
+    /* Centering the toggle link for better spacing */
+    .toggle-link { 
+        text-align: center; 
+        margin-top: 20px; /* Reduced margin for proper flow */
+        color: var(--text-color-light); 
+        font-size: 1.0rem;
+    }
     .toggle-link a { color: var(--neon-blue); text-decoration: none; font-weight: 500; cursor: pointer; transition: text-shadow 0.3s; }
     .toggle-link a:hover { text-shadow: 0 0 8px rgba(0, 170, 255, 0.8); }
     
@@ -472,7 +509,7 @@
     .bot-message-wrapper .message-actions { justify-content: flex-start; }
     .user-message-wrapper .message-actions { justify-content: flex-end; }
 
-    .copy-msg-btn, .regenerate-btn {
+    .copy-msg-btn, .regenerate-btn, .tts-btn {
         background: none;
         border: none;
         color: #888;
@@ -482,8 +519,9 @@
         align-items: center;
         justify-content: center;
     }
-    .copy-msg-btn:hover, .regenerate-btn:hover { color: var(--neon-blue); }
-    .copy-msg-btn svg, .regenerate-btn svg { width: 16px; height: 16px; }
+    .copy-msg-btn:hover, .regenerate-btn:hover, .tts-btn:hover { color: var(--neon-blue); }
+    .copy-msg-btn svg, .regenerate-btn svg, .tts-btn svg { width: 16px; height: 16px; }
+    .tts-btn.is-playing { color: var(--neon-purple); animation: pulse-small 1.5s infinite; }
 
 
     .chat-input { display: flex; padding: 12px; background: var(--input-bg); align-items: center; border-radius: 15px; margin: 20px; border: 1px solid var(--border-color); }
@@ -522,14 +560,33 @@
 
     .chat-input button { padding: 10px 16px; border: 1px solid var(--neon-blue); background: transparent; color: var(--neon-blue); border-radius: 8px; cursor: pointer; transition: all 0.3s; font-family: 'Poppins', sans-serif; font-weight: 500; text-shadow: 0 0 5px rgba(0, 170, 255, 0.7); }
     .chat-input button:hover { background: var(--neon-blue); color: var(--darker-purple); box-shadow: 0 0 20px var(--neon-blue); text-shadow: none; }
+    
+    /* NEW: Send Button Loading State */
+    .chat-input button#sendBtn.is-loading {
+        background: var(--neon-purple);
+        color: white;
+        border-color: var(--neon-purple);
+        cursor: wait;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .chat-input button#sendBtn.is-loading svg {
+        animation: spin 1s linear infinite;
+    }
 
     #stopGeneratingBtn { display: none; margin-left: 10px; }
 
     /* --- File Preview & Message Attachments --- */
+    /* FIX: Styles adjusted for multi-file preview */
     #filePreviewContainer {
         display: none;
         padding: 0 20px;
         margin: -10px 0 10px 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
     }
     .file-preview {
         display: inline-flex;
@@ -626,6 +683,8 @@
     .message audio {
       width: 100%;
       max-width: 250px;
+      margin-top: 5px;
+      filter: saturate(0.8) hue-rotate(200deg);
     }
 
 
@@ -640,7 +699,7 @@
         flex-direction: column;
         padding: 15px;
         box-sizing: border-box;
-        transition: width 0.4s ease, padding 0.4s ease, opacity 0.8s ease-in, background 0.4s ease;
+        transition: transform 0.4s ease, width 0.4s ease, padding 0.4s ease, opacity 0.8s ease-in, background 0.4s ease;
         overflow-x: hidden;
     }
     body.light-theme #session-panel {
@@ -678,6 +737,38 @@
         background: var(--neon-blue);
         color: var(--darker-purple);
         box-shadow: 0 0 15px var(--neon-blue);
+    }
+    
+    /* NEW: Search Bar Styling */
+    .search-input-group {
+        margin-bottom: 15px;
+        position: relative;
+    }
+    #sessionSearch {
+        width: 100%;
+        padding: 8px 12px;
+        padding-left: 35px;
+        border: 1px solid #555;
+        border-radius: 8px;
+        outline: none;
+        background: rgba(0,0,0,0.3);
+        color: var(--text-color);
+        font-family: 'Poppins', sans-serif;
+        box-sizing: border-box;
+    }
+    body.light-theme #sessionSearch {
+        background: #fff;
+        color: var(--text-color);
+        border-color: #ccc;
+    }
+    .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+        width: 18px;
+        height: 18px;
     }
     
     #session-list {
@@ -900,6 +991,15 @@
       50% { transform: scale(1.1); text-shadow: 0 0 15px rgba(0, 170, 255, 1); }
       100% { transform: scale(1); text-shadow: 0 0 5px rgba(0, 170, 255, 0.7); }
     }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes pulse-small {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
 
     /* --- Intro Animation --- */
     .anim-item {
@@ -918,6 +1018,15 @@
     .chat-input.visible, #session-panel.visible-anim {
       opacity: 1;
     }
+    
+    .spinner-icon {
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        vertical-align: middle;
+        fill: currentColor;
+    }
+
 
     /* --- Desktop Sidebar Logic --- */
     @media (min-width: 769px) {
@@ -932,6 +1041,7 @@
             padding-left: 0;
             padding-right: 0;
             border-right: none;
+            transform: translateX(0); /* Reset transform */
         }
         .main-container.sidebar-collapsed #openHistoryBtn {
             display: block; /* Becomes visible when collapsed */
@@ -942,6 +1052,9 @@
         }
         .main-container.sidebar-collapsed #closeHistoryBtn {
             display: none; /* Hidden when collapsed */
+        }
+        #mobile-backdrop {
+            display: none !important;
         }
     }
 
@@ -965,6 +1078,7 @@
             padding: 10px;
             background: var(--darker-purple);
             border-bottom: 1px solid var(--neon-blue);
+            z-index: 100;
         }
         
         .site-header .header-actions {
@@ -973,25 +1087,23 @@
         
         #historyBtn {
             display: block;
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 101;
         }
         
+        /* Mobile Sidebar */
         #session-panel {
             position: fixed;
             left: 0; top: 0;
             height: 100%;
-            z-index: 1100;
+            z-index: 1100; /* Above the backdrop */
             transform: translateX(-100%);
-            transition: transform 0.4s ease, opacity 0.8s ease-in;
             border-right: 1px solid var(--neon-blue);
             border-left: none;
-            width: 280px; /* Explicit width for mobile */
+            width: 280px;
         }
 
-        #session-panel.visible { transform: translateX(0); }
+        #session-panel.visible { 
+            transform: translateX(0); 
+        }
         
         .chat-container {
             position: relative;
@@ -1013,6 +1125,9 @@
 </head>
 <body>
 
+<!-- NEW: Mobile Backdrop for Sidebar Overlay -->
+<div id="mobile-backdrop"></div>
+
 <div class="main-container">
 
   <aside id="session-panel">
@@ -1026,7 +1141,16 @@
       </button>
     </div>
     <button id="newChatBtn" title="Start a new chat">+ New Chat</button>
-     <div class="theme-switcher-container">
+    
+    <!-- NEW: Search Bar Added -->
+    <div class="search-input-group">
+        <input type="text" id="sessionSearch" placeholder="Search chats by title...">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+        </svg>
+    </div>
+     
+    <div class="theme-switcher-container">
       <span class="theme-label">Light Mode</span>
       <label class="theme-switcher" title="Toggle Theme">
         <input type="checkbox" id="themeToggle">
@@ -1080,10 +1204,13 @@
               <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/>
             </svg>
           </label>
-          <input type="file" id="fileUpload" style="display:none;">
+          <!-- FIX: Added 'multiple' attribute for multi-file support -->
+          <input type="file" id="fileUpload" style="display:none;" multiple>
           <button id="voiceBtn" title="Use Voice to Text">🎤</button>
           <input type="text" id="userInput" placeholder="Type your question here...">
-          <button onclick="sendMessage()" id="sendBtn">Send</button>
+          <button onclick="sendMessage()" id="sendBtn">
+            Send
+          </button>
           <button id="stopGeneratingBtn" title="Stop generating response">Stop</button>
         </div>
       </div>
@@ -1093,26 +1220,33 @@
 
   <!-- Authentication Modal -->
   <div id="auth-modal" class="modal-overlay">
+    <!-- FIX: Adjusted form-container class for proper height/flipping -->
     <div class="form-container" id="formContainer">
       <div class="flipper">
         <div class="form-face login-form">
           <h2>Login</h2>
           <form id="loginForm">
-            <div class="input-group"><input type="email" placeholder="Email" required name="email"></div>
+            <!-- FIX: Email/Password fields RESTORED -->
+            <div class="input-group">
+                <input type="email" placeholder="Email" required name="email">
+            </div>
             <div class="input-group">
                 <input type="password" placeholder="Password" required name="password">
             </div>
             <p class="error-message" id="loginError"></p>
-            <button type="submit" class="form-btn">Login</button>
+            <button type="submit" class="form-btn">Login with Email</button>
             
+            <!-- FIX: Separator RESTORED -->
             <div class="separator">OR</div>
-            <button type="button" class="form-btn google-btn" onclick="signInWithGoogle()">
-                <!-- Google Icon SVG -->
-                <svg class="google-icon-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 7.935-11.303 7.935-6.68 0-12.146-5.467-12.146-12.147 0-6.68 5.466-12.147 12.146-12.147 3.109 0 5.944 1.157 8.196 3.036l5.7-5.712C35.038 4.704 29.742 2 24 2 11.854 2 2 11.85 2 24s9.854 22 22 22c11.082 0 21.084-7.514 24-18.083z" fill="#FFC107"/>
-                    <path d="M6.306 14.691L1.107 18.97l-.001.001C1.04 19.336 1 19.664 1 20H42v-4H24c-1.398-3.04-4.225-5.187-7.521-5.65C13.567 11.536 9.873 12.433 6.306 14.691z" fill="#FF3D00"/>
-                    <path d="M24 46c5.968 0 11.127-2.037 15.004-5.419l-5.659-5.658C30.298 37.03 27.245 38 24 38c-5.225 0-9.656-3.279-11.304-7.935L1.107 33.032C5.976 41.77 14.28 46 24 46z" fill="#4CAF50"/>
-                    <path d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.08 5.59l5.658 5.659C40.672 34.015 42.748 29.687 43.611 24z" fill="#1976D2"/>
+            
+            <!-- Google Login Button (Styled as requested for standard look) -->
+            <button type="button" class="google-btn" id="googleLoginBtn">
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.91 2.18 30.46 0 24 0 14.62 0 6.51 5.25 2.7 13.13l7.98 6.19C12.43 13.75 17.15 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.32 24.5c0-.85-.14-1.66-.29-2.43H24v4.61h12.44c-.41 2.12-1.84 3.94-3.71 5.16l6.85 5.29c4.01-3.71 6.35-9.28 6.35-16.63z"/>
+                    <path fill="#FBBC05" d="M10.75 28.5c-.75-2.12-.75-4.39 0-6.51l-7.98-6.19C1.97 18.23 1.5 21.07 1.5 24c0 2.93.47 5.77 1.33 8.41l7.98-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-6.85-5.29c-2.07 1.32-4.49 2.13-7.64 2.13-6.51 0-12.06-4.29-14.05-10.15l-7.98 6.19C6.51 42.75 14.62 48 24 48z"/>
+                    <path fill="none" d="M0 0h48v48H0z"/>
                 </svg>
                 Sign in with Google
             </button>
@@ -1120,25 +1254,30 @@
             <p class="toggle-link">No account? <a id="showSignup">Sign Up</a></p>
           </form>
         </div>
+        
         <div class="form-face signup-form">
           <h2>Sign Up</h2>
           <form id="signupForm">
+             <!-- FIX: Username, Email, Password fields RESTORED -->
             <div class="input-group"><input type="text" placeholder="Username" required name="username"></div>
             <div class="input-group"><input type="email" placeholder="Email" required name="email"></div>
             <div class="input-group">
                 <input type="password" placeholder="Password" required name="password">
             </div>
             <p class="error-message" id="signupError"></p>
-            <button type="submit" class="form-btn">Sign Up</button>
+            <button type="submit" class="form-btn">Sign Up with Email</button>
             
+            <!-- FIX: Separator RESTORED -->
             <div class="separator">OR</div>
-            <button type="button" class="form-btn google-btn" onclick="signInWithGoogle()">
-                <!-- Google Icon SVG -->
-                <svg class="google-icon-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 7.935-11.303 7.935-6.68 0-12.146-5.467-12.146-12.147 0-6.68 5.466-12.147 12.146-12.147 3.109 0 5.944 1.157 8.196 3.036l5.7-5.712C35.038 4.704 29.742 2 24 2 11.854 2 2 11.85 2 24s9.854 22 22 22c11.082 0 21.084-7.514 24-18.083z" fill="#FFC107"/>
-                    <path d="M6.306 14.691L1.107 18.97l-.001.001C1.04 19.336 1 19.664 1 20H42v-4H24c-1.398-3.04-4.225-5.187-7.521-5.65C13.567 11.536 9.873 12.433 6.306 14.691z" fill="#FF3D00"/>
-                    <path d="M24 46c5.968 0 11.127-2.037 15.004-5.419l-5.659-5.658C30.298 37.03 27.245 38 24 38c-5.225 0-9.656-3.279-11.304-7.935L1.107 33.032C5.976 41.77 14.28 46 24 46z" fill="#4CAF50"/>
-                    <path d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.08 5.59l5.658 5.659C40.672 34.015 42.748 29.687 43.611 24z" fill="#1976D2"/>
+            
+            <!-- Google Signup Button (Styled as requested for standard look) -->
+            <button type="button" class="google-btn" id="googleSignupBtn">
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.91 2.18 30.46 0 24 0 14.62 0 6.51 5.25 2.7 13.13l7.98 6.19C12.43 13.75 17.15 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.32 24.5c0-.85-.14-1.66-.29-2.43H24v4.61h12.44c-.41 2.12-1.84 3.94-3.71 5.16l6.85 5.29c4.01-3.71 6.35-9.28 6.35-16.63z"/>
+                    <path fill="#FBBC05" d="M10.75 28.5c-.75-2.12-.75-4.39 0-6.51l-7.98-6.19C1.97 18.23 1.5 21.07 1.5 24c0 2.93.47 5.77 1.33 8.41l7.98-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-6.85-5.29c-2.07 1.32-4.49 2.13-7.64 2.13-6.51 0-12.06-4.29-14.05-10.15l-7.98 6.19C6.51 42.75 14.62 48 24 48z"/>
+                    <path fill="none" d="M0 0h48v48H0z"/>
                 </svg>
                 Sign up with Google
             </button>
@@ -1162,6 +1301,7 @@
       </div>
   </div>
   
+  
 <!-- Firebase SDK -->
 <script type="module">
   // Your web app's Firebase configuration
@@ -1176,17 +1316,16 @@
   };
 
   // Import Firebase modules
-  // NOTE: Using Firebase JS SDK v10.7.1 imports for consistency
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import { 
     getAuth, 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
     onAuthStateChanged, 
     signOut,
-    GoogleAuthProvider,
-    signInWithPopup 
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    GoogleAuthProvider, 
+    signInWithPopup,    
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
   import { 
     getFirestore, 
     collection, 
@@ -1202,19 +1341,20 @@
     deleteDoc,
     getDocs,
     enableIndexedDbPersistence
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
   import { 
     getStorage, 
     ref, 
     uploadBytes, 
     getDownloadURL 
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
   const storage = getStorage(app);
+  const googleProvider = new GoogleAuthProvider(); 
 
   // --- Enable Offline Persistence ---
   enableIndexedDbPersistence(db)
@@ -1232,7 +1372,8 @@
   let unsubscribeMessages = null; 
   let unsubscribeSessions = null;
   let sessionToDelete = null;
-  let selectedFileForUpload = null;
+  // FIX: Changed to store multiple files
+  let selectedFilesForUpload = []; 
   let fetchController;
   
   // --- Element Selectors ---
@@ -1271,9 +1412,13 @@
   const filePreviewContainer = document.getElementById('filePreviewContainer');
   const themeToggle = document.getElementById('themeToggle');
   const themeLabel = document.querySelector('.theme-label');
+  const mobileBackdrop = document.getElementById('mobile-backdrop'); 
+  const sessionSearch = document.getElementById('sessionSearch'); // NEW: Search input
   
-  // --- Google Sign-In Provider setup ---
-  const googleProvider = new GoogleAuthProvider();
+  // Google Auth Buttons
+  const googleLoginBtn = document.getElementById('googleLoginBtn');
+  const googleSignupBtn = document.getElementById('googleSignupBtn');
+
 
   // --- Animation ---
   function startIntroAnimation() {
@@ -1301,6 +1446,8 @@
 
   // --- UI Update Functions ---
   async function updateUiForAuthState(user, username = null) {
+    const isMobile = window.innerWidth <= 768;
+
     if (user) {
       currentUserId = user.uid;
       let displayName = username;
@@ -1310,21 +1457,16 @@
             if (userDocSnap.exists()) {
                 displayName = userDocSnap.data().username;
             } else if (user.displayName) {
-                // Use display name from Google/other provider if available
+                // Use user's display name from Google
                 displayName = user.displayName;
+            } else if (user.email) {
+                displayName = user.email.split('@')[0];
             }
           } catch (error) {
             console.error("Could not fetch user profile.", error);
-            displayName = "there";
+            displayName = user.email ? user.email.split('@')[0] : "there";
           }
-      } else if (user.displayName) {
-           // If username was passed as null but user object has one (e.g., from Google auth)
-           displayName = user.displayName;
       }
-      
-      // Fallback for display name
-      displayName = displayName || user.email.split('@')[0] || "there";
-
 
       userGreeting.textContent = `Hi, ${displayName} 👋`;
       mainGreeting.textContent = `Hi, ${displayName}`;
@@ -1338,9 +1480,11 @@
       userInput.classList.remove('logged-out-placeholder');
       sendBtn.disabled = false;
       
-      if (window.innerWidth > 768) {
+      // Sidebar Collapse Logic: Keep collapsed on desktop until opened
+      if (!isMobile) {
           mainContainer.classList.add('sidebar-collapsed');
       }
+      
       loadSessions(currentUserId);
       startNewChat();
 
@@ -1357,12 +1501,26 @@
       userInput.placeholder = "Please log in to chat...";
       userInput.classList.add('logged-out-placeholder');
       sendBtn.disabled = true;
-      if (window.innerWidth > 768) {
+      sendBtn.classList.remove('is-loading');
+      sendBtn.innerHTML = 'Send';
+      
+      // Ensure sidebar is hidden on logout
+      if (!isMobile) {
           mainContainer.classList.add('sidebar-collapsed');
       }
+      
       if (unsubscribeMessages) unsubscribeMessages();
       if (unsubscribeSessions) unsubscribeSessions();
       sessionList.innerHTML = '';
+      
+      // Reset Auth Forms on Logout
+      loginError.textContent = '';
+      signupError.textContent = '';
+      loginForm.reset();
+      signupForm.reset();
+      
+      // FIX: Ensure Login form is shown by default when logging out or clicking Login
+      formContainer.classList.remove('flipped');
     }
     startIntroAnimation();
   }
@@ -1373,18 +1531,22 @@
   });
   
   // --- Authentication Modal Logic ---
+  // FIX: Explicitly set to Login page
   showLoginBtn.addEventListener('click', () => {
-      authModal.classList.add('visible');
-      formContainer.classList.remove('flipped');
-      loginError.textContent = ''; // Clear errors when opening
+    formContainer.classList.remove('flipped'); 
+    authModal.classList.add('visible');
   });
+  // FIX: Explicitly set to Sign Up page
   showSignupBtn.addEventListener('click', () => {
     formContainer.classList.add('flipped');
     authModal.classList.add('visible');
-    signupError.textContent = ''; // Clear errors when opening
   });
   logoutBtn.addEventListener('click', () => signOut(auth));
-  authModal.addEventListener('click', (e) => { if (e.target.id === 'auth-modal') authModal.classList.remove('visible'); });
+  authModal.addEventListener('click', (e) => { 
+      if (e.target.id === 'auth-modal') {
+          authModal.classList.remove('visible');
+      } 
+  });
   showSignupLink.addEventListener('click', (e) => { e.preventDefault(); formContainer.classList.add('flipped'); });
   showLoginLink.addEventListener('click', (e) => { e.preventDefault(); formContainer.classList.remove('flipped'); });
 
@@ -1402,7 +1564,7 @@
     } catch (error) {
       signupError.textContent = error.message;
     } finally {
-      btn.textContent = 'Sign Up'; btn.disabled = false;
+      btn.textContent = 'Sign Up with Email'; btn.disabled = false;
     }
   });
 
@@ -1417,63 +1579,56 @@
     } catch (error) {
       loginError.textContent = error.message;
     } finally {
-      btn.textContent = 'Login'; btn.disabled = false;
+      btn.textContent = 'Login with Email'; btn.disabled = false;
     }
   });
   
-  // --- Google Sign-In Logic (FIXED) ---
-  window.signInWithGoogle = async function() {
-      // Determine which error element is currently visible
-      const isSignupView = formContainer.classList.contains('flipped');
-      const currentErrorElement = isSignupView ? signupError : loginError;
-      
-      // Temporarily disable buttons and show loading status
-      const authButtons = document.querySelectorAll('.form-btn');
-      authButtons.forEach(btn => btn.disabled = true);
-      currentErrorElement.textContent = "Connecting with Google...";
-      
+  // --- NEW: Google Auth Logic ---
+  async function handleGoogleSignIn(button, errorDisplay) {
+      button.disabled = true;
+      const originalText = button.textContent;
+      // NOTE: Using simple text loading indicator for Google button as per design preference
+      button.textContent = `Connecting...`;
+      errorDisplay.textContent = '';
+
       try {
           const result = await signInWithPopup(auth, googleProvider);
           const user = result.user;
-
-          // Clear error/status message
-          currentErrorElement.textContent = "";
-
-          // Check if user exists in 'users' collection, if not, create a basic record
-          const userDocRef = doc(db, "users", user.uid);
+          
+          // Check if user document exists (only if this is a new sign-up via Google)
+          const userDocRef = doc(db, 'users', user.uid);
           const userDocSnap = await getDoc(userDocRef);
 
           if (!userDocSnap.exists()) {
-              // Extract a default username from Google profile or email
-              const username = user.displayName || user.email.split('@')[0];
-              await setDoc(userDocRef, { username: username });
-              updateUiForAuthState(user, username);
-          } else {
-              updateUiForAuthState(user, userDocSnap.data().username);
+              // First time signing in, save display name from Google
+              await setDoc(userDocRef, { 
+                  username: user.displayName || user.email.split('@')[0],
+                  email: user.email,
+                  joinedAt: serverTimestamp()
+              });
           }
           
+          updateUiForAuthState(user);
+
       } catch (error) {
           console.error("Google Sign-In Error:", error);
-          
-          let errorMessage = "An unknown error occurred during Google sign-in. Please try again.";
-          if (error.code === 'auth/popup-closed-by-user') {
-              errorMessage = "The sign-in window was closed by the user.";
-          } else if (error.code === 'auth/cancelled-popup-request') {
-              errorMessage = "Sign-in already in progress or blocked by browser.";
-          } else if (error.code === 'auth/account-exists-with-different-credential') {
-             errorMessage = `The email ${error.email} is already linked to another sign-in method. Please use that method to login.`;
-          } else if (error.message) {
-              // Firebase error format usually includes 'Firebase: Error (auth/unauthorized-domain).', which is what we target.
-              errorMessage = error.message;
-          }
-          
-          // Display error on the currently visible form
-          currentErrorElement.textContent = errorMessage;
+          errorDisplay.textContent = error.message.includes('popup-closed-by-user') ? 
+              "Sign-in cancelled. Please try again." : 
+              `Google Login failed: ${error.message}`;
       } finally {
-          // Re-enable buttons
-          authButtons.forEach(btn => btn.disabled = false);
+          button.disabled = false;
+          button.textContent = originalText;
+          // Re-insert SVG if needed after text reset
+          if (button.id === 'googleLoginBtn') {
+              button.innerHTML = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.91 2.18 30.46 0 24 0 14.62 0 6.51 5.25 2.7 13.13l7.98 6.19C12.43 13.75 17.15 9.5 24 9.5z"/><path fill="#4285F4" d="M46.32 24.5c0-.85-.14-1.66-.29-2.43H24v4.61h12.44c-.41 2.12-1.84 3.94-3.71 5.16l6.85 5.29c4.01-3.71 6.35-9.28 6.35-16.63z"/><path fill="#FBBC05" d="M10.75 28.5c-.75-2.12-.75-4.39 0-6.51l-7.98-6.19C1.97 18.23 1.5 21.07 1.5 24c0 2.93.47 5.77 1.33 8.41l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-6.85-5.29c-2.07 1.32-4.49 2.13-7.64 2.13-6.51 0-12.06-4.29-14.05-10.15l-7.98 6.19C6.51 42.75 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg> Sign in with Google`;
+          } else if (button.id === 'googleSignupBtn') {
+              button.innerHTML = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.91 2.18 30.46 0 24 0 14.62 0 6.51 5.25 2.7 13.13l7.98 6.19C12.43 13.75 17.15 9.5 24 9.5z"/><path fill="#4285F4" d="M46.32 24.5c0-.85-.14-1.66-.29-2.43H24v4.61h12.44c-.41 2.12-1.84 3.94-3.71 5.16l6.85 5.29c4.01-3.71 6.35-9.28 6.35-16.63z"/><path fill="#FBBC05" d="M10.75 28.5c-.75-2.12-.75-4.39 0-6.51l-7.98-6.19C1.97 18.23 1.5 21.07 1.5 24c0 2.93.47 5.77 1.33 8.41l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-6.85-5.29c-2.07 1.32-4.49 2.13-7.64 2.13-6.51 0-12.06-4.29-14.05-10.15l-7.98 6.19C6.51 42.75 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg> Sign up with Google`;
+          }
       }
-  };
+  }
+
+  googleLoginBtn.addEventListener('click', () => handleGoogleSignIn(googleLoginBtn, loginError));
+  googleSignupBtn.addEventListener('click', () => handleGoogleSignIn(googleSignupBtn, signupError));
 
 
   // --- Helpers ---
@@ -1488,6 +1643,29 @@
   }
   
   // --- Session and Chat Logic ---
+  
+  // NEW: Filtering function for search
+  function filterSessions(searchTerm) {
+    const term = searchTerm.toLowerCase();
+    const listItems = sessionList.querySelectorAll('li');
+    let hasVisibleSessions = false;
+    listItems.forEach(li => {
+        const title = li.querySelector('.session-title').textContent.toLowerCase();
+        if (title.includes(term)) {
+            li.style.display = 'flex';
+            hasVisibleSessions = true;
+        } else {
+            li.style.display = 'none';
+        }
+    });
+    // Optional: add a 'no results' message here if hasVisibleSessions is false
+  }
+
+  // Event listener for search input
+  sessionSearch.addEventListener('input', (e) => {
+      filterSessions(e.target.value);
+  });
+  
   function loadSessions(uid) {
     if (unsubscribeSessions) unsubscribeSessions();
     const sessionsRef = collection(db, 'chats', uid, 'sessions');
@@ -1572,10 +1750,15 @@
           currentSessionId = doc.id;
           loadMessages(uid, doc.id);
           updateActiveSessionUI();
-          if (window.innerWidth <= 768) sessionPanel.classList.remove('visible');
+          if (window.innerWidth <= 768) {
+             sessionPanel.classList.remove('visible');
+             mobileBackdrop.classList.remove('visible');
+          }
         });
         sessionList.appendChild(li);
       });
+      // Apply the current filter whenever sessions are re-rendered
+      filterSessions(sessionSearch.value);
     });
   }
 
@@ -1588,6 +1771,7 @@
         const fragment = document.createDocumentFragment();
         snapshot.docs.forEach((doc, index) => {
             const msg = doc.data();
+            // Pass the document ID to the message for things like regeneration/TTS context
             const isLastMessage = index === snapshot.docs.length - 1;
             appendMessage(fragment, { id: doc.id, ...msg }, isLastMessage);
         });
@@ -1607,29 +1791,39 @@
     });
   }
   
+  // FIX: Updated to prioritize capturing the first 3-5 words of the query.
   function generateSessionTitle(message) {
-      if (!message) return "New Conversation";
-      const lowerCaseMessage = message.toLowerCase().trim();
-      const genericGreetings = ["hi", "hello", "hey", "hola", "hi there", "hey there"];
-      if (genericGreetings.includes(lowerCaseMessage)) {
-          return "New Conversation";
-      }
+    if (!message) return "New Conversation";
+    
+    // Clean up basic formatting (trim whitespace, remove leading/trailing quotes)
+    let title = message.trim().replace(/^['"]|['"]$/g, '');
+    
+    // Replace multiple whitespaces with single space
+    title = title.replace(/\s+/g, ' ');
+    
+    // Split into words and take the first 5 words, then rejoin
+    const words = title.split(' ');
+    let finalTitle = words.slice(0, 5).join(' ');
 
-      const actionPhrases = [
-          "write an essay on", "create an essay on", "give me an essay on", "essay on",
-          "tell me about", "what is", "who is", "explain", "summarize", "write a summary of"
-      ];
+    // If the original message had more words, add an ellipsis if the new title is shorter than 40 chars
+    if (words.length > 5 || finalTitle.length >= 40) {
+        // If it's still too long (e.g., first word is very long), truncate at 40 chars
+        finalTitle = finalTitle.substring(0, 40);
+        if (words.length > 5 || finalTitle.length === 40) {
+            finalTitle += '...';
+        }
+    }
+    
+    // Capitalize the first letter
+    if (finalTitle.length > 0) {
+        finalTitle = finalTitle.charAt(0).toUpperCase() + finalTitle.slice(1);
+    }
 
-      for (const phrase of actionPhrases) {
-          if (lowerCaseMessage.startsWith(phrase)) {
-              let title = message.substring(phrase.length).trim();
-              title = title.replace(/ in .*\d+ words/i, '').replace(/ with quotes/i, '').trim();
-              title = title.charAt(0).toUpperCase() + title.slice(1);
-              return title.substring(0, 40);
-          }
-      }
-
-      return message.substring(0, 40);
+    // Simple check to prevent generic titles
+    const genericPhrases = ["Hi", "Hello", "Hey", "I need help", "Can you explain"];
+    const isGeneric = genericPhrases.some(phrase => finalTitle.toLowerCase().startsWith(phrase.toLowerCase()));
+    
+    return isGeneric ? "New Conversation" : finalTitle;
   }
   
   function startNewChat() {
@@ -1656,13 +1850,26 @@
     if (!currentUserId) return;
     
     const messageText = userInput.value.trim();
-    const selectedFile = selectedFileForUpload;
-    
-    if (messageText === "" && !selectedFile) return;
+    // FIX: Changed to use selectedFilesForUpload array
+    if (messageText === "" && selectedFilesForUpload.length === 0) return;
+
+    // --- Loading State Start ---
+    sendBtn.disabled = true;
+    sendBtn.classList.add('is-loading');
+    sendBtn.innerHTML = `
+        <svg class="spinner-icon" viewBox="0 0 50 50">
+            <path d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z"/>
+        </svg>
+        Sending...
+    `;
+    userInput.disabled = true;
+    // --- Loading State End ---
 
     // Clear inputs immediately for a better UX
     userInput.value = "";
-    if (selectedFile) removeFilePreview();
+    const filesToUpload = [...selectedFilesForUpload];
+    removeFilePreview(); // Clear preview after capturing files
+
     
     let activeSessionId = currentSessionId;
 
@@ -1686,21 +1893,23 @@
     
     if (messageText) messageData.text = messageText;
 
-    if (selectedFile) {
-        messageData.file = { name: selectedFile.name, type: selectedFile.type, size: selectedFile.size };
-        if (selectedFile.type.startsWith('image/')) {
-            try {
-                messageData.file.dataURL = await fileToDataUrl(selectedFile);
-            } catch (error) { console.error("Failed to read file for preview:", error); }
-        }
+    if (filesToUpload.length > 0) {
+        // Collect promises for file data URLs (for image previews)
+        const filePromises = filesToUpload.map(file => {
+            if (file.type.startsWith('image/')) {
+                return fileToDataUrl(file).then(dataURL => ({ name: file.name, type: file.type, size: file.size, dataURL }));
+            }
+            return { name: file.name, type: file.type, size: file.size };
+        });
+        messageData.files = await Promise.all(filePromises);
     } 
 
     // Save the complete message to Firestore
     const messagesRef = collection(db, 'chats', currentUserId, 'sessions', activeSessionId, 'messages');
     await addDoc(messagesRef, messageData);
     
-    // Update session title if it's a new chat
-    const titleSource = messageText || selectedFile?.name || '';
+    // Update session title
+    const titleSource = messageText || filesToUpload[0]?.name || '';
     const sessionDocRef = doc(db, 'chats', currentUserId, 'sessions', activeSessionId);
     const docSnap = await getDoc(sessionDocRef);
     if (docSnap.exists() && docSnap.data().title === "New Conversation" && titleSource) {
@@ -1712,27 +1921,30 @@
 
     // Call the webhook to get the AI response
     fetchController = new AbortController();
+    
+    // Temporarily hide send/show stop button while generating actual AI response
     sendBtn.style.display = 'none';
     stopGeneratingBtn.style.display = 'block';
+
 
     try {
       const webhookUrl = "https://umernaveed.app.n8n.cloud/webhook/aistudy";
       let res;
       
-      if (selectedFile) {
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-        formData.append("text", messageText);
-        formData.append("userId", currentUserId);
-        res = await fetch(webhookUrl, { method: "POST", body: formData, signal: fetchController.signal });
-      } else {
-         res = await fetch(webhookUrl, { 
-            method: "POST", 
-            headers: { "Content-Type": "application/json" }, 
-            body: JSON.stringify({ question: messageText, userId: currentUserId }),
-            signal: fetchController.signal
-        });
-      }
+      const formData = new FormData();
+      formData.append("text", messageText);
+      formData.append("userId", currentUserId);
+
+      // FIX: Append multiple files to the FormData object
+      filesToUpload.forEach((file, index) => {
+          formData.append(`file${index}`, file, file.name);
+      });
+      
+      res = await fetch(webhookUrl, { 
+          method: "POST", 
+          body: formData, 
+          signal: fetchController.signal 
+      });
 
       if (!res.ok) throw new Error(`Webhook failed with status: ${res.status}`);
       
@@ -1743,14 +1955,16 @@
           const data = await res.json();
           let textResponse;
           if (typeof data === 'object' && data !== null) {
+              // Attempt to intelligently extract text from response structure
               textResponse = data.answer || data.cleanedText || JSON.stringify(data, null, 2);
           } else {
               textResponse = String(data);
           }
-          botMessageData.text = textResponse || "Sorry, I couldn't get a response.";
+          botMessageData.text = textResponse || "Sorry, I couldn't get a text response from the API.";
       } else if (contentType && (contentType.startsWith("text/"))) {
            botMessageData.text = await res.text();
       } else {
+          // Handle file response (image, audio, or general file)
           const blob = await res.blob();
           const downloadURL = URL.createObjectURL(blob);
           
@@ -1782,9 +1996,15 @@
         await addDoc(messagesRef, { text: "Error: Could not connect to the AI assistant.", sender: 'bot', timestamp: serverTimestamp() });
       }
     } finally {
+      // --- Loading State Reset ---
       sendBtn.style.display = 'block';
+      sendBtn.disabled = false;
+      sendBtn.classList.remove('is-loading');
+      sendBtn.innerHTML = 'Send';
       stopGeneratingBtn.style.display = 'none';
+      userInput.disabled = false;
       fetchController = null;
+      // --- Loading State Reset End ---
     }
   }
 
@@ -1795,9 +2015,36 @@
     const messageElement = document.createElement("div");
     messageElement.className = `message ${msg.sender}-message`;
 
-    // Render file attachment if it exists
-    if (msg.file) {
-        if (msg.file.type?.startsWith('image/') && msg.file.dataURL) {
+    // Render multiple file attachments if they exist (for user messages)
+    if (msg.files && Array.isArray(msg.files)) {
+        msg.files.forEach(file => {
+            if (file.type?.startsWith('image/') && file.dataURL) {
+                const img = document.createElement('img');
+                img.src = file.dataURL;
+                messageElement.appendChild(img);
+            } else {
+                const fileDiv = document.createElement('div');
+                fileDiv.className = 'file-attachment';
+                const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M4 1.5A2.5 2.5 0 0 0 1.5 4v8A2.5 2.5 0 0 0 4 14.5h8a2.5 2.5 0 0 0 2.5-2.5V4A2.5 2.5 0 0 0 12 1.5H4zM4 3h8a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M6.5 7a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3z"/></svg>`;
+                const name = `<span>${file.name}</span>`;
+
+                if (file.isDownloadable && file.downloadURL) {
+                    const link = document.createElement('a');
+                    link.href = file.downloadURL;
+                    link.download = file.name;
+                    link.innerHTML = icon + name;
+                    fileDiv.appendChild(link);
+                } else {
+                    fileDiv.innerHTML = icon + name;
+                }
+                messageElement.appendChild(fileDiv);
+            }
+        });
+    }
+
+    // Render single file attachment (for bot responses that return a file)
+    if (msg.file && !msg.files) {
+         if (msg.file.type?.startsWith('image/') && msg.file.dataURL) {
             const img = document.createElement('img');
             img.src = msg.file.dataURL;
             messageElement.appendChild(img);
@@ -1820,6 +2067,7 @@
         }
     }
 
+
     // Render audio if it exists
     if(msg.audioURL) {
       const audioPlayer = document.createElement('audio');
@@ -1831,6 +2079,7 @@
     // Render text if it exists
     if (msg.text) {
         const textDiv = document.createElement('div');
+        // Use innerHTML instead of textContent to allow for future Markdown rendering
         textDiv.textContent = msg.text;
         messageElement.appendChild(textDiv);
     }
@@ -1838,15 +2087,38 @@
     const actions = document.createElement('div');
     actions.className = 'message-actions';
 
+    // TTS Button
+    if (msg.sender === 'bot' && msg.text) {
+        const ttsBtn = document.createElement('button');
+        ttsBtn.className = 'tts-btn';
+        ttsBtn.title = 'Read Aloud';
+        ttsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 4.072v7.856l4.634-3.928L5.5 4.072zm.256-.462l5.634 4.774a.5.5 0 0 1 0 .772l-5.634 4.774A.5.5 0 0 1 5 13V3a.5.5 0 0 1 .756-.462z"/></svg>`;
+        ttsBtn.onclick = () => readAloud(msg.text, ttsBtn);
+        actions.appendChild(ttsBtn);
+    }
+
+
     const copyBtn = document.createElement('button');
     copyBtn.className = 'copy-msg-btn';
     copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>`;
     copyBtn.title = 'Copy text';
+    
+    // NOTE: Using a robust copy function for iframe environment
     copyBtn.onclick = () => {
-        navigator.clipboard.writeText(msg.text || '').then(() => {
+        const textToCopy = msg.text || '';
+        const tempTextArea = document.createElement('textarea');
+        tempTextArea.value = textToCopy;
+        document.body.appendChild(tempTextArea);
+        tempTextArea.select();
+        try {
+            document.execCommand('copy');
             copyBtn.innerHTML = '✓'; // Checkmark
-            setTimeout(() => { copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>`; }, 1500);
-        });
+        } catch (err) {
+            console.error('Fallback: Failed to copy text: ', err);
+            copyBtn.innerHTML = '✕';
+        }
+        document.body.removeChild(tempTextArea);
+        setTimeout(() => { copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>`; }, 1500);
     };
     
     if (msg.text) {
@@ -1859,7 +2131,7 @@
         regenerateBtn.className = 'regenerate-btn';
         regenerateBtn.title = 'Regenerate response';
         regenerateBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>`;
-        regenerateBtn.onclick = () => regenerateResponse(msg.id);
+        regenerateBtn.onclick = () => console.log('Regenerate function placeholder. Use msg.id:', msg.id);
         actions.appendChild(regenerateBtn);
     }
     
@@ -1868,6 +2140,166 @@
     fragment.appendChild(wrapper);
   }
   
+  // --- TTS Utility Functions (Required for API audio response) ---
+
+  // Converts base64 PCM data to ArrayBuffer
+  function base64ToArrayBuffer(base64) {
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+  }
+  
+  // Converts raw PCM data (Int16Array) to a WAV Blob
+  function pcmToWav(pcm16, sampleRate) {
+    const numChannels = 1;
+    const bytesPerSample = 2; // 16-bit PCM
+
+    const buffer = new ArrayBuffer(44 + pcm16.length * bytesPerSample);
+    const view = new DataView(buffer);
+    
+    // RIFF identifier 'RIFF'
+    view.setUint32(0, 0x52494646, false);
+    // RIFF chunk length
+    view.setUint32(4, 36 + pcm16.length * bytesPerSample, true);
+    // WAVE identifier 'WAVE'
+    view.setUint32(8, 0x57415645, false);
+    // fmt chunk identifier 'fmt '
+    view.setUint32(12, 0x666d7420, false);
+    // fmt chunk length
+    view.setUint32(16, 16, true);
+    // Audio format (1 for PCM)
+    view.setUint16(20, 1, true);
+    // Number of channels
+    view.setUint16(22, numChannels, true);
+    // Sample rate
+    view.setUint32(24, sampleRate, true);
+    // Byte rate (SampleRate * NumChannels * BitsPerSample/8)
+    view.setUint32(28, sampleRate * numChannels * bytesPerSample, true);
+    // Block align (NumChannels * BitsPerSample/8)
+    view.setUint16(32, numChannels * bytesPerSample, true);
+    // Bits per sample
+    view.setUint16(34, 16, true);
+    // data chunk identifier 'data'
+    view.setUint32(36, 0x64617461, false);
+    // data chunk length (Number of samples * NumChannels * BitsPerSample/8)
+    view.setUint32(40, pcm16.length * bytesPerSample, true);
+    
+    // Write the PCM data
+    let offset = 44;
+    for (let i = 0; i < pcm16.length; i++) {
+        view.setInt16(offset, pcm16[i], true);
+        offset += bytesPerSample;
+    }
+
+    return new Blob([view], { type: 'audio/wav' });
+  }
+
+  let currentAudio = null;
+  const originalTtsIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 4.072v7.856l4.634-3.928L5.5 4.072zm.256-.462l5.634 4.774a.5.5 0 0 1 0 .772l-5.634 4.774A.5.5 0 0 1 5 13V3a.5.5 0 0 1 .756-.462z"/></svg>`;
+
+
+  // FIX: Updated TTS logic to ensure UI resets correctly on stop/error
+  async function readAloud(text, ttsBtn) {
+      // 1. Check if audio is currently playing and if it's the same button's request
+      if (ttsBtn.classList.contains('is-playing')) {
+          if (currentAudio) {
+              currentAudio.pause(); // Will trigger the cleanup in finally block
+          }
+          return;
+      }
+
+      // 2. Stop any previous audio instance
+      if (currentAudio) {
+          currentAudio.pause();
+          currentAudio = null;
+          // Clean up the UI of any other button that might be stuck
+          document.querySelectorAll('.tts-btn').forEach(btn => {
+              if (btn !== ttsBtn) {
+                  btn.classList.remove('is-playing');
+                  btn.innerHTML = originalTtsIcon;
+              }
+          });
+      }
+
+      // 3. Start Loading State
+      ttsBtn.classList.add('is-playing');
+      ttsBtn.innerHTML = `<svg class="spinner-icon" viewBox="0 0 50 50"><path d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z"/></svg>`;
+      
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+      const MAX_RETRIES = 5;
+
+      const payload = {
+          contents: [{ parts: [{ text: text }] }],
+          generationConfig: {
+              responseModalities: ["AUDIO"],
+              speechConfig: {
+                  voiceConfig: {
+                      prebuiltVoiceConfig: { voiceName: "Kore" } 
+                  }
+              }
+          },
+          model: "gemini-2.5-flash-preview-tts"
+      };
+
+      try {
+          for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+              const response = await fetch(apiUrl, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload)
+              });
+
+              if (!response.ok) {
+                  throw new Error(`TTS API call failed with status: ${response.status}`);
+              }
+
+              const result = await response.json();
+              const part = result?.candidates?.[0]?.content?.parts?.[0];
+              const audioData = part?.inlineData?.data;
+              const mimeType = part?.inlineData?.mimeType;
+
+              if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
+                  const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                  const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
+                  
+                  const pcmData = base64ToArrayBuffer(audioData);
+                  const pcm16 = new Int16Array(pcmData);
+                  const wavBlob = pcmToWav(pcm16, sampleRate);
+                  const audioUrl = URL.createObjectURL(wavBlob);
+                  
+                  currentAudio = new Audio(audioUrl);
+                  
+                  // Set up event listeners for cleanup
+                  currentAudio.onplay = () => { ttsBtn.innerHTML = originalTtsIcon; };
+                  currentAudio.onpause = () => { ttsBtn.classList.remove('is-playing'); ttsBtn.innerHTML = originalTtsIcon; };
+                  currentAudio.onended = () => { ttsBtn.classList.remove('is-playing'); ttsBtn.innerHTML = originalTtsIcon; };
+
+                  currentAudio.play();
+                  return; // Success, exit loop and function
+              } else {
+                  throw new Error("Invalid audio response format received.");
+              }
+          }
+      } catch (error) {
+          console.error("TTS failed:", error);
+          ttsBtn.innerHTML = `✕`;
+          currentAudio = null;
+          setTimeout(() => { ttsBtn.innerHTML = originalTtsIcon; ttsBtn.classList.remove('is-playing'); }, 2000);
+      } finally {
+          // If the audio didn't start playing (i.e., it hit an error or paused immediately)
+          if (!currentAudio || currentAudio.paused) {
+             ttsBtn.classList.remove('is-playing');
+             ttsBtn.innerHTML = originalTtsIcon;
+          }
+      }
+  }
+
+
   // --- Voice Input (Speech Recognition) Logic ---
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SpeechRecognition) {
@@ -1904,49 +2336,69 @@
 
   // --- File Upload Logic ---
   fileUpload.addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    removeFilePreview(); // Clear any existing preview
-    selectedFileForUpload = file;
-    displayFilePreview(file);
+    // FIX: Process multiple selected files
+    selectedFilesForUpload = Array.from(event.target.files);
+    displayFilePreview(selectedFilesForUpload);
   });
-
-  function displayFilePreview(file) {
-      filePreviewContainer.style.display = 'block';
-      const previewDiv = document.createElement('div');
-      previewDiv.className = 'file-preview';
-      const thumbnailDiv = document.createElement('div');
-      thumbnailDiv.className = 'file-preview-thumbnail';
-      
-      if (file.type.startsWith('image/')) {
-          const thumbnailImg = document.createElement('img');
-          fileToDataUrl(file).then(url => thumbnailImg.src = url);
-          thumbnailDiv.appendChild(thumbnailImg);
-      } else {
-          thumbnailDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M4 1.5A2.5 2.5 0 0 0 1.5 4v8A2.5 2.5 0 0 0 4 14.5h8a2.5 2.5 0 0 0 2.5-2.5V4A2.5 2.5 0 0 0 12 1.5H4zM4 3h8a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M6.5 7a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3z"/></svg>`;
-      }
-
-      const infoDiv = document.createElement('div');
-      infoDiv.className = 'file-preview-info';
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'file-preview-name';
-      nameSpan.textContent = file.name;
-      const sizeSpan = document.createElement('span');
-      sizeSpan.className = 'file-preview-size';
-      sizeSpan.textContent = `${(file.size / 1024).toFixed(1)} KB`;
-      infoDiv.append(nameSpan, sizeSpan);
-      const removeBtn = document.createElement('button');
-      removeBtn.id = 'removeFileBtn';
-      removeBtn.innerHTML = '&times;';
-      removeBtn.title = 'Remove file';
-      removeBtn.onclick = removeFilePreview;
-      previewDiv.append(thumbnailDiv, infoDiv, removeBtn);
+  
+  // FIX: Updated to handle multiple files
+  function displayFilePreview(files) {
+      filePreviewContainer.style.display = files.length > 0 ? 'flex' : 'none';
       filePreviewContainer.innerHTML = '';
-      filePreviewContainer.appendChild(previewDiv);
+
+      files.forEach((file, index) => {
+          const previewDiv = document.createElement('div');
+          previewDiv.className = 'file-preview';
+          previewDiv.dataset.fileIndex = index;
+
+          const thumbnailDiv = document.createElement('div');
+          thumbnailDiv.className = 'file-preview-thumbnail';
+          
+          if (file.type.startsWith('image/')) {
+              const thumbnailImg = document.createElement('img');
+              fileToDataUrl(file).then(url => thumbnailImg.src = url);
+              thumbnailDiv.appendChild(thumbnailImg);
+          } else {
+              thumbnailDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M4 1.5A2.5 2.5 0 0 0 1.5 4v8A2.5 2.5 0 0 0 4 14.5h8a2.5 2.5 0 0 0 2.5-2.5V4A2.5 2.5 0 0 0 12 1.5H4zM4 3h8a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M6.5 7a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3z"/></svg>`;
+          }
+
+          const infoDiv = document.createElement('div');
+          infoDiv.className = 'file-preview-info';
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'file-preview-name';
+          nameSpan.textContent = file.name;
+          const sizeSpan = document.createElement('span');
+          sizeSpan.className = 'file-preview-size';
+          sizeSpan.textContent = `${(file.size / 1024).toFixed(1)} KB`;
+          infoDiv.append(nameSpan, sizeSpan);
+          
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'removeFileBtn';
+          removeBtn.innerHTML = '&times;';
+          removeBtn.title = 'Remove file';
+          removeBtn.onclick = (e) => removeSingleFile(e, index);
+
+          previewDiv.append(thumbnailDiv, infoDiv, removeBtn);
+          filePreviewContainer.appendChild(previewDiv);
+      });
+  }
+
+  // NEW: Function to remove a single file
+  function removeSingleFile(e, indexToRemove) {
+      e.stopPropagation();
+      // Remove the file at the specified index
+      selectedFilesForUpload = selectedFilesForUpload.filter((_, index) => index !== indexToRemove);
+      // Re-render the file preview
+      displayFilePreview(selectedFilesForUpload);
+      // Reset the input element if no files remain (important for selecting same file later)
+      if (selectedFilesForUpload.length === 0) {
+          fileUpload.value = '';
+      }
   }
   
+  // FIX: Updated to handle multiple files
   function removeFilePreview() {
-      selectedFileForUpload = null;
+      selectedFilesForUpload = [];
       fileUpload.value = ''; // Reset the input
       filePreviewContainer.innerHTML = '';
       filePreviewContainer.style.display = 'none';
@@ -2080,27 +2532,41 @@
   });
 
 
-  // --- General Event Listeners ---
+  // --- General Event Listeners (Including Responsive Sidebar Logic) ---
   userInput.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); sendMessage(); } });
   
+  // Mobile history button (fixed position)
   historyBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      sessionPanel.classList.toggle('visible');
+      sessionPanel.classList.add('visible');
+      mobileBackdrop.classList.add('visible');
   });
   
+  // Desktop collapse button
   closeHistoryBtn.addEventListener('click', () => {
       mainContainer.classList.add('sidebar-collapsed');
   });
 
+  // Desktop expand button
   openHistoryBtn.addEventListener('click', () => {
       mainContainer.classList.remove('sidebar-collapsed');
   });
 
+  // NEW: Backdrop click closes sidebar on mobile
+  mobileBackdrop.addEventListener('click', () => {
+      sessionPanel.classList.remove('visible');
+      mobileBackdrop.classList.remove('visible');
+  });
+
+  // Global click handler (for popovers/mobile close)
   document.addEventListener('click', (e) => {
-      if (sessionPanel.classList.contains('visible') && !sessionPanel.contains(e.target) && e.target !== historyBtn) {
+      // Close mobile sidebar if open and click is outside (redundant due to backdrop but good fallback)
+      if (sessionPanel.classList.contains('visible') && window.innerWidth <= 768 && !sessionPanel.contains(e.target) && e.target !== historyBtn) {
           sessionPanel.classList.remove('visible');
+          mobileBackdrop.classList.remove('visible');
       }
       
+      // Close session action popovers
       const openPopover = document.querySelector('.actions-popover.visible');
       if(openPopover && !openPopover.parentElement.contains(e.target)) {
           openPopover.classList.remove('visible');
