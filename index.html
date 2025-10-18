@@ -192,15 +192,13 @@
         display: none;
     }
 
+    /* FIX: Ensure hover text is always white/clear for contrast */
     #showLoginBtn:hover, #showSignupBtn:hover, #logoutBtn:hover, #historyBtn:hover, #openHistoryBtn:hover, #closeHistoryBtn:hover, #newChatBtn:hover {
       background: var(--primary-accent);
-      color: var(--background-tertiary); /* Contrast text color */
+      color: white; /* Changed to white for clarity */
       box-shadow: 0 0 20px var(--primary-accent);
       text-shadow: none;
       transform: scale(1.03);
-    }
-    body.light-theme #showLoginBtn:hover, body.light-theme #showSignupBtn:hover, body.light-theme #logoutBtn:hover, body.light-theme #historyBtn:hover, body.light-theme #openHistoryBtn:hover, body.light-theme #closeHistoryBtn:hover, body.light-theme #newChatBtn:hover {
-        color: white;
     }
     
     /* --- Modals (Auth & Delete Confirmation) --- */
@@ -389,9 +387,10 @@
         box-shadow: 0 0 20px #0056b3;
     }
 
+    /* FIX: Ensure form button hover text is white/clear */
     .form-btn:hover { 
       background: var(--primary-accent); 
-      color: var(--background-tertiary); 
+      color: white; /* Changed to white for clarity */
       box-shadow: 0 0 20px var(--primary-accent); 
       text-shadow: none; 
       transform: scale(1.03);
@@ -749,6 +748,10 @@
         animation: pulse 1.5s infinite; 
         transform: scale(1.1); 
     }
+    /* FIX: Override pulse text-shadow in light mode */
+    body.light-theme #voiceBtn.is-listening {
+      text-shadow: none !important;
+    }
 
     /* Send Button */
     .chat-input button { 
@@ -767,15 +770,13 @@
         text-shadow: none;
         box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
     }
+    /* FIX: Ensure chat button hover text is white/clear */
     .chat-input button:hover { 
         background: var(--primary-accent); 
-        color: var(--background-tertiary); 
+        color: white; /* Changed to white for clarity */
         box-shadow: 0 0 20px var(--primary-accent); 
         text-shadow: none; 
         transform: scale(1.03); 
-    }
-    body.light-theme .chat-input button:hover {
-        color: white;
     }
     
     /* Send Button Loading State */
@@ -794,6 +795,59 @@
     }
 
     #stopGeneratingBtn { display: none; margin-left: 10px; }
+
+    /* --- Typing Indicator Styles --- */
+    .typing-indicator-wrapper {
+        align-self: flex-start;
+        display: none; /* Hidden by default */
+        margin-bottom: 15px;
+        /* Ensure the indicator uses the same wrapper style as a bot message for positioning */
+        max-width: 80%; 
+        width: fit-content;
+    }
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, var(--background-secondary), #2a2250);
+        color: white;
+        border: 1px solid var(--secondary-accent);
+        box-shadow: 0 0 15px rgba(212, 0, 255, 0.2);
+        border-bottom-left-radius: 2px;
+        font-size: 0.9rem;
+    }
+    body.light-theme .typing-indicator {
+        background: var(--background-secondary);
+        color: var(--text-color);
+        border-color: #ced4da;
+        box-shadow: none;
+    }
+
+    .typing-indicator span {
+        margin-left: 8px;
+        font-style: italic;
+        color: var(--text-color-light);
+    }
+    
+    .typing-dot {
+        width: 8px;
+        height: 8px;
+        background-color: var(--primary-accent);
+        border-radius: 50%;
+        margin: 0 2px;
+        animation: bounce 1.4s infinite ease-in-out both;
+    }
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    .typing-dot:nth-child(3) { animation-delay: 0s; }
+    
+    @keyframes bounce {
+        0%, 80%, 100% { transform: translateY(-3px); }
+        40% { transform: translateY(-9px); }
+    }
+    /* ------------------------------------- */
+
 
     /* --- File Preview & Message Attachments --- */
     #filePreviewContainer {
@@ -1199,32 +1253,23 @@
 
 
     /* Keyframe Animations */
-@keyframes gradient-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-@keyframes fadeIn { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
-@keyframes pulse {
-  0% { transform: scale(1); text-shadow: 0 0 5px var(--shadow-color); }
-  50% { transform: scale(1.1); text-shadow: 0 0 15px var(--primary-accent); }
-  100% { transform: scale(1); text-shadow: 0 0 5px var(--shadow-color); }
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-@keyframes pulse-small {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-/* Light Theme Override for Pulse Animation:
-   We override the text-shadow property on elements using the 'pulse' animation
-   when the light theme is active, removing the neon glow.
-*/
-body.light-theme #voiceBtn.is-listening {
-  /* Remove the text shadow from the pulse animation in light mode */
-  text-shadow: none !important;
-}
-
+    @keyframes gradient-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    @keyframes fadeIn { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
+    @keyframes pulse {
+      0% { transform: scale(1); text-shadow: 0 0 5px var(--shadow-color); }
+      50% { transform: scale(1.1); text-shadow: 0 0 15px var(--primary-accent); }
+      100% { transform: scale(1); text-shadow: 0 0 5px var(--shadow-color); }
+    }
+    /* FIX: Removed nested @keyframes block which causes CSS error */
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes pulse-small {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
 
     /* --- Intro Animation --- */
     .anim-item {
@@ -1411,11 +1456,23 @@ body.light-theme #voiceBtn.is-listening {
         <div class="chat-box" id="chatBox">
           <div class="chat-box-limiter">
             <div class="chat-box-inner">
+                <!-- Typing Indicator added here (hidden by default) -->
+                <div class="typing-indicator-wrapper" id="typingIndicator">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <span>AI is processing...</span>
+                    </div>
+                </div>
+                <!-- End Typing Indicator -->
+                
                 <div class="empty-chat-state">
-                    <h1 id="mainGreeting" class="anim-item">Hi, I'm Umer</h1>
+                    <!-- Updated greeting text is now managed by JS, but keeping elements -->
+                    <h1 id="mainGreeting" class="anim-item"></h1>
                     <h2 id="mainSubtitle">
-                      <span class="anim-item subtitle-line-1">Your AI Study Assistant</span><br>
-                      <span class="anim-item subtitle-line-2">How can I help you today?</span>
+                      <span class="anim-item subtitle-line-1"></span><br>
+                      <span class="anim-item subtitle-line-2"></span>
                     </h2>
                 </div>
             </div>
@@ -1632,6 +1689,7 @@ body.light-theme #voiceBtn.is-listening {
   const themeLabel = document.querySelector('.theme-label');
   const mobileBackdrop = document.getElementById('mobile-backdrop'); 
   const sessionSearch = document.getElementById('sessionSearch');
+  const typingIndicator = document.getElementById('typingIndicator'); // NEW: Typing Indicator Element
   
   // Google Auth Buttons
   const googleLoginBtn = document.getElementById('googleLoginBtn');
@@ -1686,8 +1744,12 @@ body.light-theme #voiceBtn.is-listening {
           }
       }
 
+      // FIX 2: Remove emoji from header greeting
       userGreeting.textContent = `Hi, ${displayName} 👋`;
-      mainGreeting.textContent = `Hi, ${displayName}`;
+      // Logged IN: Show personalized greeting
+      mainGreeting.textContent = `Hi, ${displayName}`; // FIX 2: Remove emoji
+      document.querySelector('.subtitle-line-1').textContent = `I'm Your AI Study Assistant`;
+      document.querySelector('.subtitle-line-2').textContent = `How can I help you today?`;
       
       userGreeting.style.display = 'inline';
       showLoginBtn.style.display = 'none';
@@ -1709,14 +1771,26 @@ body.light-theme #voiceBtn.is-listening {
     } else {
       currentUserId = null;
       userGreeting.style.display = 'none';
-      mainGreeting.textContent = "Hi, I'm Umer";
+      // Logged OUT: Show generic welcoming greeting (FIX 2: Removed emoji)
+      mainGreeting.textContent = `Hi, Dear`; 
+      document.querySelector('.subtitle-line-1').textContent = `I'm Your AI Study Assistant`;
+      document.querySelector('.subtitle-line-2').textContent = `How can I help you today?`;
+      
       // Ensure Login/Signup buttons are explicitly shown and Logout is hidden
       showLoginBtn.style.display = 'block';
       showSignupBtn.style.display = 'block';
       logoutBtn.style.display = 'none';
-      chatBoxInner.innerHTML = '';
+      
+      // FIX 1: Ensure innerHTML is cleared before appending children
+      // The issue was here: chatBoxInner.innerHTML = '';
+      // When a snapshot is received later, it cleans out the old messages, but the 
+      // typing indicator must be re-added if it was visible. 
+      // During LOGOUT, we must ensure empty chat state is visible.
+      chatBoxInner.innerHTML = ''; 
+      chatBoxInner.appendChild(typingIndicator); // Add indicator back to keep its position
       chatBoxInner.appendChild(emptyChatState);
       emptyChatState.style.display = 'flex';
+      
       userInput.placeholder = "Please log in to chat...";
       userInput.classList.add('logged-out-placeholder');
       sendBtn.disabled = true;
@@ -2003,13 +2077,24 @@ body.light-theme #voiceBtn.is-listening {
             appendMessage(fragment, { id: doc.id, ...msg }, isLastMessage);
         });
 
-        chatBoxInner.innerHTML = '';
+        // FIX 1: Corrected logic to clear all non-indicator content before re-rendering messages.
+        // We iterate backwards to remove everything except the empty state and the typing indicator.
+        const elementsToRemove = [];
+        for (let i = chatBoxInner.children.length - 1; i >= 0; i--) {
+            const child = chatBoxInner.children[i];
+            if (child.id !== 'typingIndicator' && child !== emptyChatState) {
+                elementsToRemove.push(child);
+            }
+        }
+        elementsToRemove.forEach(child => child.remove());
+
+
         if (snapshot.empty) {
-            chatBoxInner.appendChild(emptyChatState);
             emptyChatState.style.display = 'flex';
         } else {
             emptyChatState.style.display = 'none';
-            chatBoxInner.appendChild(fragment);
+            // Insert the new messages BEFORE the typing indicator and the empty state
+            chatBoxInner.insertBefore(fragment, typingIndicator);
         }
         
         setTimeout(() => {
@@ -2057,8 +2142,16 @@ body.light-theme #voiceBtn.is-listening {
       currentSessionId = null;
       if(unsubscribeMessages) unsubscribeMessages();
       
-      chatBoxInner.innerHTML = '';
-      chatBoxInner.appendChild(emptyChatState);
+      // FIX 1: Clear chat by removing all messages, leaving only the indicator and empty state
+      const elementsToRemove = [];
+      for (let i = chatBoxInner.children.length - 1; i >= 0; i--) {
+          const child = chatBoxInner.children[i];
+          if (child.id !== 'typingIndicator' && child !== emptyChatState) {
+              elementsToRemove.push(child);
+          }
+      }
+      elementsToRemove.forEach(child => child.remove());
+      
       emptyChatState.style.display = 'flex';
 
       updateActiveSessionUI();
@@ -2090,6 +2183,10 @@ body.light-theme #voiceBtn.is-listening {
         Sending...
     `;
     userInput.disabled = true;
+    
+    // NEW: Show Typing Indicator and scroll to bottom
+    typingIndicator.style.display = 'flex';
+    chatBox.scrollTop = chatBox.scrollHeight;
     // --- Loading State End ---
 
     // Clear inputs immediately for a better UX
@@ -2233,6 +2330,9 @@ body.light-theme #voiceBtn.is-listening {
       stopGeneratingBtn.style.display = 'none';
       userInput.disabled = false;
       fetchController = null;
+      
+      // NEW: Hide Typing Indicator
+      typingIndicator.style.display = 'none';
       // --- Loading State Reset End ---
     }
   }
