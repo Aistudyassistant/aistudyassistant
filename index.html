@@ -8,44 +8,59 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
+    /*
+     * --- GLOBAL CSS VARIABLES ---
+     */
     :root {
-      --neon-blue: #00aaff;
-      --neon-purple: #d400ff;
-      --dark-bg: #0a0f1e;
-      --dark-purple: #1d1135;
-      --darker-purple: #050210;
-      --user-bubble: #3a3f4b;
-      --danger-red: #ff4757;
+      /* Dark Theme (Neon/Cyberpunk) */
+      --primary-accent: #00aaff; /* Neon Blue */
+      --secondary-accent: #d400ff; /* Neon Purple */
+      --background-primary: #0a0f1e; /* Deep Dark Background */
+      --background-secondary: #1d1135; /* Sidebar/Bot Bubble Background */
+      --background-tertiary: #050210; /* Darkest element background */
+      --user-bubble-bg: #3a3f4b; /* User message bubble */
+      
       --text-color: white;
       --text-color-light: #ccc;
       --border-color: #333;
       --input-bg: rgba(0,0,0,0.3);
-      --google-blue: #4285f4;
-      --google-red: #ea4335;
-      --google-yellow: #fbbc05;
-      --google-green: #34a853;
-      --icon-color: #888; /* Default icon color */
-      --filled-color: var(--neon-blue); /* Filled state color */
-      --filled-like: var(--neon-blue);
+      --shadow-color: rgba(0, 170, 255, 0.3);
+      
+      --danger-red: #ff4757;
+      --icon-color: #888;
+      --filled-like: var(--primary-accent);
       --filled-dislike: var(--danger-red);
+      
+      /* Google colors for buttons */
+      --google-btn-bg: white;
+      --google-btn-color: #1f1f1f;
+      --google-btn-border: #ccc;
     }
 
     body.light-theme {
-      --neon-blue: #007bff;
-      --neon-purple: #6f42c1;
-      --dark-bg: #f8f9fa;
-      --dark-purple: #e9ecef;
-      --darker-purple: #ffffff;
-      --user-bubble: #d1e7fd;
+      /* Light Theme (Professional/Soft Material) */
+      --primary-accent: #007bff; /* Primary Blue */
+      --secondary-accent: #6f42c1; /* Secondary Purple */
+      --background-primary: #f8f9fa; /* Very Light Gray */
+      --background-secondary: #e9ecef; /* Sidebar/Lightest Background */
+      --background-tertiary: #ffffff; /* Modal/Input Background */
+      --user-bubble-bg: #d1e7fd; /* Soft Blue User Message */
+      
+      --text-color: #212529; /* Dark text */
+      --text-color-light: #555; /* Muted text */
+      --border-color: #ced4da; /* Light Gray Border */
+      --input-bg: #ffffff;
+      --shadow-color: rgba(0, 123, 255, 0.2);
+      
       --danger-red: #dc3545;
-      --text-color: #212529;
-      --text-color-light: #555;
-      --border-color: #ccc;
-      --input-bg: #fff; /* FIX: White input background for light theme */
       --icon-color: #555;
-      --filled-color: var(--neon-blue);
-      --filled-like: var(--neon-blue);
+      --filled-like: var(--primary-accent);
       --filled-dislike: var(--danger-red);
+      
+      /* Google colors for buttons in light theme */
+      --google-btn-bg: white;
+      --google-btn-color: #1f1f1f;
+      --google-btn-border: #ccc;
     }
     
     /* Global Transition Smoothing */
@@ -64,7 +79,7 @@
       font-family: 'Poppins', sans-serif;
       display: flex;
       min-height: 100vh;
-      background: var(--dark-bg);
+      background: var(--background-primary);
       color: var(--text-color);
       box-sizing: border-box;
       overflow: hidden;
@@ -110,16 +125,23 @@
       color: var(--text-color-light);
       font-size: 0.9rem;
       font-weight: 500;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+      text-shadow: 0 0 5px var(--shadow-color); /* Theme-specific shadow */
       z-index: 100;
+    }
+    body.light-theme .credits {
+        text-shadow: none;
     }
 
     #userGreeting {
         display: none;
         align-self: center;
         margin-right: 15px;
-        color: var(--neon-blue);
-        text-shadow: 0 0 5px rgba(0, 170, 255, 0.7);
+        color: var(--primary-accent);
+        text-shadow: 0 0 5px var(--shadow-color);
+    }
+    body.light-theme #userGreeting {
+        text-shadow: none;
+        font-weight: 500;
     }
     
     .header-actions {
@@ -133,45 +155,54 @@
       margin-right: 10px;
     }
 
-    #showLoginBtn, #showSignupBtn, #logoutBtn, #historyBtn, #openHistoryBtn, #closeHistoryBtn {
+    #showLoginBtn, #showSignupBtn, #logoutBtn, #historyBtn, #openHistoryBtn, #closeHistoryBtn, #newChatBtn {
       padding: 10px 20px;
-      border: 1px solid var(--neon-blue);
-      background: rgba(13, 17, 23, 0.5);
-      backdrop-filter: blur(5px);
-      color: var(--neon-blue);
+      border: 1px solid var(--primary-accent);
+      /* Use translucent background for a glass effect in dark, solid in light */
+      background: var(--background-tertiary); 
+      color: var(--primary-accent);
       border-radius: 8px;
       cursor: pointer;
-      transition: all 0.3s, transform 0.2s; /* Added transform transition */
+      transition: all 0.3s, transform 0.2s;
       font-family: 'Poppins', sans-serif;
       font-weight: 500;
       font-size: 0.9rem;
-      text-shadow: 0 0 5px rgba(0, 170, 255, 0.7);
+      text-shadow: 0 0 5px var(--shadow-color);
     }
-    body.light-theme #showLoginBtn, body.light-theme #showSignupBtn, body.light-theme #logoutBtn, body.light-theme #historyBtn, body.light-theme #openHistoryBtn, body.light-theme #closeHistoryBtn {
-        background: rgba(255,255,255,0.5);
+    body:not(.light-theme) #showLoginBtn, body:not(.light-theme) #showSignupBtn, body:not(.light-theme) #logoutBtn, body:not(.light-theme) #historyBtn, body:not(.light-theme) #openHistoryBtn, body:not(.light-theme) #closeHistoryBtn {
+        background: rgba(13, 17, 23, 0.5);
+        backdrop-filter: blur(5px);
+    }
+    body.light-theme #showLoginBtn, body.light-theme #showSignupBtn, body.light-theme #logoutBtn, body.light-theme #historyBtn, body.light-theme #openHistoryBtn, body.light-theme #closeHistoryBtn, body.light-theme #newChatBtn {
+        background: var(--background-tertiary);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-shadow: none;
     }
     
     #historyBtn {
-        display: none; /* Hidden on desktop */
-        position: fixed; /* Changed to fixed for better mobile header */
+        display: none;
+        position: fixed;
         top: 10px;
         left: 10px;
         z-index: 101;
-        padding: 8px 15px; /* Smaller padding for fixed button */
+        padding: 8px 15px;
     }
     
     #logoutBtn {
-        display: none; /* Hidden by default */
+        display: none;
     }
 
-    #showLoginBtn:hover, #showSignupBtn:hover, #logoutBtn:hover, #historyBtn:hover, #openHistoryBtn:hover, #closeHistoryBtn:hover {
-      background: var(--neon-blue);
-      color: var(--darker-purple);
-      box-shadow: 0 0 20px var(--neon-blue);
+    #showLoginBtn:hover, #showSignupBtn:hover, #logoutBtn:hover, #historyBtn:hover, #openHistoryBtn:hover, #closeHistoryBtn:hover, #newChatBtn:hover {
+      background: var(--primary-accent);
+      color: var(--background-tertiary); /* Contrast text color */
+      box-shadow: 0 0 20px var(--primary-accent);
       text-shadow: none;
-      transform: scale(1.03); /* NEW: Subtle scale effect */
+      transform: scale(1.03);
     }
-
+    body.light-theme #showLoginBtn:hover, body.light-theme #showSignupBtn:hover, body.light-theme #logoutBtn:hover, body.light-theme #historyBtn:hover, body.light-theme #openHistoryBtn:hover, body.light-theme #closeHistoryBtn:hover, body.light-theme #newChatBtn:hover {
+        color: white;
+    }
+    
     /* --- Modals (Auth & Delete Confirmation) --- */
     .modal-overlay {
       position: fixed;
@@ -189,8 +220,10 @@
       pointer-events: none;
       transition: opacity 0.4s ease-out;
     }
+    body.light-theme .modal-overlay {
+        background: rgba(200, 200, 200, 0.6);
+    }
     
-    /* NEW: Mobile Sidebar Backdrop */
     #mobile-backdrop {
         position: fixed;
         top: 0;
@@ -198,7 +231,7 @@
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.5);
-        z-index: 1050; /* Below the sidebar, above chat area */
+        z-index: 1050;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.4s ease;
@@ -218,7 +251,6 @@
       perspective: 1000px;
       width: 90%;
       max-width: 400px;
-      /* FIX: Increased height to 580px to accommodate Sign Up page properly */
       height: 580px; 
       position: relative;
     }
@@ -238,32 +270,43 @@
     .form-face, .delete-confirm-modal {
       position: absolute;
       width: 100%;
-      height: 100%; /* Important for flipper to work */
+      height: 100%; 
       backface-visibility: hidden;
       display: flex;
       flex-direction: column;
       justify-content: center;
       padding: 30px;
       box-sizing: border-box;
-      background: rgba(13, 17, 23, 0.7);
+      background: var(--background-secondary);
       backdrop-filter: blur(10px);
       border-radius: 20px;
-      border: 1px solid var(--neon-blue);
-      box-shadow: 0 0 25px rgba(0, 170, 255, 0.3), 0 0 40px rgba(212, 0, 255, 0.2);
+      border: 1px solid var(--primary-accent);
+      box-shadow: 0 0 25px var(--shadow-color), 0 0 40px rgba(212, 0, 255, 0.2);
+    }
+    body.light-theme .form-face, body.light-theme .delete-confirm-modal {
+        background: var(--background-tertiary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-color: var(--border-color);
+        backdrop-filter: none;
     }
     .delete-confirm-modal {
         height: auto;
         max-width: 400px;
+        padding: 40px;
     }
     
     .delete-confirm-modal h4 { margin: 0 0 10px; font-size: 1.2rem; }
     .delete-confirm-modal p { margin: 0 0 25px; color: var(--text-color-light); }
     .delete-confirm-modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
     .modal-btn { padding: 8px 16px; border-radius: 6px; cursor: pointer; border: 1px solid; font-weight: 500; transition: all 0.2s, transform 0.2s; }
+    
     #confirmDeleteBtn { background: var(--danger-red); border-color: var(--danger-red); color: white; }
     #confirmDeleteBtn:hover { background: #ff2d41; transform: scale(1.05); }
+    
     #cancelDeleteBtn { background: transparent; border-color: #555; color: var(--text-color-light); }
+    body.light-theme #cancelDeleteBtn { border-color: var(--border-color); }
     #cancelDeleteBtn:hover { background: #555; color: white; transform: scale(1.05); }
+    body.light-theme #cancelDeleteBtn:hover { background: #e0e0e0; color: var(--text-color); }
 
 
     .login-form, .signup-form { height: 100%; }
@@ -275,7 +318,7 @@
       font-size: 2.5rem;
       text-align: center;
       margin: 0 0 30px 0;
-      background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
+      background: linear-gradient(90deg, var(--secondary-accent), var(--primary-accent));
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -286,95 +329,105 @@
     .input-group { 
         margin-bottom: 20px; 
         position: relative;
-        /* FIX: Ensure input groups are visible again */
         display: block; 
     }
     .input-group input {
       width: 100%;
       padding: 12px 15px;
-      border: 1px solid #555;
+      border: 1px solid var(--border-color);
       border-radius: 10px;
       outline: none;
-      background: var(--input-bg); /* Use CSS variable */
-      color: var(--text-color); /* Use CSS variable */
+      background: var(--input-bg);
+      color: var(--text-color);
       font-family: 'Poppins', sans-serif;
       font-size: 1rem;
       transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
       box-sizing: border-box;
     }
     
-    /* FIX: Ensure text color is dark in light theme for inputs */
-    body.light-theme .input-group input {
-        color: var(--text-color); /* #212529 */
-        background: var(--input-bg); /* #fff */
+    .input-group input:focus { 
+        border-color: var(--primary-accent); 
+        box-shadow: 0 0 10px var(--shadow-color); 
     }
-    
-    .input-group input:focus { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 170, 255, 0.5); }
-    .input-group input::placeholder { color: #888; }
+    .input-group input::placeholder { color: var(--text-color-light); opacity: 0.6; }
     
     .error-message {
-      color: #ff5555;
+      color: var(--danger-red);
       text-align: center;
       font-size: 0.9rem;
       margin-top: -10px;
       margin-bottom: 15px;
-      height: 1em; /* Reserve space to prevent layout shift */
+      height: 1em;
     }
 
-    /* Email Sign up button - FIX: Ensure visibility */
+    /* Email Sign up button - Primary Action Button */
     .form-btn {
         display: block;
         width: 100%;
         padding: 12px 20px;
         margin-top: 10px;
-        border: 1px solid var(--neon-blue);
+        border: 1px solid var(--primary-accent);
         background: transparent;
-        color: var(--neon-blue);
+        color: var(--primary-accent);
         border-radius: 8px;
         cursor: pointer;
-        transition: all 0.3s, transform 0.2s; /* Added transform transition */
+        transition: all 0.3s, transform 0.2s;
         font-family: 'Poppins', sans-serif;
         font-weight: 500;
         font-size: 1rem;
-        text-shadow: 0 0 5px rgba(0, 170, 255, 0.7);
+        text-shadow: 0 0 5px var(--shadow-color);
+    }
+    body.light-theme .form-btn {
+        background: var(--primary-accent);
+        color: white;
+        text-shadow: none;
+        border-color: var(--primary-accent);
+        box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+    }
+    body.light-theme .form-btn:hover {
+        background: #0056b3; /* Darker blue on hover */
+        box-shadow: 0 0 20px #0056b3;
     }
 
     .form-btn:hover { 
-      background: var(--neon-blue); 
-      color: var(--darker-purple); 
-      box-shadow: 0 0 20px var(--neon-blue); 
+      background: var(--primary-accent); 
+      color: var(--background-tertiary); 
+      box-shadow: 0 0 20px var(--primary-accent); 
       text-shadow: none; 
-      transform: scale(1.03); /* NEW: Subtle scale effect */
+      transform: scale(1.03);
     }
     .form-btn:disabled {
         cursor: not-allowed;
         opacity: 0.6;
         transform: scale(1);
+        background: transparent !important;
+        box-shadow: none !important;
+        color: var(--primary-accent) !important;
     }
     
-    /* Google Button Styling FIX: Standard Google Sign-in appearance */
+    /* Google Button Styling */
     .google-btn {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        background: white; /* Standard White background */
-        color: #1f1f1f; /* Dark text */
-        padding: 10px 20px; /* Slightly smaller padding than neon button */
+        background: var(--google-btn-bg);
+        color: var(--google-btn-color);
+        padding: 10px 20px;
         margin: 10px auto 0 auto; 
         border-radius: 8px;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.3s, transform 0.2s; /* Added transform transition */
-        border: 1px solid #ccc;
+        transition: all 0.3s, transform 0.2s;
+        border: 1px solid var(--google-btn-border);
         box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         width: 100%; 
     }
     .google-btn:hover {
         background: #f1f1f1;
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        color: #1f1f1f;
-        transform: scale(1.03); /* NEW: Subtle scale effect */
+        color: var(--google-btn-color);
+        transform: scale(1.03);
     }
     
     .google-btn svg {
@@ -382,7 +435,7 @@
         height: 18px;
     }
     
-    /* Style for the separator - FIX: Ensure visibility */
+    /* Style for the separator */
     .separator {
         display: flex;
         align-items: center;
@@ -394,7 +447,7 @@
     .separator::after {
         content: '';
         flex: 1;
-        border-bottom: 1px solid #555;
+        border-bottom: 1px solid var(--border-color);
     }
     .separator:not(:empty)::before {
         margin-right: .5em;
@@ -406,12 +459,24 @@
     /* Centering the toggle link for better spacing */
     .toggle-link { 
         text-align: center; 
-        margin-top: 20px; /* Reduced margin for proper flow */
+        margin-top: 20px;
         color: var(--text-color-light); 
         font-size: 1.0rem;
     }
-    .toggle-link a { color: var(--neon-blue); text-decoration: none; font-weight: 500; cursor: pointer; transition: text-shadow 0.3s; }
-    .toggle-link a:hover { text-shadow: 0 0 8px rgba(0, 170, 255, 0.8); }
+    .toggle-link a { 
+        color: var(--primary-accent); 
+        text-decoration: none; 
+        font-weight: 500; 
+        cursor: pointer; 
+        transition: text-shadow 0.3s; 
+    }
+    .toggle-link a:hover { 
+        text-shadow: 0 0 8px var(--shadow-color); 
+    }
+    body.light-theme .toggle-link a:hover {
+        text-shadow: none;
+        color: #0056b3;
+    }
     
     /* --- Main App Section --- */
     .chat-container {
@@ -454,11 +519,14 @@
       border-radius: 10px;
     }
     .chat-box::-webkit-scrollbar-thumb {
-      background: var(--neon-blue);
+      background: var(--primary-accent);
       border-radius: 10px;
     }
     body.light-theme .chat-box::-webkit-scrollbar-track {
-        background: rgba(0,0,0,0.1);
+        background: rgba(0,0,0,0.05);
+    }
+    body.light-theme .chat-box::-webkit-scrollbar-thumb {
+        background: var(--primary-accent);
     }
     
     /* NEW: Message Animation Keyframe */
@@ -479,8 +547,8 @@
         align-items: center;
         text-align: center;
         flex-grow: 1;
-        color: #888;
-        padding-bottom: 10vh; /* Pushes content up */
+        color: var(--text-color-light);
+        padding-bottom: 10vh;
     }
     .empty-chat-state h1 {
       font-family: 'Audiowide', sans-serif;
@@ -488,7 +556,7 @@
       font-weight: 400;
       margin: 0;
       letter-spacing: 2px;
-      background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue), #55ffb8, var(--neon-purple));
+      background: linear-gradient(90deg, var(--secondary-accent), var(--primary-accent), #55ffb8, var(--secondary-accent));
       background-size: 250% auto;
       background-clip: text;
       -webkit-background-clip: text;
@@ -501,35 +569,55 @@
       font-weight: 400;
       margin-top: 10px;
       color: var(--text-color-light);
-      text-shadow: 0 0 10px rgba(0, 170, 255, 0.3);
+      text-shadow: 0 0 10px var(--shadow-color);
     }
     body.light-theme .empty-chat-state h2 {
         text-shadow: none;
+        color: #777;
     }
     
-    /* Removed .message-wrapper animation for clarity, applied to base message in JS instead */
-
     .user-message-wrapper { align-self: flex-end; }
     .bot-message-wrapper { align-self: flex-start; }
 
-    .message { position: relative; padding: 10px 15px; border-radius: 15px; max-width: 80%; word-wrap: break-word; width: fit-content; line-height: 1.5; white-space: pre-wrap; }
-    .user-message { background: var(--user-bubble); color: #eee; border: 1px solid #555; }
-    .bot-message { 
-        background: linear-gradient(135deg, var(--dark-purple), #2a2250);
-        color: white; 
-        border: 1px solid var(--neon-purple);
-        box-shadow: 0 0 15px rgba(212, 0, 255, 0.2);
+    .message { 
+        position: relative; 
+        padding: 10px 15px; 
+        border-radius: 15px; 
+        max-width: 80%; 
+        word-wrap: break-word; 
+        width: fit-content; 
+        line-height: 1.5; 
+        white-space: pre-wrap; 
     }
+    
+    /* Dark Theme Bubbles */
+    body:not(.light-theme) .user-message { 
+        background: var(--user-bubble-bg); 
+        color: #eee; 
+        border: 1px solid #555; 
+        border-bottom-right-radius: 2px; /* Slight modern cutout */
+    }
+    body:not(.light-theme) .bot-message { 
+        background: linear-gradient(135deg, var(--background-secondary), #2a2250);
+        color: white; 
+        border: 1px solid var(--secondary-accent);
+        box-shadow: 0 0 15px rgba(212, 0, 255, 0.2);
+        border-bottom-left-radius: 2px;
+    }
+    
+    /* Light Theme Bubbles */
     body.light-theme .message.bot-message {
-        background: var(--dark-purple);
+        background: var(--background-secondary);
         color: var(--text-color);
         border-color: #ced4da;
-        box-shadow: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-bottom-left-radius: 2px;
     }
     body.light-theme .message.user-message {
-        background: var(--user-bubble);
-        color: #004085;
+        background: var(--user-bubble-bg);
+        color: var(--primary-accent); /* Blue text in light user bubble for contrast */
         border-color: #b8daff;
+        border-bottom-right-radius: 2px;
     }
     
     .message-actions {
@@ -554,11 +642,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        /* NEW: Smoother interaction transition */
         transition: color 0.15s ease-out, transform 0.1s ease-out; 
     }
     .action-btn:hover { 
-        color: var(--neon-blue); 
+        color: var(--primary-accent); 
         transform: scale(1.1); 
     }
     .action-btn svg { 
@@ -570,13 +657,12 @@
     /* Styles for Feedback icons */
     .feedback-btn.active {
         color: var(--filled-like);
-        transform: scale(1.05); /* Pop slightly when active */
+        transform: scale(1.05);
     }
     .feedback-btn.dislike.active {
         color: var(--filled-dislike);
         transform: scale(1.05);
     }
-    /* Ensure active icons don't change color on hover */
     .feedback-btn.active:hover {
         color: var(--filled-like); 
     }
@@ -587,67 +673,129 @@
     /* Hide redundant elements */
     .regenerate-btn, .tts-btn { display: none; } 
 
-    .chat-input { display: flex; padding: 12px; background: var(--input-bg); align-items: center; border-radius: 15px; margin: 20px; border: 1px solid var(--border-color); }
-    .chat-input input[type="text"] { flex: 1; padding: 10px; border: none; outline: none; background: transparent; color: var(--text-color); font-family: 'Poppins', sans-serif; transition: border-color 0.3s, box-shadow 0.3s, color 0.3s; }
-    .chat-input input:focus { box-shadow: none; }
-    .chat-input input::placeholder { color: #888; }
-    .chat-input input.logged-out-placeholder::placeholder {
-        color: var(--neon-blue);
-        opacity: 0.8;
-        text-shadow: 0 0 5px rgba(0, 170, 255, 0.5);
+    .chat-input { 
+        display: flex; 
+        padding: 12px; 
+        background: var(--input-bg); 
+        align-items: center; 
+        border-radius: 15px; 
+        margin: 20px; 
+        border: 1px solid var(--border-color); 
+        box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Subtle shadow for input area */
     }
-    /* FIX: Ensure color changes for Light theme inputs on input */
-    body.light-theme .chat-input input[type="text"] {
+    body:not(.light-theme) .chat-input {
+        backdrop-filter: blur(5px);
+    }
+    
+    .chat-input input[type="text"] { 
+        flex: 1; 
+        padding: 10px; 
+        border: none; 
+        outline: none; 
+        background: transparent; 
         color: var(--text-color); 
+        font-family: 'Poppins', sans-serif; 
+        transition: color 0.3s; 
+    }
+    .chat-input input:focus { box-shadow: none; }
+    .chat-input input::placeholder { color: var(--text-color-light); opacity: 0.8; }
+    .chat-input input.logged-out-placeholder::placeholder {
+        color: var(--primary-accent);
+        opacity: 0.8;
+        text-shadow: 0 0 5px var(--shadow-color);
+    }
+    body.light-theme .chat-input input.logged-out-placeholder::placeholder {
+        text-shadow: none;
     }
 
     .chat-input label { 
         margin-left: 10px; 
         cursor: pointer; 
-        color: #888; 
+        color: var(--icon-color); 
         transition: color 0.3s, text-shadow 0.3s;
         display: flex;
         align-items: center;
     }
-    .chat-input label:hover { color: var(--neon-blue); text-shadow: 0 0 8px rgba(0, 170, 255, 0.8); transform: scale(1.1); }
+    .chat-input label:hover { 
+        color: var(--primary-accent); 
+        text-shadow: 0 0 8px var(--shadow-color); 
+        transform: scale(1.1); 
+    }
+    body.light-theme .chat-input label:hover {
+        text-shadow: none;
+    }
 
     #voiceBtn {
       padding: 10px;
       border: none;
       background: transparent;
-      color: #888;
+      color: var(--icon-color);
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.3s, transform 0.2s;
       font-size: 1.2rem;
       margin: 0 10px;
     }
-    #voiceBtn:hover { color: var(--neon-blue); text-shadow: 0 0 8px rgba(0, 170, 255, 0.7); transform: scale(1.1); }
-    #voiceBtn.is-listening { color: var(--neon-blue); animation: pulse 1.5s infinite; transform: scale(1.1); }
+    #voiceBtn:hover { 
+        color: var(--primary-accent); 
+        text-shadow: 0 0 8px var(--shadow-color); 
+        transform: scale(1.1); 
+    }
+    body.light-theme #voiceBtn:hover {
+        text-shadow: none;
+    }
+    #voiceBtn.is-listening { 
+        color: var(--primary-accent); 
+        animation: pulse 1.5s infinite; 
+        transform: scale(1.1); 
+    }
 
-    .chat-input button { padding: 10px 16px; border: 1px solid var(--neon-blue); background: transparent; color: var(--neon-blue); border-radius: 8px; cursor: pointer; transition: all 0.3s, transform 0.2s; font-family: 'Poppins', sans-serif; font-weight: 500; text-shadow: 0 0 5px rgba(0, 170, 255, 0.7); }
-    .chat-input button:hover { background: var(--neon-blue); color: var(--darker-purple); box-shadow: 0 0 20px var(--neon-blue); text-shadow: none; transform: scale(1.03); }
-    
-    /* NEW: Send Button Loading State */
-    .chat-input button#sendBtn.is-loading {
-        background: var(--neon-purple);
+    /* Send Button */
+    .chat-input button { 
+        padding: 10px 16px; 
+        border: 1px solid var(--primary-accent); 
+        background: transparent; 
+        color: var(--primary-accent); 
+        border-radius: 8px; 
+        cursor: pointer; 
+        transition: all 0.3s, transform 0.2s; 
+        font-family: 'Poppins', sans-serif; 
+        font-weight: 500; 
+        text-shadow: 0 0 5px var(--shadow-color); 
+    }
+    body.light-theme .chat-input button {
+        text-shadow: none;
+        box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+    }
+    .chat-input button:hover { 
+        background: var(--primary-accent); 
+        color: var(--background-tertiary); 
+        box-shadow: 0 0 20px var(--primary-accent); 
+        text-shadow: none; 
+        transform: scale(1.03); 
+    }
+    body.light-theme .chat-input button:hover {
         color: white;
-        border-color: var(--neon-purple);
+    }
+    
+    /* Send Button Loading State */
+    .chat-input button#sendBtn.is-loading {
+        background: var(--secondary-accent);
+        color: white;
+        border-color: var(--secondary-accent);
         cursor: wait;
         pointer-events: none;
         display: flex;
         align-items: center;
         gap: 5px;
         transform: scale(1);
-    }
-    .chat-input button#sendBtn.is-loading svg {
-        animation: spin 1s linear infinite;
+        box-shadow: none;
+        text-shadow: none;
     }
 
     #stopGeneratingBtn { display: none; margin-left: 10px; }
 
     /* --- File Preview & Message Attachments --- */
-    /* FIX: Styles adjusted for multi-file preview */
     #filePreviewContainer {
         display: none;
         padding: 0 20px;
@@ -660,11 +808,15 @@
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        background: var(--user-bubble);
+        background: var(--user-bubble-bg);
         padding: 8px 12px;
         border-radius: 12px;
-        border: 1px solid #555;
+        border: 1px solid var(--border-color);
         transition: transform 0.2s;
+        color: var(--text-color);
+    }
+    body.light-theme .file-preview {
+        color: var(--text-color);
     }
     .file-preview:hover {
         transform: translateY(-2px);
@@ -702,12 +854,12 @@
     }
     .file-preview-size {
         font-size: 0.75rem;
-        color: #aaa;
+        color: var(--text-color-light);
     }
     #removeFileBtn {
         background: none;
         border: none;
-        color: #aaa;
+        color: var(--text-color-light);
         cursor: pointer;
         font-size: 1.5rem;
         padding: 0 5px;
@@ -736,16 +888,16 @@
         border-radius: 8px;
         border: 1px solid rgba(255,255,255,0.1);
     }
+    body.light-theme .message .file-attachment {
+        background: rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.1);
+    }
     .message .file-attachment a {
       display: flex;
       align-items: center;
       gap: 10px;
       text-decoration: none;
       color: inherit;
-    }
-    body.light-theme .message .file-attachment {
-        background: rgba(0,0,0,0.05);
-        border: 1px solid rgba(0,0,0,0.1);
     }
     .message .file-attachment svg {
         width: 24px;
@@ -765,9 +917,9 @@
     #session-panel {
         width: 280px;
         flex-shrink: 0;
-        background: rgba(13, 17, 23, 0.5);
+        background: var(--background-secondary);
         backdrop-filter: blur(5px);
-        border-right: 1px solid var(--neon-blue);
+        border-right: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
         padding: 15px;
@@ -776,8 +928,8 @@
         overflow-x: hidden;
     }
     body.light-theme #session-panel {
-        background: rgba(255,255,255,0.7);
-        border-right-color: #dee2e6;
+        background: var(--background-secondary);
+        border-right-color: var(--border-color);
     }
 
     .session-panel-header {
@@ -790,30 +942,17 @@
     #session-panel h3 {
         font-family: 'Audiowide', sans-serif;
         margin: 0;
-        color: var(--neon-blue);
+        color: var(--primary-accent);
         font-weight: 400;
     }
 
+    /* NEW CHAT BUTTON (Styled with common button class for consistency) */
     #newChatBtn {
         width: 100%;
-        padding: 12px;
-        border: 1px solid var(--neon-blue);
-        background: transparent;
-        color: var(--neon-blue);
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s, transform 0.2s;
-        font-weight: 500;
         margin-bottom: 20px;
     }
-    #newChatBtn:hover {
-        background: var(--neon-blue);
-        color: var(--darker-purple);
-        box-shadow: 0 0 15px var(--neon-blue);
-        transform: scale(1.03);
-    }
     
-    /* NEW: Search Bar Styling */
+    /* Search Bar Styling */
     .search-input-group {
         margin-bottom: 15px;
         position: relative;
@@ -822,31 +961,29 @@
         width: 100%;
         padding: 8px 12px;
         padding-left: 35px;
-        border: 1px solid #555;
+        border: 1px solid var(--border-color);
         border-radius: 8px;
         outline: none;
-        background: rgba(0,0,0,0.3);
+        background: var(--input-bg);
         color: var(--text-color);
         font-family: 'Poppins', sans-serif;
         box-sizing: border-box;
+        transition: all 0.3s;
     }
-    /* NEW: Search Bar Focus Pulse */
     #sessionSearch:focus {
-        border-color: var(--neon-blue);
-        box-shadow: 0 0 8px rgba(0, 170, 255, 0.5);
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 8px var(--shadow-color);
     }
-
     body.light-theme #sessionSearch {
-        background: #fff;
+        background: var(--input-bg);
         color: var(--text-color);
-        border-color: #ccc;
     }
     .search-icon {
         position: absolute;
         left: 10px;
         top: 50%;
         transform: translateY(-50%);
-        color: #888;
+        color: var(--icon-color);
         width: 18px;
         height: 18px;
     }
@@ -860,7 +997,7 @@
     }
     #session-list::-webkit-scrollbar { width: 3px; }
     #session-list::-webkit-scrollbar-track { background: transparent; }
-    #session-list::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; }
+    #session-list::-webkit-scrollbar-thumb { background: var(--secondary-accent); border-radius: 10px; }
 
     #session-list li {
         display: flex;
@@ -872,19 +1009,21 @@
         border-radius: 8px;
         cursor: pointer;
         border-left: 3px solid transparent;
-        transition: all 0.3s ease, transform 0.2s; /* Added transform transition */
+        transition: all 0.3s ease, transform 0.2s;
         position: relative;
     }
     body.light-theme #session-list li {
         background: #f1f3f5;
+        color: var(--text-color);
     }
     
     #session-list li:hover {
         background: rgba(0,0,0,0.4);
-        transform: translateX(5px); /* Subtle slide effect on hover */
+        transform: translateX(5px);
     }
     body.light-theme #session-list li:hover {
         background: #e9ecef;
+        transform: translateX(0); /* Light theme feels better without slide */
     }
 
     .session-info {
@@ -899,28 +1038,26 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-weight: 500;
     }
     
     .session-date {
         font-size: 0.75rem;
-        color: #888;
+        color: var(--text-color-light);
         margin-top: 2px;
     }
     
     .rename-input {
-        flex-grow: 1; /* Match the title span */
-        background: #333;
-        border: 1px solid var(--neon-blue);
+        flex-grow: 1;
+        background: var(--background-primary);
+        border: 1px solid var(--primary-accent);
         color: var(--text-color);
         padding: 5px;
         border-radius: 4px;
         font-family: 'Poppins', sans-serif;
-        font-size: inherit; /* Inherit from parent li */
+        font-size: inherit;
         box-sizing: border-box;
         outline: none;
-    }
-    body.light-theme .rename-input {
-        background: #fff;
     }
     
     .session-actions {
@@ -944,7 +1081,7 @@
     }
     
     .actions-menu-btn {
-        background: none; border: none; color: #aaa; cursor: pointer;
+        background: none; border: none; color: var(--icon-color); cursor: pointer;
         font-size: 1.2rem; padding: 5px;
     }
     .actions-menu-btn:hover { color: var(--text-color); }
@@ -953,45 +1090,34 @@
         position: absolute;
         right: 5px;
         top: 25px;
-        background: #222;
+        background: var(--background-primary);
         border-radius: 6px;
-        border: 1px solid #444;
+        border: 1px solid var(--border-color);
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         z-index: 10;
         overflow: hidden;
         display: none;
-        /* FIX: Increased width to ensure 'Delete' is fully visible */
         width: 120px; 
-        padding: 5px 0; /* Added slight padding */
-    }
-    body.light-theme .actions-popover {
-        background: #fff;
-        border-color: #ccc;
+        padding: 5px 0;
     }
 
     .actions-popover.visible { display: block; }
     .actions-popover.up { top: auto; bottom: 25px; }
     .actions-popover button {
         display: block; width: 100%; text-align: left;
-        background: none; border: none; color: white; 
-        padding: 8px 15px; /* Increased vertical padding */
+        background: none; border: none; color: var(--text-color); 
+        padding: 8px 15px;
         cursor: pointer;
         font-size: 0.9rem;
     }
-    body.light-theme .actions-popover button {
-        color: var(--text-color);
-    }
-    .actions-popover button:hover { background: #333; }
-    body.light-theme .actions-popover button:hover {
-        background: #f1f3f5;
-    }
+    .actions-popover button:hover { background: var(--background-secondary); }
     .actions-popover .delete-action { color: var(--danger-red); }
     
     #session-list li.active {
-        background: var(--dark-purple);
-        border-left-color: var(--neon-blue);
-        font-weight: 500;
-        transform: none; /* Active item stays put */
+        background: var(--background-secondary);
+        border-left-color: var(--primary-accent);
+        font-weight: 600;
+        transform: none;
     }
      body.light-theme #session-list li.active {
         background: #dbe4f0;
@@ -1000,19 +1126,20 @@
     #closeHistoryBtn, #openHistoryBtn {
       background: none;
       border: none;
-      color: #aaa;
+      color: var(--text-color-light);
       cursor: pointer;
       padding: 5px;
-      display: none; /* Hidden by default */
+      display: none;
       line-height: 1;
       transition: color 0.2s, transform 0.2s;
     }
     #closeHistoryBtn svg, #openHistoryBtn svg {
       width: 20px;
       height: 20px;
+      fill: currentColor;
     }
     #closeHistoryBtn:hover, #openHistoryBtn:hover {
-        color: var(--text-color);
+        color: var(--primary-accent);
         transform: scale(1.1);
     }
     
@@ -1051,6 +1178,10 @@
       transition: .4s;
       border-radius: 24px;
     }
+    body.light-theme .slider { background-color: #ccc; }
+    input:checked + .slider {
+      background-color: var(--primary-accent);
+    }
     .slider:before {
       position: absolute;
       content: "";
@@ -1062,9 +1193,6 @@
       transition: .4s;
       border-radius: 50%;
     }
-    input:checked + .slider {
-      background-color: var(--neon-blue);
-    }
     input:checked + .slider:before {
       transform: translateX(20px);
     }
@@ -1074,9 +1202,14 @@
     @keyframes gradient-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     @keyframes fadeIn { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
     @keyframes pulse {
-      0% { transform: scale(1); text-shadow: 0 0 5px rgba(0, 170, 255, 0.7); }
-      50% { transform: scale(1.1); text-shadow: 0 0 15px rgba(0, 170, 255, 1); }
-      100% { transform: scale(1); text-shadow: 0 0 5px rgba(0, 170, 255, 0.7); }
+      0% { transform: scale(1); text-shadow: 0 0 5px var(--shadow-color); }
+      50% { transform: scale(1.1); text-shadow: 0 0 15px var(--primary-accent); }
+      100% { transform: scale(1); text-shadow: 0 0 5px var(--shadow-color); }
+    }
+    body.light-theme @keyframes pulse {
+         0% { transform: scale(1); }
+         50% { transform: scale(1.1); }
+         100% { transform: scale(1); }
     }
     @keyframes spin {
         0% { transform: rotate(0deg); }
@@ -1118,27 +1251,27 @@
     /* --- Desktop Sidebar Logic --- */
     @media (min-width: 769px) {
         #openHistoryBtn {
-            display: none; /* Hidden when sidebar is open */
+            display: none;
         }
         #closeHistoryBtn {
-            display: block; /* Visible when sidebar is open */
+            display: block;
         }
         .main-container.sidebar-collapsed #session-panel {
             width: 0;
             padding-left: 0;
             padding-right: 0;
             border-right: none;
-            transform: translateX(0); /* Reset transform */
+            transform: translateX(0);
         }
         .main-container.sidebar-collapsed #openHistoryBtn {
-            display: block; /* Becomes visible when collapsed */
+            display: block;
         }
         .main-container.sidebar-collapsed .site-header {
             left: 20px;
             right: 20px;
         }
         .main-container.sidebar-collapsed #closeHistoryBtn {
-            display: none; /* Hidden when collapsed */
+            display: none;
         }
         #mobile-backdrop {
             display: none !important;
@@ -1163,8 +1296,8 @@
             position: fixed;
             top: 0; right: 0; left: 0;
             padding: 10px;
-            background: var(--darker-purple);
-            border-bottom: 1px solid var(--neon-blue);
+            background: var(--background-secondary);
+            border-bottom: 1px solid var(--border-color);
             z-index: 100;
         }
         
@@ -1181,9 +1314,9 @@
             position: fixed;
             left: 0; top: 0;
             height: 100%;
-            z-index: 1100; /* Above the backdrop */
+            z-index: 1100;
             transform: translateX(-100%);
-            border-right: 1px solid var(--neon-blue);
+            border-right: 1px solid var(--border-color);
             border-left: none;
             width: 280px;
         }
@@ -1197,14 +1330,14 @@
             width: 100%;
             height: 100%;
             border-radius: 0;
-            padding-top: 60px; /* Space for fixed header */
+            padding-top: 60px;
             box-sizing: border-box;
             border: none;
             box-shadow: none;
             background: none;
         }
 
-        #session-list li .session-actions { opacity: 1; pointer-events: auto; } /* Always show actions on mobile */
+        #session-list li .session-actions { opacity: 1; pointer-events: auto; }
         #closeHistoryBtn, #openHistoryBtn { display: none !important; }
     }
 
@@ -1291,7 +1424,6 @@
               <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/>
             </svg>
           </label>
-          <!-- FIX: Added 'multiple' attribute for multi-file support -->
           <input type="file" id="fileUpload" name="files" style="display:none;" multiple>
           <button id="voiceBtn" title="Use Voice to Text">🎤</button>
           <input type="text" id="userInput" placeholder="Type your question here...">
@@ -1307,13 +1439,11 @@
 
   <!-- Authentication Modal -->
   <div id="auth-modal" class="modal-overlay">
-    <!-- FIX: Adjusted form-container class for proper height/flipping -->
     <div class="form-container" id="formContainer">
       <div class="flipper">
         <div class="form-face login-form">
           <h2>Login</h2>
           <form id="loginForm">
-            <!-- FIX: Email/Password fields RESTORED -->
             <div class="input-group">
                 <input type="email" placeholder="Email" required name="email">
             </div>
@@ -1323,10 +1453,9 @@
             <p class="error-message" id="loginError"></p>
             <button type="submit" class="form-btn">Login with Email</button>
             
-            <!-- FIX: Separator RESTORED -->
             <div class="separator">OR</div>
             
-            <!-- Google Login Button (Styled as requested for standard look) -->
+            <!-- Google Login Button -->
             <button type="button" class="google-btn" id="googleLoginBtn">
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.91 2.18 30.46 0 24 0 14.62 0 6.51 5.25 2.7 13.13l7.98 6.19C12.43 13.75 17.15 9.5 24 9.5z"/>
@@ -1345,7 +1474,6 @@
         <div class="form-face signup-form">
           <h2>Sign Up</h2>
           <form id="signupForm">
-             <!-- FIX: Username, Email, Password fields RESTORED -->
             <div class="input-group"><input type="text" placeholder="Username" required name="username"></div>
             <div class="input-group"><input type="email" placeholder="Email" required name="email"></div>
             <div class="input-group">
@@ -1354,10 +1482,9 @@
             <p class="error-message" id="signupError"></p>
             <button type="submit" class="form-btn">Sign Up with Email</button>
             
-            <!-- FIX: Separator RESTORED -->
             <div class="separator">OR</div>
             
-            <!-- Google Signup Button (Styled as requested for standard look) -->
+            <!-- Google Signup Button -->
             <button type="button" class="google-btn" id="googleSignupBtn">
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.91 2.18 30.46 0 24 0 14.62 0 6.51 5.25 2.7 13.13l7.98 6.19C12.43 13.75 17.15 9.5 24 9.5z"/>
@@ -1459,7 +1586,6 @@
   let unsubscribeMessages = null; 
   let unsubscribeSessions = null;
   let sessionToDelete = null;
-  // FIX: Changed to store multiple files
   let selectedFilesForUpload = []; 
   let fetchController;
   
@@ -1500,7 +1626,7 @@
   const themeToggle = document.getElementById('themeToggle');
   const themeLabel = document.querySelector('.theme-label');
   const mobileBackdrop = document.getElementById('mobile-backdrop'); 
-  const sessionSearch = document.getElementById('sessionSearch'); // NEW: Search input
+  const sessionSearch = document.getElementById('sessionSearch');
   
   // Google Auth Buttons
   const googleLoginBtn = document.getElementById('googleLoginBtn');
@@ -1579,7 +1705,7 @@
       currentUserId = null;
       userGreeting.style.display = 'none';
       mainGreeting.textContent = "Hi, I'm Umer";
-      // FIX: Ensure Login/Signup buttons are explicitly shown and Logout is hidden
+      // Ensure Login/Signup buttons are explicitly shown and Logout is hidden
       showLoginBtn.style.display = 'block';
       showSignupBtn.style.display = 'block';
       logoutBtn.style.display = 'none';
@@ -1607,7 +1733,7 @@
       loginForm.reset();
       signupForm.reset();
       
-      // FIX: Ensure Login form is shown by default when logging out or clicking Login
+      // Ensure Login form is shown by default when logging out or clicking Login
       formContainer.classList.remove('flipped');
     }
     startIntroAnimation();
@@ -1619,17 +1745,17 @@
   });
   
   // --- Authentication Modal Logic ---
-  // FIX: Explicitly set to Login page
+  // Explicitly set to Login page
   showLoginBtn.addEventListener('click', () => {
     formContainer.classList.remove('flipped'); 
     authModal.classList.add('visible');
   });
-  // FIX: Explicitly set to Sign Up page
+  // Explicitly set to Sign Up page
   showSignupBtn.addEventListener('click', () => {
     formContainer.classList.add('flipped');
     authModal.classList.add('visible');
   });
-  // FIX: Logout button calls Firebase signOut
+  // Logout button calls Firebase signOut
   logoutBtn.addEventListener('click', () => {
       signOut(auth).then(() => {
           // Sign out successful. updateUiForAuthState will handle the UI reset.
@@ -1679,11 +1805,10 @@
     }
   });
   
-  // --- NEW: Google Auth Logic ---
+  // --- Google Auth Logic ---
   async function handleGoogleSignIn(button, errorDisplay) {
       button.disabled = true;
       const originalText = button.textContent;
-      // NOTE: Using simple text loading indicator for Google button as per design preference
       button.textContent = `Connecting...`;
       errorDisplay.textContent = '';
 
@@ -1691,7 +1816,6 @@
           const result = await signInWithPopup(auth, googleProvider);
           const user = result.user;
           
-          // Check if user document exists (only if this is a new sign-up via Google)
           const userDocRef = doc(db, 'users', user.uid);
           const userDocSnap = await getDoc(userDocRef);
 
@@ -1740,7 +1864,7 @@
   
   // --- Session and Chat Logic ---
   
-  // NEW: Filtering function for search
+  // Filtering function for search
   function filterSessions(searchTerm) {
     const term = searchTerm.toLowerCase();
     const listItems = sessionList.querySelectorAll('li');
@@ -1889,7 +2013,7 @@
     });
   }
   
-  // FIX: Updated to prioritize capturing the first 3-5 words of the query.
+  // Updated to prioritize capturing the first 3-5 words of the query.
   function generateSessionTitle(message) {
     if (!message) return "New Conversation";
     
@@ -2263,7 +2387,7 @@
         const dislikeBtn = document.createElement('button');
         dislikeBtn.className = 'action-btn feedback-btn dislike';
         dislikeBtn.title = 'Dislike response';
-        // Exact Thumbs Down Outline Icon from screenshot (used simple filled version in previous attempt, now using an outline version)
+        // Exact Thumbs Down Outline Icon from screenshot
         dislikeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.887 14.545c-1.579 0-2.926-.641-4.043-1.637a.512.512 0 0 1 .715-.714c.942.84 2.147 1.35 3.328 1.35s2.386-.51 3.328-1.35a.512.512 0 0 1 .715.714c-1.117.996-2.464 1.637-4.043 1.637zM4.75 8a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5zm6.5 0a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5z"/></svg>`;
         
         // Check initial rating and apply 'active' class
@@ -2326,12 +2450,12 @@
 
   // --- File Upload Logic ---
   fileUpload.addEventListener("change", (event) => {
-    // FIX: Process multiple selected files
+    // Process multiple selected files
     selectedFilesForUpload = Array.from(event.target.files);
     displayFilePreview(selectedFilesForUpload);
   });
   
-  // FIX: Updated to handle multiple files
+  // Updated to handle multiple files
   function displayFilePreview(files) {
       filePreviewContainer.style.display = files.length > 0 ? 'flex' : 'none';
       filePreviewContainer.innerHTML = '';
@@ -2373,7 +2497,7 @@
       });
   }
 
-  // NEW: Function to remove a single file
+  // Function to remove a single file
   function removeSingleFile(e, indexToRemove) {
       e.stopPropagation();
       // Remove the file at the specified index
@@ -2386,7 +2510,7 @@
       }
   }
   
-  // FIX: Updated to handle multiple files
+  // Updated to handle multiple files
   function removeFilePreview() {
       selectedFilesForUpload = [];
       fileUpload.value = ''; // Reset the input
