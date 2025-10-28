@@ -201,6 +201,83 @@
       transform: scale(1.03);
     }
     
+    /* --- NEW: Mode Selector Dropdown --- */
+    .mode-selector-container {
+      position: relative;
+      display: inline-block;
+      margin-right: 10px;
+    }
+
+    #modeSelector {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      padding: 10px 35px 10px 15px;
+      border: 1px solid var(--primary-accent);
+      background: var(--background-tertiary);
+      color: var(--text-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      font-size: 0.9rem;
+      text-shadow: 0 0 5px var(--shadow-color);
+      outline: none;
+    }
+    
+    body:not(.light-theme) #modeSelector {
+      background: rgba(13, 17, 23, 0.5);
+      backdrop-filter: blur(5px);
+    }
+    
+    body.light-theme #modeSelector {
+      background: var(--background-tertiary);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-shadow: none;
+      color: var(--text-color);
+    }
+
+    #modeSelector:hover {
+      background: var(--primary-accent);
+      color: white;
+      box-shadow: 0 0 20px var(--primary-accent);
+      text-shadow: none;
+    }
+    
+    /* Custom dropdown arrow */
+    .mode-selector-container::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--primary-accent);
+      pointer-events: none;
+      transition: border-color 0.3s;
+    }
+    
+    .mode-selector-container:hover::after {
+      border-top-color: white;
+    }
+
+    #modeSelector option {
+      background: var(--background-secondary);
+      color: var(--text-color);
+      padding: 10px;
+    }
+    
+    body.light-theme #modeSelector option {
+      background: var(--background-tertiary);
+      color: var(--text-color);
+    }
+    /* --- End Mode Selector --- */
+
+
     /* --- Modals (Auth & Delete Confirmation) --- */
     .modal-overlay {
       position: fixed;
@@ -331,7 +408,7 @@
     }
     .input-group input {
       width: 100%;
-      padding: 12px 15px;
+      padding: 12px 40px 12px 15px; /* Add padding-right for icon */
       border: 1px solid var(--border-color);
       border-radius: 10px;
       outline: none;
@@ -341,6 +418,29 @@
       font-size: 1rem;
       transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
       box-sizing: border-box;
+    }
+    /* Non-password inputs */
+    .input-group input[type="email"], .input-group input[type="text"] {
+        padding: 12px 15px;
+    }
+    
+    /* NEW: Password toggle icon */
+    .password-toggle-icon {
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        transform: translateY(-50%);
+        color: var(--icon-color);
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .password-toggle-icon:hover {
+        color: var(--primary-accent);
+    }
+    .password-toggle-icon svg {
+        width: 20px;
+        height: 20px;
+        display: block;
     }
     
     .input-group input:focus { 
@@ -1251,6 +1351,31 @@
       transform: translateX(20px);
     }
 
+    /* --- Toast Notification --- */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: var(--primary-accent);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px var(--shadow-color);
+      z-index: 2000;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+      font-weight: 500;
+      pointer-events: none;
+    }
+    body.light-theme .toast {
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
 
     /* Keyframe Animations */
     @keyframes gradient-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
@@ -1358,6 +1483,19 @@
         #historyBtn {
             display: block;
         }
+
+        /* NEW: Adjust mode selector for mobile */
+        .mode-selector-container {
+            margin-right: 5px; /* Less margin on mobile */
+        }
+        #modeSelector {
+            font-size: 0.8rem;
+            padding: 8px 30px 8px 10px;
+        }
+        .mode-selector-container::after {
+            right: 10px;
+        }
+
         
         /* Mobile Sidebar */
         #session-panel {
@@ -1380,7 +1518,7 @@
             width: 100%;
             height: 100%;
             border-radius: 0;
-            padding-top: 60px;
+            padding-top: 60px; /* Adjusted for taller header */
             box-sizing: border-box;
             border: none;
             box-shadow: none;
@@ -1439,6 +1577,17 @@
             <path fill-rule="evenodd" d="M1 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 12z"/>
           </svg>
         </button>
+        
+        <!-- NEW: Mode Selector Dropdown -->
+        <div class="mode-selector-container">
+          <select id="modeSelector">
+            <option value="normal">Normal Study Mode</option>
+            <option value="deep">Deep Study Mode</option>
+            <option value="test">Test Study Mode</option>
+            <option value="chat">Chat Mode</option>
+          </select>
+        </div>
+        
         <div class="header-actions">
             <span id="userGreeting"></span>
             <button id="showLoginBtn">Login</button>
@@ -1511,6 +1660,11 @@
             </div>
             <div class="input-group">
                 <input type="password" placeholder="Password" required name="password">
+                <!-- NEW: Password Toggle Icon -->
+                <span class="password-toggle-icon" title="Show/Hide Password">
+                    <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></svg>
+                    <svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="display: none;"><path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.94 5.94 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.707z"/><path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"/><path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.88 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.707z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>
+                </span>
             </div>
             <p class="error-message" id="loginError"></p>
             <button type="submit" class="form-btn">Login with Email</button>
@@ -1540,6 +1694,11 @@
             <div class="input-group"><input type="email" placeholder="Email" required name="email"></div>
             <div class="input-group">
                 <input type="password" placeholder="Password" required name="password">
+                <!-- NEW: Password Toggle Icon -->
+                <span class="password-toggle-icon" title="Show/Hide Password">
+                    <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></svg>
+                    <svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="display: none;"><path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.94 5.94 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.707z"/><path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"/><path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.88 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.707z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>
+                </span>
             </div>
             <p class="error-message" id="signupError"></p>
             <button type="submit" class="form-btn">Sign Up with Email</button>
@@ -1575,6 +1734,11 @@
               <button id="confirmDeleteBtn" class="modal-btn">Delete</button>
           </div>
       </div>
+  </div>
+  
+  <!-- Toast Notification -->
+  <div id="toast-notification" class="toast">
+    Message Copied!
   </div>
   
   
@@ -1645,11 +1809,40 @@
   // --- Global State ---
   let currentUserId = null;
   let currentSessionId = null;
+  let currentSessionMode = 'normal'; // Global state for mode
+  let loadingSessionId = null; // NEW: Tracks which session is loading
   let unsubscribeMessages = null; 
   let unsubscribeSessions = null;
   let sessionToDelete = null;
   let selectedFilesForUpload = []; 
   let fetchController;
+  let toastTimer; // Timer for the copy-to-clipboard toast
+  
+  // NEW: Webhook URL map
+  const modeWebhooks = {
+    'normal': 'https://awesome97d.app.n8n.cloud/webhook/normal',
+    'deep': 'https://awesome97d.app.n8n.cloud/webhook/Deep',
+    'test': 'https://awesome97d.app.n8n.cloud/webhook/test',
+    'chat': 'https://awesome97d.app.n8n.cloud/webhook/chat' // As requested
+  };
+  
+  // --- NEW: Icon SVGs ---
+  const iconCopy = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>`;
+  const iconCheck = `✓`; // Simple checkmark
+  
+  // *** BUG 2 FIX: Replaced icons with Thumbs Up/Down ***
+  const iconLikeOutline = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.39a.858.858 0 0 1-.17.31L10.867 8H12.5a1.5 1.5 0 0 1 1.5 1.5v3.5a1.5 1.5 0 0 1-1.5 1.5H8c-.28 0-.554-.054-.8-.15L2.4 12.859V8.062C2.4 7.23 3.03 6.5 3.843 6.5H4.5a.5.5 0 0 1 .5.5v3.5a.5.5 0 0 1-1 0V7.5a.5.5 0 0 1 .5-.5h.334L6.1 11.2a.5.5 0 0 1-.197.53l-.004.002h-.001a.5.5 0 0 1-.5-.13l-1.58-1.58a.5.5 0 0 1-.146-.353V6.5a1.5 1.5 0 0 1 1.5-1.5h1.763a1.86 1.86 0 0 0 1.41-2.258l-.115-.292z"/></svg>`;
+  const iconDislikeOutline = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M6.956 14.255c.065.935.952 1.658 1.908 1.42l.261-.065a1.86 1.86 0 0 0 1.012-.965c.22-.816.533-2.511.062-4.39a.858.858 0 0 1 .17-.31L10.867 8H12.5a1.5 1.5 0 0 0 1.5-1.5V3a1.5 1.5 0 0 0-1.5-1.5H8c-.28 0-.554.054-.8.15L2.4 3.141V7.938c0 .83.63 1.5 1.443 1.5H4.5a.5.5 0 0 0 .5-.5V5.5a.5.5 0 0 0-1 0v1.5a.5.5 0 0 0 .5.5h.334l2.061-2.815a.5.5 0 0 0 .197-.53l.004-.002h.001a.5.5 0 0 0-.5.13L2.58 6.088a.5.5 0 0 0 .146.353V8a1.5 1.5 0 0 0 1.5 1.5h1.763a1.86 1.86 0 0 1 1.41 2.258l-.115.292z"/></svg>`;
+
+  // Filled icons for active state
+  const iconLikeFilled = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.39a.858.858 0 0 1-.17.31L10.867 8H12.5A1.5 1.5 0 0 1 14 9.5v3.5A1.5 1.5 0 0 1 12.5 14.5H8.261a1.5 1.5 0 0 1-1.44-.91l-1.01-2.816a.5.5 0 0 1 .592-.66 1.85 1.85 0 0 0 1.994-1.499.818.818 0 0 0-.584-.736.455.455 0 0 1-.413-.413 1.2 1.2 0 0 0-.238-.85l-.03-.034a1.86 1.86 0 0 0-1.41-2.258L6.956 1.745zM3 6.5a1.5 1.5 0 0 1 1.5-1.5h1.763a1.86 1.86 0 0 0 1.41-2.258L7.565.11a1.5 1.5 0 0 0-1.21-.053L5.57 1.107a.5.5 0 0 1-.502.13L3.59 1.005a1.5 1.5 0 0 0-1.127.182 1.5 1.5 0 0 0-.82 1.111c-.042.23-.072.467-.087.684-.017.228-.022.463-.02.684v.043c.002.215.01.42.02.612.01.18.024.348.04.504.02.192.04.38.064.562.026.19.05.37.078.53.03.16.064.304.1.438.038.138.08.266.125.38.046.115.096.212.147.29a.5.5 0 0 1-.5.708l-.001-.001C1.07 7.91 1 7.23 1 6.5a1.5 1.5 0 0 1 1.5-1.5H3z"/></svg>`;
+  const iconDislikeFilled = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M6.956 14.255c.065.935.952 1.658 1.908 1.42l.261-.065a1.86 1.86 0 0 0 1.012-.965c.22-.816.533-2.511.062-4.39a.858.858 0 0 1 .17-.31L10.867 8H12.5a1.5 1.5 0 0 0 1.5-1.5V3A1.5 1.5 0 0 0 12.5 1.5H8.261a1.5 1.5 0 0 0-1.44.91L5.81 5.226a.5.5 0 0 1-.592.66 1.85 1.85 0 0 1-1.994 1.499.818.818 0 0 1 .584.736.455.455 0 0 0 .413.413 1.2 1.2 0 0 1 .238.85l.03.034a1.86 1.86 0 0 1 1.41 2.258L6.956 14.255zM3 9.5a1.5 1.5 0 0 0-1.5 1.5v1.763a1.86 1.86 0 0 1-1.41 2.258l-.115.029a1.5 1.5 0 0 1-1.21.053l-.78-.567a.5.5 0 0 0-.502-.13l-.473.236a1.5 1.5 0 0 1-1.127-.182 1.5 1.5 0 0 1-.82-1.111c-.042-.23-.072-.467-.087-.684-.017-.228-.022-.463-.02-.684v-.043c.002-.215.01-.42.02-.612.01-.18.024-.348.04-.504.02-.192.04-.38.064-.562.026-.19.05-.37.078-.53.03-.16.064-.304.1-.438.038-.138.08-.266.125-.38.046-.115.096-.212.147-.29a.5.5 0 0 0 .5-.708l.001.001C1.93 8.09 1 8.77 1 9.5a1.5 1.5 0 0 0 1.5 1.5H3z"/></svg>`;
+  // *** END BUG 2 FIX ***
+
+  // Eye icons
+  const iconEyeOpen = `<svg class="eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></svg>`;
+  const iconEyeClosed = `<svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="display: none;"><path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.94 5.94 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.707z"/><path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"/><path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.88 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.707z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>`;
+  
   
   // --- Element Selectors ---
   const mainContainer = document.querySelector('.main-container');
@@ -1689,7 +1882,9 @@
   const themeLabel = document.querySelector('.theme-label');
   const mobileBackdrop = document.getElementById('mobile-backdrop'); 
   const sessionSearch = document.getElementById('sessionSearch');
-  const typingIndicator = document.getElementById('typingIndicator'); // NEW: Typing Indicator Element
+  const typingIndicator = document.getElementById('typingIndicator');
+  const modeSelector = document.getElementById('modeSelector'); // Mode Selector Element
+  const passwordToggleIcons = document.querySelectorAll('.password-toggle-icon'); // Password Eye Icons
   
   // Google Auth Buttons
   const googleLoginBtn = document.getElementById('googleLoginBtn');
@@ -1744,10 +1939,8 @@
           }
       }
 
-      // FIX 2: Remove emoji from header greeting
-      userGreeting.textContent = `Hi, ${displayName} 👋`;
-      // Logged IN: Show personalized greeting
-      mainGreeting.textContent = `Hi, ${displayName}`; // FIX 2: Remove emoji
+      userGreeting.textContent = `Hi, ${displayName}`;
+      mainGreeting.textContent = `Hi, ${displayName}`;
       document.querySelector('.subtitle-line-1').textContent = `I'm Your AI Study Assistant`;
       document.querySelector('.subtitle-line-2').textContent = `How can I help you today?`;
       
@@ -1760,34 +1953,26 @@
       userInput.classList.remove('logged-out-placeholder');
       sendBtn.disabled = false;
       
-      // Sidebar Collapse Logic: Keep collapsed on desktop until opened
       if (!isMobile) {
           mainContainer.classList.add('sidebar-collapsed');
       }
       
       loadSessions(currentUserId);
-      startNewChat();
+      startNewChat(); 
 
     } else {
       currentUserId = null;
       userGreeting.style.display = 'none';
-      // Logged OUT: Show generic welcoming greeting (FIX 2: Removed emoji)
       mainGreeting.textContent = `Hi, Dear`; 
       document.querySelector('.subtitle-line-1').textContent = `I'm Your AI Study Assistant`;
       document.querySelector('.subtitle-line-2').textContent = `How can I help you today?`;
       
-      // Ensure Login/Signup buttons are explicitly shown and Logout is hidden
       showLoginBtn.style.display = 'block';
       showSignupBtn.style.display = 'block';
       logoutBtn.style.display = 'none';
       
-      // FIX 1: Ensure innerHTML is cleared before appending children
-      // The issue was here: chatBoxInner.innerHTML = '';
-      // When a snapshot is received later, it cleans out the old messages, but the 
-      // typing indicator must be re-added if it was visible. 
-      // During LOGOUT, we must ensure empty chat state is visible.
       chatBoxInner.innerHTML = ''; 
-      chatBoxInner.appendChild(typingIndicator); // Add indicator back to keep its position
+      chatBoxInner.appendChild(typingIndicator); 
       chatBoxInner.appendChild(emptyChatState);
       emptyChatState.style.display = 'flex';
       
@@ -1797,7 +1982,6 @@
       sendBtn.classList.remove('is-loading');
       sendBtn.innerHTML = 'Send';
       
-      // Ensure sidebar is hidden on logout
       if (!isMobile) {
           mainContainer.classList.add('sidebar-collapsed');
       }
@@ -1805,14 +1989,16 @@
       if (unsubscribeMessages) unsubscribeMessages();
       if (unsubscribeSessions) unsubscribeSessions();
       sessionList.innerHTML = '';
+
+      currentSessionMode = 'normal';
+      modeSelector.value = 'normal';
+      localStorage.setItem('lastActiveMode', 'normal');
       
-      // Reset Auth Forms on Logout
       loginError.textContent = '';
       signupError.textContent = '';
       loginForm.reset();
       signupForm.reset();
       
-      // Ensure Login form is shown by default when logging out or clicking Login
       formContainer.classList.remove('flipped');
     }
     startIntroAnimation();
@@ -1824,20 +2010,16 @@
   });
   
   // --- Authentication Modal Logic ---
-  // Explicitly set to Login page
   showLoginBtn.addEventListener('click', () => {
     formContainer.classList.remove('flipped'); 
     authModal.classList.add('visible');
   });
-  // Explicitly set to Sign Up page
   showSignupBtn.addEventListener('click', () => {
     formContainer.classList.add('flipped');
     authModal.classList.add('visible');
   });
-  // Logout button calls Firebase signOut
   logoutBtn.addEventListener('click', () => {
       signOut(auth).then(() => {
-          // Sign out successful. updateUiForAuthState will handle the UI reset.
           console.log("User successfully signed out.");
       }).catch((error) => {
           console.error("Error signing out:", error);
@@ -1899,7 +2081,6 @@
           const userDocSnap = await getDoc(userDocRef);
 
           if (!userDocSnap.exists()) {
-              // First time signing in, save display name from Google
               await setDoc(userDocRef, { 
                   username: user.displayName || user.email.split('@')[0],
                   email: user.email,
@@ -1917,7 +2098,6 @@
       } finally {
           button.disabled = false;
           button.textContent = originalText;
-          // Re-insert SVG if needed after text reset
           if (button.id === 'googleLoginBtn') {
               button.innerHTML = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.91 2.18 30.46 0 24 0 14.62 0 6.51 5.25 2.7 13.13l7.98 6.19C12.43 13.75 17.15 9.5 24 9.5z"/><path fill="#4285F4" d="M46.32 24.5c0-.85-.14-1.66-.29-2.43H24v4.61h12.44c-.41 2.12-1.84 3.94-3.71 5.16l6.85 5.29c4.01-3.71 6.35-9.28 6.35-16.63z"/><path fill="#FBBC05" d="M10.75 28.5c-.75-2.12-.75-4.39 0-6.51l-7.98-6.19C1.97 18.23 1.5 21.07 1.5 24c0 2.93.47 5.77 1.33 8.41l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-6.85-5.29c-2.07 1.32-4.49 2.13-7.64 2.13-6.51 0-12.06-4.29-14.05-10.15l-7.98 6.19C6.51 42.75 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg> Sign in with Google`;
           } else if (button.id === 'googleSignupBtn') {
@@ -1929,6 +2109,25 @@
   googleLoginBtn.addEventListener('click', () => handleGoogleSignIn(googleLoginBtn, loginError));
   googleSignupBtn.addEventListener('click', () => handleGoogleSignIn(googleSignupBtn, signupError));
 
+  // --- NEW: Password Toggle Logic ---
+  passwordToggleIcons.forEach(icon => {
+      icon.addEventListener('click', () => {
+          const input = icon.previousElementSibling;
+          const eyeOpen = icon.querySelector('.eye-open');
+          const eyeClosed = icon.querySelector('.eye-closed');
+          
+          if (input.type === 'password') {
+              input.type = 'text';
+              eyeOpen.style.display = 'none';
+              eyeClosed.style.display = 'block';
+          } else {
+              input.type = 'password';
+              eyeOpen.style.display = 'block';
+              eyeClosed.style.display = 'none';
+          }
+      });
+  });
+
 
   // --- Helpers ---
   function formatDate(timestamp) {
@@ -1939,6 +2138,20 @@
     const month = d.toLocaleDateString('en-GB', { month: 'short' });
     const year = d.getFullYear();
     return `${day} ${date} ${month}, ${year}`;
+  }
+  
+  // --- BUG 4 FIX: Toast Notification Logic ---
+  function showToast(message) {
+    const toast = document.getElementById('toast-notification');
+    if (!toast) return;
+
+    toast.textContent = message;
+    toast.classList.add('show');
+    
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2500); // Show toast for 2.5 seconds
   }
   
   // --- Session and Chat Logic ---
@@ -1957,10 +2170,8 @@
             li.style.display = 'none';
         }
     });
-    // Optional: add a 'no results' message here if hasVisibleSessions is false
   }
 
-  // Event listener for search input
   sessionSearch.addEventListener('input', (e) => {
       filterSessions(e.target.value);
   });
@@ -2030,8 +2241,6 @@
             });
             
             const rect = menuBtn.getBoundingClientRect();
-            // This is the logic that decides if the popover opens up or down.
-            // If there's enough space below (100px threshold), open down (default). Otherwise, open up.
             if (window.innerHeight - rect.bottom < 100) { 
                 popover.classList.add('up');
             } else {
@@ -2049,7 +2258,7 @@
         li.addEventListener('click', () => {
           if (li.querySelector('.rename-input')) return;
           currentSessionId = doc.id;
-          loadMessages(uid, doc.id);
+          loadMessages(uid, doc.id); // This will now load the mode as well
           updateActiveSessionUI();
           if (window.innerWidth <= 768) {
              sessionPanel.classList.remove('visible');
@@ -2058,12 +2267,39 @@
         });
         sessionList.appendChild(li);
       });
-      // Apply the current filter whenever sessions are re-rendered
       filterSessions(sessionSearch.value);
     });
   }
 
-  function loadMessages(uid, sessionId) {
+  // NEW: Function to update typing indicator visibility
+  function updateTypingIndicatorVisibility() {
+      // *** BUG 1 FIX: Check that loadingSessionId is not null ***
+      if (loadingSessionId && loadingSessionId === currentSessionId) {
+          typingIndicator.style.display = 'flex';
+          chatBox.scrollTop = chatBox.scrollHeight;
+      } else {
+          typingIndicator.style.display = 'none';
+      }
+  }
+
+  async function loadMessages(uid, sessionId) {
+    // Load Session Mode
+    try {
+      const sessionDocRef = doc(db, 'chats', currentUserId, 'sessions', sessionId);
+      const sessionSnap = await getDoc(sessionDocRef);
+      if (sessionSnap.exists() && sessionSnap.data().mode) {
+        currentSessionMode = sessionSnap.data().mode;
+      } else {
+        currentSessionMode = 'normal';
+      }
+      modeSelector.value = currentSessionMode;
+      localStorage.setItem('lastActiveMode', currentSessionMode);
+    } catch (error) {
+      console.error("Error loading session mode:", error);
+      currentSessionMode = 'normal';
+      modeSelector.value = 'normal';
+    }
+  
     if (unsubscribeMessages) unsubscribeMessages();
     const messagesRef = collection(db, 'chats', uid, 'sessions', sessionId, 'messages');
     const q = query(messagesRef, orderBy('timestamp'));
@@ -2072,13 +2308,10 @@
         const fragment = document.createDocumentFragment();
         snapshot.docs.forEach((doc, index) => {
             const msg = doc.data();
-            // Pass the document ID to the message for things like regeneration/TTS context
             const isLastMessage = index === snapshot.docs.length - 1;
             appendMessage(fragment, { id: doc.id, ...msg }, isLastMessage);
         });
 
-        // FIX 1: Corrected logic to clear all non-indicator content before re-rendering messages.
-        // We iterate backwards to remove everything except the empty state and the typing indicator.
         const elementsToRemove = [];
         for (let i = chatBoxInner.children.length - 1; i >= 0; i--) {
             const child = chatBoxInner.children[i];
@@ -2093,45 +2326,38 @@
             emptyChatState.style.display = 'flex';
         } else {
             emptyChatState.style.display = 'none';
-            // Insert the new messages BEFORE the typing indicator and the empty state
             chatBoxInner.insertBefore(fragment, typingIndicator);
         }
         
+        // NEW: Check if this chat should be showing the indicator
+        updateTypingIndicatorVisibility();
+        
         setTimeout(() => {
+            // Scroll to bottom, accommodating the indicator if visible
             chatBox.scrollTop = chatBox.scrollHeight;
         }, 0);
     });
   }
   
-  // Updated to prioritize capturing the first 3-5 words of the query.
   function generateSessionTitle(message) {
     if (!message) return "New Conversation";
-    
-    // Clean up basic formatting (trim whitespace, remove leading/trailing quotes)
     let title = message.trim().replace(/^['"]|['"]$/g, '');
-    
-    // Replace multiple whitespaces with single space
     title = title.replace(/\s+/g, ' ');
     
-    // Split into words and take the first 5 words, then rejoin
     const words = title.split(' ');
     let finalTitle = words.slice(0, 5).join(' ');
 
-    // If the original message had more words, add an ellipsis if the new title is shorter than 40 chars
     if (words.length > 5 || finalTitle.length >= 40) {
-        // If it's still too long (e.g., first word is very long), truncate at 40 chars
         finalTitle = finalTitle.substring(0, 40);
         if (words.length > 5 || finalTitle.length === 40) {
             finalTitle += '...';
         }
     }
     
-    // Capitalize the first letter
     if (finalTitle.length > 0) {
         finalTitle = finalTitle.charAt(0).toUpperCase() + finalTitle.slice(1);
     }
 
-    // Simple check to prevent generic titles
     const genericPhrases = ["Hi", "Hello", "Hey", "I need help", "Can you explain"];
     const isGeneric = genericPhrases.some(phrase => finalTitle.toLowerCase().startsWith(phrase.toLowerCase()));
     
@@ -2142,7 +2368,6 @@
       currentSessionId = null;
       if(unsubscribeMessages) unsubscribeMessages();
       
-      // FIX 1: Clear chat by removing all messages, leaving only the indicator and empty state
       const elementsToRemove = [];
       for (let i = chatBoxInner.children.length - 1; i >= 0; i--) {
           const child = chatBoxInner.children[i];
@@ -2154,7 +2379,13 @@
       
       emptyChatState.style.display = 'flex';
 
+      // NEW: Reset mode to 'normal' for new chats
+      currentSessionMode = 'normal';
+      modeSelector.value = 'normal';
+      localStorage.setItem('lastActiveMode', 'normal'); // Set default for next time
+
       updateActiveSessionUI();
+      updateTypingIndicatorVisibility(); // Hide indicator
   }
 
   function updateActiveSessionUI() {
@@ -2164,16 +2395,29 @@
       });
   }
 
+  async function updateSessionMode(newMode) {
+    currentSessionMode = newMode;
+    modeSelector.value = newMode; 
+    localStorage.setItem('lastActiveMode', newMode);
+
+    if (currentSessionId && currentUserId) {
+      try {
+        const sessionDocRef = doc(db, 'chats', currentUserId, 'sessions', currentSessionId);
+        await updateDoc(sessionDocRef, { mode: newMode });
+      } catch (error) {
+        console.error("Error updating session mode:", error);
+      }
+    }
+  }
+
   newChatBtn.addEventListener('click', startNewChat);
 
   window.sendMessage = async function() {
     if (!currentUserId) return;
     
     const messageText = userInput.value.trim();
-    // Check files array
     if (messageText === "" && selectedFilesForUpload.length === 0) return;
 
-    // --- Loading State Start ---
     sendBtn.disabled = true;
     sendBtn.classList.add('is-loading');
     sendBtn.innerHTML = `
@@ -2184,32 +2428,29 @@
     `;
     userInput.disabled = true;
     
-    // NEW: Show Typing Indicator and scroll to bottom
-    typingIndicator.style.display = 'flex';
-    chatBox.scrollTop = chatBox.scrollHeight;
-    // --- Loading State End ---
-
-    // Clear inputs immediately for a better UX
     userInput.value = "";
     const filesToUpload = [...selectedFilesForUpload];
-    removeFilePreview(); // Clear preview after capturing files
+    removeFilePreview(); 
 
     
     let activeSessionId = currentSessionId;
 
-    // Get or create a chat session
     if (!activeSessionId) {
       const sessionsRef = collection(db, 'chats', currentUserId, 'sessions');
       const newSessionDoc = await addDoc(sessionsRef, {
         title: "New Conversation",
-        timestamp: serverTimestamp()
+        timestamp: serverTimestamp(),
+        mode: currentSessionMode 
       });
       activeSessionId = newSessionDoc.id;
       currentSessionId = activeSessionId;
       loadMessages(currentUserId, activeSessionId);
     }
     
-    // Prepare the message object for Firestore
+    // NEW: Set loading state for this session
+    loadingSessionId = activeSessionId;
+    updateTypingIndicatorVisibility();
+    
     const messageData = {
         sender: 'user',
         timestamp: serverTimestamp()
@@ -2218,7 +2459,6 @@
     if (messageText) messageData.text = messageText;
 
     if (filesToUpload.length > 0) {
-        // Collect promises for file data URLs (for image previews)
         const filePromises = filesToUpload.map(file => {
             if (file.type.startsWith('image/')) {
                 return fileToDataUrl(file).then(dataURL => ({ name: file.name, type: file.type, size: file.size, dataURL }));
@@ -2228,11 +2468,9 @@
         messageData.files = await Promise.all(filePromises);
     } 
 
-    // Save the complete message to Firestore
     const messagesRef = collection(db, 'chats', currentUserId, 'sessions', activeSessionId, 'messages');
     await addDoc(messagesRef, messageData);
     
-    // Update session title
     const titleSource = messageText || filesToUpload[0]?.name || '';
     const sessionDocRef = doc(db, 'chats', currentUserId, 'sessions', activeSessionId);
     const docSnap = await getDoc(sessionDocRef);
@@ -2243,32 +2481,26 @@
         }
     }
 
-    // Call the webhook to get the AI response
     fetchController = new AbortController();
-    
-    // Temporarily hide send/show stop button while generating actual AI response
     sendBtn.style.display = 'none';
     stopGeneratingBtn.style.display = 'block';
 
 
     try {
-      // NOTE: Placeholder for your webhook URL
-      const webhookUrl = "https://awesome97d.app.n8n.cloud/webhook/aistudy"; 
+      const webhookUrl = modeWebhooks[currentSessionMode] || modeWebhooks['normal'];
       let res;
       
       const formData = new FormData();
       formData.append("text", messageText);
       formData.append("userId", currentUserId);
 
-      // CRITICAL FIX: Append files directly as binary to FormData
       filesToUpload.forEach((file, index) => {
-          // The key should be file + index, and the value is the File object itself
           formData.append(`file_${index}`, file, file.name); 
       });
       
       res = await fetch(webhookUrl, { 
           method: "POST", 
-          body: formData, // Send FormData containing files and text
+          body: formData, 
           signal: fetchController.signal 
       });
 
@@ -2281,7 +2513,6 @@
           const data = await res.json();
           let textResponse;
           if (typeof data === 'object' && data !== null) {
-              // Attempt to intelligently extract text from response structure
               textResponse = data.answer || data.cleanedText || JSON.stringify(data, null, 2);
           } else {
               textResponse = String(data);
@@ -2290,7 +2521,6 @@
       } else if (contentType && (contentType.startsWith("text/"))) {
            botMessageData.text = await res.text();
       } else {
-          // Handle file response (image, audio, or general file)
           const blob = await res.blob();
           const downloadURL = URL.createObjectURL(blob);
           
@@ -2332,41 +2562,50 @@
       fetchController = null;
       
       // NEW: Hide Typing Indicator
-      typingIndicator.style.display = 'none';
+      loadingSessionId = null;
+      updateTypingIndicatorVisibility();
       // --- Loading State Reset End ---
     }
   }
 
-  // NEW: Function to handle feedback (Like/Dislike)
+  // NEW: Updated handleFeedback function
   function handleFeedback(msgId, rating, likeBtn, dislikeBtn) {
       if (!currentUserId || !currentSessionId) return;
 
       const messageRef = doc(db, 'chats', currentUserId, 'sessions', currentSessionId, 'messages', msgId);
-
-      // Determine the new state
-      let newRating = rating;
       
+      let newRating = 'none';
+
       if (rating === 'like') {
-          // If already liked, unlike. Otherwise, like.
           if (likeBtn.classList.contains('active')) {
-              newRating = 'none';
+              // Already liked, so un-like
               likeBtn.classList.remove('active');
+              likeBtn.innerHTML = iconLikeOutline;
+              newRating = 'none';
           } else {
-              dislikeBtn.classList.remove('active');
+              // Not liked, so like
               likeBtn.classList.add('active');
+              likeBtn.innerHTML = iconLikeFilled;
+              dislikeBtn.classList.remove('active');
+              dislikeBtn.innerHTML = iconDislikeOutline;
+              newRating = 'like';
           }
       } else if (rating === 'dislike') {
-          // If already disliked, undislike. Otherwise, dislike.
           if (dislikeBtn.classList.contains('active')) {
-              newRating = 'none';
+              // Already disliked, so un-dislike
               dislikeBtn.classList.remove('active');
+              dislikeBtn.innerHTML = iconDislikeOutline;
+              newRating = 'none';
           } else {
-              likeBtn.classList.remove('active');
+              // Not disliked, so dislike
               dislikeBtn.classList.add('active');
+              dislikeBtn.innerHTML = iconDislikeFilled;
+              likeBtn.classList.remove('active');
+              likeBtn.innerHTML = iconLikeOutline;
+              newRating = 'dislike';
           }
       }
 
-      // Update Firestore (assuming 'rating' field stores 'like', 'dislike', or is absent/null)
       const feedbackValue = newRating === 'none' ? null : newRating;
 
       updateDoc(messageRef, {
@@ -2383,7 +2622,6 @@
     const messageElement = document.createElement("div");
     messageElement.className = `message ${msg.sender}-message`;
 
-    // Render file attachments
     if (msg.files && Array.isArray(msg.files)) {
         msg.files.forEach(file => {
             if (file.type?.startsWith('image/')) {
@@ -2434,8 +2672,6 @@
         }
     }
 
-
-    // Render audio if it exists
     if(msg.audioURL) {
       const audioPlayer = document.createElement('audio');
       audioPlayer.src = msg.audioURL;
@@ -2443,7 +2679,6 @@
       messageElement.appendChild(audioPlayer);
     }
 
-    // Render text if it exists
     if (msg.text) {
         const textDiv = document.createElement('div');
         textDiv.textContent = msg.text;
@@ -2453,12 +2688,11 @@
     const actions = document.createElement('div');
     actions.className = 'message-actions';
 
-    // 1. Copy Button (for both user and bot)
+    // 1. Copy Button
     const copyBtn = document.createElement('button');
     copyBtn.className = 'action-btn copy-msg-btn';
-    // Exact Copy Icon from screenshot
-    copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>`;
-    copyBtn.title = 'Copy text';
+    copyBtn.innerHTML = iconCopy; // Use SVG const
+    copyBtn.title = 'Copy'; // Title for hover
     
     copyBtn.onclick = () => {
         const textToCopy = msg.text || '';
@@ -2468,13 +2702,16 @@
         tempTextArea.select();
         try {
             document.execCommand('copy');
-            copyBtn.innerHTML = '✓'; // Checkmark
+            copyBtn.innerHTML = iconCheck; // Use const
+            // *** BUG 4 FIX: Show toast notification ***
+            showToast('Message Copied!');
         } catch (err) {
             console.error('Fallback: Failed to copy text: ', err);
             copyBtn.innerHTML = '✕';
+            showToast('Copy Failed!');
         }
         document.body.removeChild(tempTextArea);
-        setTimeout(() => { copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>`; }, 1500);
+        setTimeout(() => { copyBtn.innerHTML = iconCopy; }, 1500); // Use const
     };
     
     if (msg.text) {
@@ -2485,24 +2722,26 @@
     if (msg.sender === 'bot') {
         const likeBtn = document.createElement('button');
         likeBtn.className = 'action-btn feedback-btn like';
-        likeBtn.title = 'Like response';
-        // Exact Thumbs Up Outline Icon from screenshot
-        likeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M6.956 1.704a.75.75 0 1 1-.413 1.348S6.4 3.75 6.4 4V7H4.854a.5.5 0 0 0-.448.275L.756 12.261A.75.75 0 0 0 1.402 13h12.596a.75.75 0 0 0 .646-.356l-3.666-6.866a.75.75 0 0 0-.663-.448H10c.134-2.146.4-5.25 1.556-5.88zM10 8h2.091l2.428-4.549A1.75 1.75 0 0 0 12.598 3H1.402a1.75 1.75 0 0 0-.646 3.356L3.111 10H10V8z"/></svg>`;
-
+        likeBtn.title = 'Good Response'; // Title for hover
+        
         const dislikeBtn = document.createElement('button');
         dislikeBtn.className = 'action-btn feedback-btn dislike';
-        dislikeBtn.title = 'Dislike response';
-        // Exact Thumbs Down Outline Icon from screenshot
-        dislikeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.887 14.545c-1.579 0-2.926-.641-4.043-1.637a.512.512 0 0 1 .715-.714c.942.84 2.147 1.35 3.328 1.35s2.386-.51 3.328-1.35a.512.512 0 0 1 .715.714c-1.117.996-2.464 1.637-4.043 1.637zM4.75 8a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5zm6.5 0a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5z"/></svg>`;
+        dislikeBtn.title = 'Bad Response'; // Title for hover
         
-        // Check initial rating and apply 'active' class
+        // Set initial state
         if (msg.rating === 'like') {
+            likeBtn.innerHTML = iconLikeFilled;
             likeBtn.classList.add('active');
+            dislikeBtn.innerHTML = iconDislikeOutline;
         } else if (msg.rating === 'dislike') {
+            likeBtn.innerHTML = iconLikeOutline;
+            dislikeBtn.innerHTML = iconDislikeFilled;
             dislikeBtn.classList.add('active');
+        } else {
+            likeBtn.innerHTML = iconLikeOutline;
+            dislikeBtn.innerHTML = iconDislikeOutline;
         }
 
-        // Add event listeners using the message ID
         likeBtn.onclick = () => handleFeedback(msg.id, 'like', likeBtn, dislikeBtn);
         dislikeBtn.onclick = () => handleFeedback(msg.id, 'dislike', likeBtn, dislikeBtn);
         
@@ -2515,9 +2754,7 @@
     fragment.appendChild(wrapper);
   }
   
-  // --- TTS Utility Functions (REMOVED, KEEPING SKELETON FOR REFERENCE) ---
-  
-  let currentAudio = null; // Kept for general JS scope
+  let currentAudio = null; 
 
   // --- Voice Input (Speech Recognition) Logic ---
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2555,12 +2792,10 @@
 
   // --- File Upload Logic ---
   fileUpload.addEventListener("change", (event) => {
-    // Process multiple selected files
     selectedFilesForUpload = Array.from(event.target.files);
     displayFilePreview(selectedFilesForUpload);
   });
   
-  // Updated to handle multiple files
   function displayFilePreview(files) {
       filePreviewContainer.style.display = files.length > 0 ? 'flex' : 'none';
       filePreviewContainer.innerHTML = '';
@@ -2602,23 +2837,18 @@
       });
   }
 
-  // Function to remove a single file
   function removeSingleFile(e, indexToRemove) {
       e.stopPropagation();
-      // Remove the file at the specified index
       selectedFilesForUpload = selectedFilesForUpload.filter((_, index) => index !== indexToRemove);
-      // Re-render the file preview
       displayFilePreview(selectedFilesForUpload);
-      // Reset the input element if no files remain (important for selecting same file later)
       if (selectedFilesForUpload.length === 0) {
           fileUpload.value = '';
       }
   }
   
-  // Updated to handle multiple files
   function removeFilePreview() {
       selectedFilesForUpload = [];
-      fileUpload.value = ''; // Reset the input
+      fileUpload.value = ''; 
       filePreviewContainer.innerHTML = '';
       filePreviewContainer.style.display = 'none';
   }
@@ -2692,13 +2922,13 @@
             infoDiv.replaceChild(titleSpan, input);
 
             if (newTitle && newTitle !== originalTitle) {
-                titleSpan.textContent = newTitle; // Optimistic update
+                titleSpan.textContent = newTitle; 
                 const sessionDocRef = doc(db, 'chats', currentUserId, 'sessions', sessionId);
                 try {
                     await updateDoc(sessionDocRef, { title: newTitle });
                 } catch (error) {
                     console.error("Error renaming session:", error);
-                    titleSpan.textContent = originalTitle; // Revert on error
+                    titleSpan.textContent = originalTitle; 
                 }
             } else {
                 titleSpan.textContent = originalTitle; 
@@ -2754,38 +2984,35 @@
   // --- General Event Listeners (Including Responsive Sidebar Logic) ---
   userInput.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); sendMessage(); } });
   
-  // Mobile history button (fixed position)
   historyBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       sessionPanel.classList.add('visible');
       mobileBackdrop.classList.add('visible');
   });
   
-  // Desktop collapse button
   closeHistoryBtn.addEventListener('click', () => {
       mainContainer.classList.add('sidebar-collapsed');
   });
 
-  // Desktop expand button
   openHistoryBtn.addEventListener('click', () => {
       mainContainer.classList.remove('sidebar-collapsed');
   });
 
-  // NEW: Backdrop click closes sidebar on mobile
   mobileBackdrop.addEventListener('click', () => {
       sessionPanel.classList.remove('visible');
       mobileBackdrop.classList.remove('visible');
   });
 
-  // Global click handler (for popovers/mobile close)
+  modeSelector.addEventListener('change', (e) => {
+    updateSessionMode(e.target.value);
+  });
+
   document.addEventListener('click', (e) => {
-      // Close mobile sidebar if open and click is outside (redundant due to backdrop but good fallback)
       if (sessionPanel.classList.contains('visible') && window.innerWidth <= 768 && !sessionPanel.contains(e.target) && e.target !== historyBtn) {
           sessionPanel.classList.remove('visible');
           mobileBackdrop.classList.remove('visible');
       }
       
-      // Close session action popovers
       const openPopover = document.querySelector('.actions-popover.visible');
       if(openPopover && !openPopover.parentElement.contains(e.target)) {
           openPopover.classList.remove('visible');
