@@ -287,12 +287,43 @@
       background: var(--background-secondary);
       color: var(--text-color);
       padding: 10px;
+      font-weight: 500; /* Make them a bit bolder */
     }
     
     body.light-theme #modeSelector option {
       background: var(--background-tertiary);
       color: var(--text-color);
     }
+    
+    /* --- NEW: Mode Selector Option Colors --- */
+    #modeSelector option[value="normal"] {
+      color: #00aaff; /* Neon Blue */
+    }
+    #modeSelector option[value="deep"] {
+      color: #d400ff; /* Neon Purple */
+    }
+    #modeSelector option[value="test"] {
+      color: #ff4757; /* Danger Red */
+    }
+    #modeSelector option[value="chat"] {
+      color: #2ecc71; /* Success Green */
+    }
+    
+    /* Light theme overrides for option colors for better visibility */
+    body.light-theme #modeSelector option[value="normal"] {
+      color: #007bff; /* Primary Blue */
+    }
+    body.light-theme #modeSelector option[value="deep"] {
+      color: #6f42c1; /* Secondary Purple */
+    }
+    body.light-theme #modeSelector option[value="test"] {
+      color: #dc3545; /* Danger Red */
+    }
+    body.light-theme #modeSelector option[value="chat"] {
+      color: #28a745; /* Success Green */
+    }
+    /* --- End Mode Selector Option Colors --- */
+    
     /* --- End Mode Selector --- */
 
 
@@ -879,7 +910,21 @@
     .bot-message-wrapper .message-actions { 
       justify-content: flex-start; 
       margin-left: 5px;
+      opacity: 1; /* Ensure bot actions are always visible */
     }
+
+    /* --- NEW: Hide user actions by default, show on hover --- */
+    .user-message-wrapper .message-actions {
+      opacity: 0; /* Make invisible */
+      transition: opacity 0.2s ease-in-out;
+      pointer-events: none;
+    }
+
+    .user-message-wrapper:hover .message-actions {
+      opacity: 1; /* Show on hover */
+      pointer-events: auto;
+    }
+    /* --- End new visibility rules --- */
 
     .speak-btn, .like-btn, .dislike-btn {
       background: rgba(255, 255, 255, 0.08);
@@ -909,11 +954,15 @@
       color: var(--text-color);
     }
     
+    /* --- FIX: Light mode button hover --- */
     body.light-theme .speak-btn:hover, 
     body.light-theme .like-btn:hover, 
     body.light-theme .dislike-btn:hover {
-        color: var(--text-color);
-        background: rgba(0, 0, 0, 0.08);
+        color: var(--primary-accent); /* Use accent color for hover text */
+        background: rgba(0, 123, 255, 0.1); /* Use accent color for bg */
+        border-color: var(--primary-accent); /* Use accent color for border */
+        transform: translateY(-2px); /* Add transform */
+        box-shadow: 0 4px 8px var(--shadow-color); /* Add shadow */
     }
 
     .like-btn.active {
@@ -953,6 +1002,43 @@
       0%, 100% { box-shadow: 0 0 0 var(--shadow-color); }
       50% { box-shadow: 0 0 10px var(--shadow-color); }
     }
+    
+    /* --- NEW: User-specific copy button style --- */
+    .user-copy-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-color-light);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      position: relative; /* For tooltip */
+    }
+    
+    body.light-theme .user-copy-btn {
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--text-color-light);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .user-copy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 12px var(--shadow-color);
+      color: var(--text-color);
+    }
+
+    body.light-theme .user-copy-btn:hover {
+        color: var(--primary-accent);
+        background: rgba(0, 123, 255, 0.1);
+        border-color: var(--primary-accent);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px var(--shadow-color);
+    }
+    /* --- End user-copy-btn style --- */
     
     /* --- End of user-provided button styles --- */
 
@@ -1485,14 +1571,19 @@
         transform: scale(1.1);
     }
     
+    /* --- FIX: Theme switcher container style --- */
     .theme-switcher-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 5px;
+      padding: 10px 10px; /* Increased padding */
       margin-bottom: 20px;
-      border-top: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
+      border: 1px solid var(--border-color); /* Use full border */
+      border-radius: 8px; /* Added rounded corners */
+      background: var(--background-primary); /* Added a background */
+    }
+    body.light-theme .theme-switcher-container {
+        background: #ffffff; /* Use white, panel is e9ecef */
     }
     .theme-switcher-container .theme-label {
       font-size: 0.9rem;
@@ -1652,7 +1743,16 @@
             width: 100%;
         }
 
-        .credits { display: none; }
+        /* --- FIX: Made credits visible on mobile --- */
+        .credits {
+            display: block; /* Make it visible */
+            top: 65px; /* Position it below the 55px fixed header + 10px padding */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem; /* Make it a bit smaller on mobile */
+            color: var(--text-color-light);
+            z-index: 50; /* Below header but above content */
+        }
 
         /* --- MOBILE UI FIXES --- */
         .site-header {
@@ -1762,7 +1862,7 @@
         }
     }
 /* === Tooltip Base Style === */
-.speak-btn, .like-btn, .dislike-btn {
+.speak-btn, .like-btn, .dislike-btn, .user-copy-btn {
   position: relative;
 }
 
@@ -1831,6 +1931,29 @@
   box-shadow: 0 0 10px rgba(255,90,90,0.4);
 }
 .dislike-btn:hover::after {
+  opacity: 1;
+  transform: translate(-50%, 5px);
+}
+
+/* ===== 📋 Copy Tooltip (Neutral) ===== */
+.user-copy-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(200, 200, 200, 0.15); /* soft neutral background */
+  color: #ddd; /* light text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 0 10px rgba(200,200,200,0.4);
+}
+.user-copy-btn:hover::after {
   opacity: 1;
   transform: translate(-50%, 5px);
 }
@@ -2244,7 +2367,6 @@
   const sessionList = document.getElementById('session-list');
   const newChatBtn = document.getElementById('newChatBtn');
   const historyBtn = document.getElementById('historyBtn');
-//   const openHistoryBtn = document.getElementById('openHistoryBtn');
   const openHistoryBtn = document.querySelector('#openHistoryBtn');
   const closeHistoryBtn = document.getElementById('closeHistoryBtn');
   const deleteConfirmModal = document.getElementById('delete-confirm-modal');
@@ -2325,7 +2447,7 @@
           }
       }
 
-      userGreeting.textContent = `Hi, ${displayName}`;
+      userGreeting.textContent = ` ${displayName}`;
       mainGreeting.textContent = `Hi, ${displayName}`;
       document.querySelector('.subtitle-line-1').textContent = `I'm Your AI Study Assistant`;
       document.querySelector('.subtitle-line-2').textContent = `How can I help you today?`;
@@ -3309,6 +3431,7 @@
         }); 
         // Add a copy button as well
         const copyBtn = document.createElement('button');
+        // *** MODIFICATION HERE ***
         copyBtn.className = 'speak-btn'; // Use same style as speak-btn
         
         copyBtn.innerHTML = '📋'; // Copy emoji
@@ -3339,7 +3462,36 @@
         
         wrapper.appendChild(actionsDiv);
     }
-    // --- End of new button logic ---
+    // --- NEW: Add Copy Button for User Messages ---
+    else if (msg.sender === 'user' && msg.text) {
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'message-actions';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'user-copy-btn'; // <-- CHANGED from 'speak-btn copy-btn'
+        copyBtn.innerHTML = '📋'; // Copy emoji
+        copyBtn.setAttribute("data-tooltip", "Copy Message"); 
+        
+        copyBtn.onclick = () => {
+            const textToCopy = msg.text || '';
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Message Copied!');
+            } catch (err) {
+                console.error('Fallback: Failed to copy text: ', err);
+                showToast('Copy Failed!');
+            }
+            document.body.removeChild(tempTextArea);
+        };
+        
+        actionsDiv.appendChild(copyBtn);
+        wrapper.appendChild(actionsDiv);
+    }
+    // --- End of User Copy Button Logic ---
     
     fragment.appendChild(wrapper);
   }
@@ -3574,6 +3726,37 @@
 
   // --- General Event Listeners (Including Responsive Sidebar Logic) ---
   userInput.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); sendMessage(); } });
+  
+  // --- NEW: Stop button event listener ---
+  stopGeneratingBtn.addEventListener('click', () => {
+    if (fetchController) {
+      fetchController.abort(); // Send the abort signal
+      console.log("Fetch aborted by user.");
+      
+      // Manually reset UI since the fetch 'finally' block won't run immediately
+      sendBtn.style.display = 'block';
+      sendBtn.disabled = false;
+      sendBtn.classList.remove('is-loading');
+      sendBtn.innerHTML = 'Send';
+      stopGeneratingBtn.style.display = 'none';
+      userInput.disabled = false;
+      fetchController = null;
+      
+      loadingSessionId = null;
+      updateTypingIndicatorVisibility();
+      
+      // Add a cancellation message to the chat
+      if (currentSessionId && currentUserId) {
+          const messagesRef = collection(db, 'chats', currentUserId, 'sessions', currentSessionId, 'messages');
+          addDoc(messagesRef, { 
+              text: "Message generation stopped by user.", 
+              sender: 'bot',
+              timestamp: serverTimestamp() 
+          }).catch(err => console.error("Error adding stop message:", err));
+      }
+    }
+  });
+  // --- End of stop button listener ---
   
   // This is the hamburger button
   openHistoryBtn.addEventListener('click', (e) => {
