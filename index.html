@@ -173,7 +173,8 @@
       margin-right: 10px;
     }
 
-    #showLoginBtn, #showSignupBtn, #logoutBtn, #historyBtn, #openHistoryBtn, #closeHistoryBtn, #newChatBtn {
+    /* --- UPDATED: Added #headerFeedbackBtn to this group --- */
+    #showLoginBtn, #showSignupBtn, #logoutBtn, #historyBtn, #openHistoryBtn, #closeHistoryBtn, #newChatBtn, #headerFeedbackBtn {
       padding: 10px 20px;
       border: 1px solid var(--primary-accent);
       /* Use translucent background for a glass effect in dark, solid in light */
@@ -188,11 +189,11 @@
       text-shadow: 0 0 5px var(--shadow-color);
       white-space: nowrap; /* Prevent wrapping */
     }
-    body:not(.light-theme) #showLoginBtn, body:not(.light-theme) #showSignupBtn, body:not(.light-theme) #logoutBtn, body:not(.light-theme) #historyBtn, body:not(.light-theme) #openHistoryBtn, body:not(.light-theme) #closeHistoryBtn {
+    body:not(.light-theme) #showLoginBtn, body:not(.light-theme) #showSignupBtn, body:not(.light-theme) #logoutBtn, body:not(.light-theme) #historyBtn, body:not(.light-theme) #openHistoryBtn, body:not(.light-theme) #closeHistoryBtn, body:not(.light-theme) #headerFeedbackBtn {
         background: rgba(13, 17, 23, 0.5);
         backdrop-filter: blur(5px);
     }
-    body.light-theme #showLoginBtn, body.light-theme #showSignupBtn, body.light-theme #logoutBtn, body.light-theme #historyBtn, body.light-theme #openHistoryBtn, body.light-theme #closeHistoryBtn, body.light-theme #newChatBtn {
+    body.light-theme #showLoginBtn, body.light-theme #showSignupBtn, body.light-theme #logoutBtn, body.light-theme #historyBtn, body.light-theme #openHistoryBtn, body.light-theme #closeHistoryBtn, body.light-theme #newChatBtn, body.light-theme #headerFeedbackBtn {
         background: var(--background-tertiary);
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         text-shadow: none;
@@ -207,11 +208,12 @@
         padding: 8px 15px;
     }
     
-    #logoutBtn {
-        display: none;
+    /* --- UPDATED: Added #headerFeedbackBtn --- */
+    #logoutBtn, #headerFeedbackBtn {
+        display: none; /* Hide by default, shown on login */
     }
 
-    #showLoginBtn:hover, #showSignupBtn:hover, #logoutBtn:hover, #historyBtn:hover, #openHistoryBtn:hover, #closeHistoryBtn:hover, #newChatBtn:hover {
+    #showLoginBtn:hover, #showSignupBtn:hover, #logoutBtn:hover, #historyBtn:hover, #openHistoryBtn:hover, #closeHistoryBtn:hover, #newChatBtn:hover, #headerFeedbackBtn:hover {
       background: var(--primary-accent);
       color: white; /* Changed to white for clarity */
       box-shadow: 0 0 20px var(--primary-accent);
@@ -455,7 +457,9 @@
         position: relative;
         display: block; 
     }
-    .input-group input {
+    .input-group input,
+    /* --- NEW: Added #feedbackText styling --- */
+    #feedbackText {
       width: 100%;
       padding: 12px 40px 12px 15px; /* Add padding-right for icon */
       border: 1px solid var(--border-color);
@@ -469,8 +473,17 @@
       box-sizing: border-box;
     }
     /* Non-password inputs */
-    .input-group input[type="email"], .input-group input[type="text"] {
+    .input-group input[type="email"], 
+    .input-group input[type="text"],
+    /* --- NEW: Added #feedbackText styling --- */
+    #feedbackText {
         padding: 12px 15px;
+    }
+    
+    /* --- NEW: #feedbackText specific styles --- */
+    #feedbackText {
+        resize: vertical;
+        min-height: 100px;
     }
     
     .password-toggle-icon {
@@ -491,11 +504,14 @@
         display: block;
     }
     
-    .input-group input:focus { 
+    .input-group input:focus,
+    /* --- NEW: Added #feedbackText styling --- */
+    #feedbackText:focus { 
         border-color: var(--primary-accent); 
         box-shadow: 0 0 10px var(--shadow-color); 
     }
-    .input-group input::placeholder { color: var(--text-color-light); opacity: 0.6; }
+    .input-group input::placeholder,
+    #feedbackText::placeholder { color: var(--text-color-light); opacity: 0.6; }
     
     .error-message {
       color: var(--danger-red);
@@ -561,6 +577,14 @@
         box-shadow: none !important;
         color: var(--primary-accent) !important;
     }
+    /* --- NEW: Specific hover/disabled for light theme disabled button --- */
+    body.light-theme .form-btn:disabled {
+        background: var(--primary-accent) !important;
+        color: white !important;
+        box-shadow: none !important;
+        opacity: 0.6;
+    }
+
     
     /* Google Button Styling */
     .google-btn {
@@ -749,7 +773,150 @@
     #changePasswordForm .input-group {
       margin-bottom: 15px;
     }
+    
+    /* --- NEW: Profile Feedback Button style --- */
+    #profileFeedbackBtn {
+        margin: 20px 0 0 0; /* Spacing from separator */
+    }
+
     /* --- End Profile Modal Styles --- */
+
+
+    /* --- NEW: Feedback Modal Styles --- */
+    .feedback-modal-content {
+      /* Re-use profile modal styles */
+      position: relative;
+      background: var(--background-secondary);
+      border-radius: 20px;
+      border: 1px solid var(--primary-accent);
+      box-shadow: 0 0 25px var(--shadow-color), 0 0 40px rgba(212, 0, 255, 0.2);
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 30px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+
+      /* Animation */
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    }
+    
+    #feedback-modal.visible .feedback-modal-content {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    body.light-theme .feedback-modal-content {
+      background: var(--background-tertiary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-color: var(--border-color);
+    }
+    
+    /* Reuse profile header styles */
+    .feedback-modal-content .profile-modal-header {
+      margin-bottom: 25px;
+    }
+    .feedback-modal-content .profile-modal-header h2 {
+      font-size: 2rem;
+    }
+    #closeFeedbackModal {
+      /* Re-use profile close button style */
+      font-size: 2.5rem;
+      color: var(--icon-color);
+      cursor: pointer;
+      background: none;
+      border: none;
+      line-height: 1;
+      padding: 0;
+      transition: color 0.2s, transform 0.2s;
+    }
+    #closeFeedbackModal:hover {
+      color: var(--text-color);
+      transform: rotate(90deg);
+    }
+    
+    #feedbackForm label {
+      /* Re-use profile label style */
+      display: block;
+      font-weight: 500;
+      color: var(--text-color-light);
+      margin-bottom: 8px;
+    }
+    
+    /* Rating Section */
+    .feedback-rating-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+    .rating-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        transition: all 0.2s ease;
+    }
+    .rating-option:hover {
+        background: var(--input-bg);
+        border-color: var(--primary-accent);
+    }
+    .rating-option.selected {
+        background: var(--input-bg);
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 10px var(--shadow-color);
+    }
+    .rating-box {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--icon-color);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem; /* Checkmark size */
+        color: var(--success-green);
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+    .rating-option.selected .rating-box {
+        border-color: var(--success-green);
+        box-shadow: 0 0 8px rgba(46, 204, 113, 0.5);
+    }
+    .rating-emoji {
+        font-size: 1.2rem;
+    }
+    .rating-label {
+        font-weight: 500;
+        color: var(--text-color);
+    }
+    body.light-theme .rating-label {
+        color: var(--text-color);
+    }
+    
+    #feedbackError {
+        text-align: left;
+        margin-top: 10px;
+    }
+    #feedbackSuccess {
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 500;
+        margin-top: 10px;
+    }
+    
+    #submitFeedbackBtn {
+        margin-top: 15px;
+    }
+    /* --- End Feedback Modal Styles --- */
 
 
     /* --- Main App Section --- */
@@ -1780,9 +1947,11 @@
         }
         
         /* Smaller header buttons on mobile */
+        /* --- UPDATED: Added #headerFeedbackBtn --- */
         .site-header #showLoginBtn, 
         .site-header #showSignupBtn, 
-        .site-header #logoutBtn {
+        .site-header #logoutBtn,
+        .site-header #headerFeedbackBtn {
             padding: 8px 10px;
             font-size: 0.8rem;
         }
@@ -1834,12 +2003,14 @@
         #session-list li .session-actions { opacity: 1; pointer-events: auto; }
         #closeHistoryBtn { display: none !important; } /* Always hide close '<<' button */
         
-        .profile-modal-content {
+        .profile-modal-content,
+        .feedback-modal-content { /* --- NEW: Added feedback modal --- */
           width: 95%;
           max-height: 95vh;
           padding: 20px;
         }
-        .profile-modal-header h2 {
+        .profile-modal-header h2,
+        .feedback-modal-content .profile-modal-header h2 { /* --- NEW: Added feedback modal --- */
           font-size: 1.8rem;
         }
 
@@ -2017,6 +2188,8 @@
         
         <div class="header-actions">
             <button id="userGreeting" class="user-greeting-btn" title="Open Profile"></button>
+            <!-- NEW: Feedback button added here -->
+            <button id="headerFeedbackBtn" title="Give Feedback">Feedback</button>
             <button id="showLoginBtn">Login</button>
             <button id="showSignupBtn">Sign Up</button>
             <button id="logoutBtn" title="Logout">Logout</button>
@@ -2186,8 +2359,11 @@
       </div>
       
       <div class="separator"></div>
+      
+      <!-- NEW: Feedback button added here -->
+      <button type="button" class="form-btn" id="profileFeedbackBtn">Give Feedback</button>
 
-      <div class="profile-section">
+      <div class="profile-section" style="margin-top: 25px;"> <!-- Added margin-top for spacing -->
         <form id="changePasswordForm">
           <label>Change Password</label>
           <div class="input-group">
@@ -2231,6 +2407,67 @@
               <button id="confirmDeleteBtn" class="modal-btn">Delete</button>
           </div>
       </div>
+  </div>
+  
+  <!-- NEW: Feedback Modal -->
+  <div id="feedback-modal" class="modal-overlay">
+    <div class="feedback-modal-content">
+      <div class="profile-modal-header"> <!-- Re-using profile header style -->
+        <h2>Give Feedback</h2>
+        <button id="closeFeedbackModal" title="Close">&times;</button>
+      </div>
+      
+      <form id="feedbackForm">
+        <label for="feedbackName">Full Name</label>
+        <div class="input-group">
+          <input type="text" id="feedbackName" name="feedbackName" placeholder="Your Name" required>
+        </div>
+        
+        <label for="feedbackEmail">Email</label>
+        <div class="input-group">
+          <input type="email" id="feedbackEmail" name="feedbackEmail" placeholder="Your Email" required>
+        </div>
+        
+        <label for="feedbackText">Feedback</label>
+        <div class="input-group">
+          <textarea id="feedbackText" name="feedbackText" placeholder="Your comments, suggestions, or bug reports..." required rows="5"></textarea>
+        </div>
+        
+        <label>Rating</label>
+        <div class="feedback-rating-group" id="feedbackRatingGroup">
+          <div class="rating-option" data-value="Very Good">
+            <span class="rating-box"></span>
+            <span class="rating-emoji">⭐</span>
+            <span class="rating-label">Very Good</span>
+          </div>
+          <div class="rating-option" data-value="Good">
+            <span class="rating-box"></span>
+            <span class="rating-emoji">😊</span>
+            <span class="rating-label">Good</span>
+          </div>
+          <div class="rating-option" data-value="Normal">
+            <span class="rating-box"></span>
+            <span class="rating-emoji">😐</span>
+            <span class="rating-label">Normal</span>
+          </div>
+          <div class="rating-option" data-value="Average">
+            <span class="rating-box"></span>
+            <span class="rating-emoji">😞</span>
+            <span class="rating-label">Average</span>
+          </div>
+          <div class="rating-option" data-value="Bad">
+            <span class="rating-box"></span>
+            <span class="rating-emoji">😡</span>
+            <span class="rating-label">Bad</span>
+          </div>
+        </div>
+        
+        <p class="error-message" id="feedbackError"></p>
+        <p class="success-message" id="feedbackSuccess"></p>
+        
+        <button type="submit" id="submitFeedbackBtn" class="form-btn">Submit Feedback</button>
+      </form>
+    </div>
   </div>
   
   <!-- Toast Notification -->
@@ -2318,6 +2555,7 @@
   let selectedFilesForUpload = []; 
   let fetchController;
   let toastTimer;
+  let currentSelectedRating = null; // NEW: For feedback rating
   
   // NEW: Feedback state from localStorage
   let feedback = JSON.parse(localStorage.getItem("feedback") || "{}");
@@ -2399,6 +2637,20 @@
 
   const googleLoginBtn = document.getElementById('googleLoginBtn');
   const googleSignupBtn = document.getElementById('googleSignupBtn');
+  
+  // --- NEW: Feedback Modal Selectors ---
+  const headerFeedbackBtn = document.getElementById('headerFeedbackBtn');
+  const profileFeedbackBtn = document.getElementById('profileFeedbackBtn');
+  const feedbackModal = document.getElementById('feedback-modal');
+  const closeFeedbackModalBtn = document.getElementById('closeFeedbackModal');
+  const feedbackForm = document.getElementById('feedbackForm');
+  const feedbackName = document.getElementById('feedbackName');
+  const feedbackEmail = document.getElementById('feedbackEmail');
+  const feedbackText = document.getElementById('feedbackText');
+  const feedbackRatingGroup = document.getElementById('feedbackRatingGroup');
+  const feedbackError = document.getElementById('feedbackError');
+  const feedbackSuccess = document.getElementById('feedbackSuccess');
+  const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
 
 
   // --- Animation ---
@@ -2461,6 +2713,7 @@
       showLoginBtn.style.display = 'none';
       showSignupBtn.style.display = 'none';
       logoutBtn.style.display = 'block';
+      headerFeedbackBtn.style.display = 'block'; // NEW: Show header feedback btn
       authModal.classList.remove('visible');
       userInput.placeholder = "Type your question here...";
       userInput.classList.remove('logged-out-placeholder');
@@ -2489,6 +2742,7 @@
       showLoginBtn.style.display = 'block';
       showSignupBtn.style.display = 'block';
       logoutBtn.style.display = 'none';
+      headerFeedbackBtn.style.display = 'none'; // NEW: Hide header feedback btn
       
       chatBoxInner.innerHTML = ''; 
       chatBoxInner.appendChild(typingIndicator); 
@@ -2837,6 +3091,160 @@
       btn.textContent = 'Update Password';
     }
   });
+
+
+  // --- NEW: Feedback Modal Logic ---
+
+  async function openFeedbackModal() {
+    const user = auth.currentUser;
+    if (!user) {
+      showToast("Please log in to give feedback.");
+      return;
+    }
+    
+    // Reset form state
+    feedbackForm.reset();
+    feedbackError.textContent = '';
+    feedbackSuccess.textContent = '';
+    submitFeedbackBtn.disabled = false;
+    submitFeedbackBtn.textContent = 'Submit Feedback';
+    currentSelectedRating = null;
+    
+    // Reset rating UI
+    document.querySelectorAll('.rating-option').forEach(opt => {
+        opt.classList.remove('selected');
+        opt.querySelector('.rating-box').textContent = '';
+    });
+    
+    // Autofill fields
+    feedbackEmail.value = user.email || '';
+    try {
+        const userDocSnap = await getDoc(doc(db, 'users', user.uid));
+        if (userDocSnap.exists()) {
+            feedbackName.value = userDocSnap.data().username || '';
+        } else {
+            feedbackName.value = user.displayName || '';
+        }
+    } catch (err) {
+        console.error("Error fetching username for feedback:", err);
+        feedbackName.value = user.displayName || '';
+    }
+    
+    // Show modal
+    feedbackModal.classList.add('visible');
+  }
+
+  function closeFeedbackModal() {
+    feedbackModal.classList.remove('visible');
+  }
+
+  async function handleFeedbackSubmit(e) {
+    e.preventDefault();
+    feedbackError.textContent = '';
+    feedbackSuccess.textContent = '';
+    
+    // 1. Validation
+    const name = feedbackName.value.trim();
+    const email = feedbackEmail.value.trim();
+    const feedback = feedbackText.value.trim();
+    
+    if (!name || !email || !feedback) {
+      feedbackError.textContent = 'Please fill out all fields.';
+      return;
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      feedbackError.textContent = 'Please enter a valid email address.';
+      return;
+    }
+    
+    if (!currentSelectedRating) {
+      feedbackError.textContent = 'Please select a rating.';
+      return;
+    }
+    
+    // 2. Disable button and show loading
+    submitFeedbackBtn.disabled = true;
+    submitFeedbackBtn.textContent = 'Sending...';
+    
+    // 3. Prepare and send data
+    const webhookURL = 'https://awesome97d.app.n8n.cloud/webhook/feedback';
+    const payload = {
+      name: name,
+      email: email,
+      feedback: feedback,
+      rating: currentSelectedRating
+    };
+    
+    try {
+      const response = await fetch(webhookURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Webhook Error: ${response.statusText}`);
+      }
+      
+      // 4. Handle Success
+      feedbackSuccess.textContent = '✅ Thank you! Your feedback has been sent.';
+      showToast('✅ Feedback sent successfully!');
+      
+      // Auto-close after 2 seconds
+      setTimeout(() => {
+        closeFeedbackModal();
+      }, 2000);
+      
+    } catch (error) {
+      // 5. Handle Error
+      console.error('Feedback submission error:', error);
+      feedbackError.textContent = 'Failed to send feedback. Please try again later.';
+      // Re-enable button on error
+      submitFeedbackBtn.disabled = false;
+      submitFeedbackBtn.textContent = 'Submit Feedback';
+    }
+  }
+
+  // Event Listeners for Feedback Modal
+  headerFeedbackBtn.addEventListener('click', openFeedbackModal);
+  profileFeedbackBtn.addEventListener('click', openFeedbackModal);
+  closeFeedbackModalBtn.addEventListener('click', closeFeedbackModal);
+  feedbackModal.addEventListener('click', (e) => {
+    if (e.target.id === 'feedback-modal') {
+      closeFeedbackModal();
+    }
+  });
+  feedbackForm.addEventListener('submit', handleFeedbackSubmit);
+  
+  // Ctrl+Enter to submit feedback
+  feedbackText.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          handleFeedbackSubmit(new Event('submit', { cancelable: true }));
+      }
+  });
+
+  // Rating selection logic
+  feedbackRatingGroup.addEventListener('click', (e) => {
+      const clickedOption = e.target.closest('.rating-option');
+      if (!clickedOption) return;
+      
+      // Clear all selections
+      document.querySelectorAll('.rating-option').forEach(opt => {
+          opt.classList.remove('selected');
+          opt.querySelector('.rating-box').textContent = '';
+      });
+      
+      // Apply new selection
+      clickedOption.classList.add('selected');
+      clickedOption.querySelector('.rating-box').textContent = '✅';
+      currentSelectedRating = clickedOption.dataset.value;
+      feedbackError.textContent = ''; // Clear error on selection
+  });
+  // --- End of Feedback Modal Logic ---
 
 
   // --- Helpers ---
@@ -3725,7 +4133,7 @@
 
 
   // --- General Event Listeners (Including Responsive Sidebar Logic) ---
-  userInput.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); sendMessage(); } });
+  userInput.addEventListener("keypress", (e) => { if (e.key === "Enter" && !(e.ctrlKey || e.metaKey)) { e.preventDefault(); sendMessage(); } });
   
   // --- NEW: Stop button event listener ---
   stopGeneratingBtn.addEventListener('click', () => {
