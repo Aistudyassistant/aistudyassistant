@@ -189,7 +189,7 @@
       text-shadow: 0 0 5px var(--shadow-color);
       white-space: nowrap; /* Prevent wrapping */
     }
-    body:not(.light-theme) #showLoginBtn, body:not(.light-theme) #showSignupBtn, body:not(.light-theme) #logoutBtn, body:not(.light-theme) #historyBtn, body:not(.light-theme) #openHistoryBtn, body:not(.light-theme) #closeHistoryBtn, body:not(.light-theme) #headerFeedbackBtn {
+    body:not(.light-theme) #showLoginBtn, body:not(.light-theme) #showSignupBtn, body:not(.light-theme) #logoutBtn, body:not(.light-theme) #historyBtn, body:not(.light-theme) #openHistoryBtn, body:not(.light-theme) #closeHistoryBtn, body:not(.light-theme) #newChatBtn, body:not(.light-theme) #headerFeedbackBtn {
         background: rgba(13, 17, 23, 0.5);
         backdrop-filter: blur(5px);
     }
@@ -1913,7 +1913,7 @@
         /* --- FIX: Made credits visible on mobile --- */
         .credits {
             display: block; /* Make it visible */
-            top: 65px; /* Position it below the 55px fixed header + 10px padding */
+            top: 100px; /* <-- CHANGED: Position it below the new 90px fixed header */
             left: 50%;
             transform: translateX(-50%);
             font-size: 0.8rem; /* Make it a bit smaller on mobile */
@@ -1929,11 +1929,15 @@
             background: var(--background-secondary);
             border-bottom: 1px solid var(--border-color);
             z-index: 100;
+            flex-wrap: wrap; /* <-- ADDED: Allow header items to wrap */
+            row-gap: 5px; /* <-- ADDED: Space between wrapped rows */
         }
         
         .site-header .header-actions {
-            margin-left: auto;
+            margin-left: 0; /* <-- CHANGED: Was auto, now 0 for wrapping */
             gap: 5px; /* Reduced gap */
+            flex-basis: 100%; /* <-- ADDED: Make actions take full width on new line */
+            justify-content: flex-end; /* <-- ADDED: Align wrapped buttons to the right */
         }
         
         #historyBtn {
@@ -1944,6 +1948,7 @@
             margin-right: 5px;
             padding: 8px 10px; /* Smaller button */
             font-size: 0.8rem; /* Smaller icon */
+            flex-shrink: 0; /* <-- ADDED: Prevent burger from shrinking */
         }
         
         /* Smaller header buttons on mobile */
@@ -1962,10 +1967,12 @@
 
         .mode-selector-container {
             margin-right: 5px;
+            flex-grow: 1; /* <-- ADDED: Allow selector to fill remaining space on first row */
         }
         #modeSelector {
             font-size: 0.8rem;
             padding: 8px 25px 8px 10px; /* Adjusted padding */
+            width: 100%; /* <-- ADDED: Make selector fill its container */
         }
         .mode-selector-container::after {
             right: 8px; /* Adjusted arrow */
@@ -1993,7 +2000,7 @@
             width: 100%;
             height: 100%;
             border-radius: 0;
-            padding-top: 55px; /* Adjusted for new header height */
+            padding-top: 90px; /* <-- CHANGED: Adjusted for new 2-row header height */
             box-sizing: border-box;
             border: none;
             box-shadow: none;
@@ -2823,7 +2830,22 @@
       });
       updateUiForAuthState(cred.user, username.value);
     } catch (error) {
-      signupError.textContent = error.message;
+      // signupError.textContent = error.message; // <-- OLD LINE
+      // --- BUG 1A FIX ---
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          signupError.textContent = "This email is already in use. Please log in.";
+          break;
+        case 'auth/weak-password':
+          signupError.textContent = "Password should be at least 6 characters long.";
+          break;
+        case 'auth/invalid-email':
+          signupError.textContent = "Please enter a valid email address.";
+          break;
+        default:
+          signupError.textContent = error.message.replace("Firebase: ", "");
+      }
+      // --- END FIX ---
     } finally {
       btn.textContent = 'Sign Up with Email'; btn.disabled = false;
     }
@@ -2840,10 +2862,12 @@
       await signInWithEmailAndPassword(auth, email.value, password.value);
     } catch (error) {
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
-        loginError.textContent = 'Invalid Password or Email. Try again With Correct.';
+        // loginError.textContent = 'Invalid Password or Email. Try again With Correct.'; // <-- OLD LINE
+        loginError.textContent = 'Invalid email or password. Please try again.'; // <-- CLEANED UP
         forgotPasswordLink.style.display = 'block';
       } else {
-        loginError.textContent = error.message;
+        // loginError.textContent = error.message; // <-- OLD LINE
+        loginError.textContent = error.message.replace("Firebase: ", ""); // <-- CLEANED UP
         forgotPasswordLink.style.display = 'none';
       }
     } finally {
@@ -2869,7 +2893,8 @@
         loginError.textContent = "Password reset email sent! Check your inbox.";
       })
       .catch((error) => {
-        loginError.textContent = `Error: ${error.message}`;
+        // loginError.textContent = `Error: ${error.message}`; // <-- OLD LINE
+        loginError.textContent = `Error: ${error.message.replace("Firebase: ", "")}`; // <-- CLEANED UP
       })
       .finally(() => {
         btn.disabled = false;
@@ -2905,7 +2930,7 @@
           console.error("Google Sign-In Error:", error);
           errorDisplay.textContent = error.message.includes('popup-closed-by-user') ? 
               "Sign-in cancelled. Please try again." : 
-              `Google Login failed: ${error.message}`;
+              `Google Login failed: ${error.message.replace("Firebase: ", "")}`; // <-- CLEANED UP
       } finally {
           button.disabled = false;
           button.textContent = originalText;
@@ -3084,7 +3109,8 @@
       } else if (error.code === 'auth/too-many-requests') {
         changePassError.textContent = "Too many attempts. Please try again later.";
       } else {
-        changePassError.textContent = "An error occurred. Please try again.";
+        // changePassError.textContent = "An error occurred. Please try again."; // <-- OLD LINE
+        changePassError.textContent = "An error occurred. " + error.message.replace("Firebase: ", ""); // <-- CLEANED UP
       }
     } finally {
       btn.disabled = false;
