@@ -474,14 +474,13 @@
     .delete-confirm-modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
     .modal-btn { padding: 8px 16px; border-radius: 6px; cursor: pointer; border: 1px solid; font-weight: 500; transition: all 0.2s, transform 0.2s; }
     
-    #confirmDeleteBtn { background: var(--danger-red); border-color: var(--danger-red); color: white; }
-    #confirmDeleteBtn:hover { background: #ff2d41; transform: scale(1.05); }
-    
-    #cancelDeleteBtn { background: transparent; border-color: #555; color: var(--text-color-light); }
-    body.light-theme #cancelDeleteBtn { border-color: var(--border-color); }
-    #cancelDeleteBtn:hover { background: #555; color: white; transform: scale(1.05); }
-    body.light-theme #cancelDeleteBtn:hover { background: #e0e0e0; color: var(--text-color); }
+    #confirmDeleteBtn, #confirmDeleteMessageBtn { background: var(--danger-red); border-color: var(--danger-red); color: white; }
+    #confirmDeleteBtn:hover, #confirmDeleteMessageBtn:hover { background: #ff2d41; transform: scale(1.05); }
 
+    #cancelDeleteBtn, #cancelDeleteMessageBtn { background: transparent; border-color: #555; color: var(--text-color-light); }
+    body.light-theme #cancelDeleteBtn, body.light-theme #cancelDeleteMessageBtn { border-color: var(--border-color); }
+    #cancelDeleteBtn:hover, #cancelDeleteMessageBtn:hover { background: #555; color: white; transform: scale(1.05); }
+    body.light-theme #cancelDeleteBtn:hover, body.light-theme #cancelDeleteMessageBtn:hover { background: #e0e0e0; color: var(--text-color); }
 
     .login-form, .signup-form { height: 100%; }
     .login-form { transform: rotateY(0deg); }
@@ -871,7 +870,9 @@
     .feedback-modal-content .profile-modal-header h2 {
       font-size: 2rem;
     }
-    #closeFeedbackModal {
+   
+    #closeFeedbackModal,
+    #closeContactManagerModal { /* <-- ADD THIS LINE */
       /* Re-use profile close button style */
       font-size: 2.5rem;
       color: var(--icon-color);
@@ -882,7 +883,8 @@
       padding: 0;
       transition: color 0.2s, transform 0.2s;
     }
-    #closeFeedbackModal:hover {
+    #closeFeedbackModal:hover,
+    #closeContactManagerModal:hover { /* <-- ADD THIS LINE */
       color: var(--text-color);
       transform: rotate(90deg);
     }
@@ -1141,13 +1143,13 @@
     }
     /* --- End new visibility rules --- */
 
-    .speak-btn, .like-btn, .dislike-btn {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-color-light); /* Use lighter text for icons */
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 50px;
-      padding: 6px 14px;
-      cursor: pointer;
+   .speak-btn, .like-btn, .dislike-btn {
+      background: none; /* <-- CHANGED */
+     color: var(--text-color-light); /* Use lighter text for icons */
+     border: none; /* <-- CHANGED */
+     border-radius: 50px;
+      padding: 6px; /* <-- CHANGED (to look better without a background) */
+       cursor: pointer;
       font-size: 14px;
       transition: all 0.2s ease;
       display: flex;
@@ -1220,11 +1222,13 @@
     
     /* --- NEW: User-specific copy button style --- */
     .user-copy-btn {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-color-light);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 8px;
-      padding: 4px 8px;
+      background: none; /* <-- CHANGED */
+       color: var(--text-color-light);
+     border: none; /* <-- CHANGED */
+     border-radius: 8px;
+     padding: 4px; /* <-- CHANGED (to look better without a background) */
+     /* ...etc... */
+
       cursor: pointer;
       font-size: 14px;
       transition: all 0.2s ease;
@@ -2238,6 +2242,41 @@
   opacity: 1;
   transform: translate(-50%, 5px);
 }
+/* ===== 🗑️ Delete Tooltip (Red) ===== */
+    .user-delete-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 90, 90, 0.15); /* soft red background */
+      color: #ff5c6c; /* red text */
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      box-shadow: 0 0 10px rgba(255,90,90,0.4);
+    }
+    .user-delete-btn:hover::after {
+      opacity: 1;
+      transform: translate(-50%, 5px);
+    }
+
+    /* Red hover color for the delete button */
+    .user-delete-btn:hover {
+      color: var(--danger-red);
+      border-color: var(--danger-red);
+      background: rgba(255, 71, 87, 0.1);
+    }
+    
+    body.light-theme .user-delete-btn:hover {
+      color: var(--danger-red);
+      background: rgba(220, 53, 69, 0.1);
+      border-color: var(--danger-red);
+    }
 /* --- NEW: Contact Manager Modal Content Styles --- */
 .contact-intro {
     font-size: 0.95rem;
@@ -2671,7 +2710,16 @@
           </div>
       </div>
   </div>
-  
+  <div id="delete-message-modal" class="modal-overlay">
+      <div class="delete-confirm-modal">
+          <h4>Delete Message?</h4>
+          <p>This will permanently delete this message.</p>
+          <div class="modal-actions">
+              <button id="cancelDeleteMessageBtn" class="modal-btn">Cancel</button>
+              <button id="confirmDeleteMessageBtn" class="modal-btn">Delete</button>
+          </div>
+      </div>
+  </div>
   <!-- NEW: Feedback Modal -->
   <div id="feedback-modal" class="modal-overlay">
     <div class="feedback-modal-content">
@@ -2815,6 +2863,7 @@
   let unsubscribeMessages = null; 
   let unsubscribeSessions = null;
   let sessionToDelete = null;
+  let messageToDeleteId = null;
   let selectedFilesForUpload = []; 
   let fetchController;
   let toastTimer;
@@ -2873,6 +2922,9 @@
   const deleteConfirmModal = document.getElementById('delete-confirm-modal');
   const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
   const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+  const deleteMessageModal = document.getElementById('delete-message-modal');
+  const confirmDeleteMessageBtn = document.getElementById('confirmDeleteMessageBtn');
+  const cancelDeleteMessageBtn = document.getElementById('cancelDeleteMessageBtn');
   const filePreviewContainer = document.getElementById('filePreviewContainer');
   const themeToggle = document.getElementById('themeToggle');
   const themeLabel = document.querySelector('.theme-label');
@@ -3978,7 +4030,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
     const messageElement = document.createElement("div");
     messageElement.className = `message ${msg.sender}-message`;
 
-    // --- File/Image/Audio/Text Appending Logic (Unchanged) ---
+    // --- File/Image/Audio/Text Appending Logic ---
     if (msg.files && Array.isArray(msg.files)) {
         msg.files.forEach(file => {
             if (file.type?.startsWith('image/')) {
@@ -4041,8 +4093,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
     
     wrapper.appendChild(messageElement); // Add the message bubble first
 
-    // --- NEW: Speak/Like/Dislike Button Logic (from user) ---
-    // Only add these for bot messages
+    // --- Action Buttons for AI Bot Messages ---
     if (msg.sender === 'bot') {
         const actionsDiv = document.createElement('div');
         actionsDiv.className = 'message-actions';
@@ -4050,13 +4101,39 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
         const msgText = msg.text || "This message contains no text to speak.";
         const msgId = msg.id; // msg.id is passed from loadMessages
 
-        // 1. Speak Button
+        // 1. Speak Button (created here, added later if msg.text exists)
         const speakBtn = document.createElement('button');
         speakBtn.className = 'speak-btn';
         speakBtn.dataset.text = msgText;
         speakBtn.innerHTML = '🔊'; 
         speakBtn.setAttribute("data-tooltip", "Speak Message");
        
+        // Speak button (TTS) listener
+        speakBtn.addEventListener("click", () => {
+          if (!window.speechSynthesis) {
+            speakBtn.disabled = true;
+            speakBtn.textContent = "TTS not supported";
+            return;
+          }
+          speechSynthesis.cancel();
+          document.querySelectorAll('.speak-btn.speaking').forEach(btn => {
+              if (btn !== speakBtn) btn.classList.remove('speaking');
+          });
+          if (speakBtn.classList.contains('speaking')) {
+              speakBtn.classList.remove('speaking');
+          } else {
+              speakBtn.classList.add('speaking');
+              const utter = new SpeechSynthesisUtterance(msgText);
+              utter.lang = "en-US";
+              utter.rate = 1;
+              utter.onend = () => speakBtn.classList.remove('speaking');
+              utter.onerror = (e) => {
+                  speakBtn.classList.remove('speaking');
+                  console.error("Speech synthesis error:", e);
+              };
+              speechSynthesis.speak(utter);
+          }
+        }); 
         
         // 2. Like Button
         const likeBtn = document.createElement('button');
@@ -4072,7 +4149,6 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
         dislikeBtn.innerHTML = '👎';
         dislikeBtn.setAttribute("data-tooltip", "Bad Response");
         
-
         // Restore saved feedback state
         if (feedback[msgId] === "like") likeBtn.classList.add("active");
         if (feedback[msgId] === "dislike") dislikeBtn.classList.add("active");
@@ -4090,107 +4166,111 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
           localStorage.setItem("feedback", JSON.stringify(feedback));
           updateFeedbackUI(likeBtn, dislikeBtn, feedback[msgId]);
         });
+        
+        // Add Like and Dislike Buttons (Always added)
+        actionsDiv.append(likeBtn, dislikeBtn);
 
-        // Speak button (TTS) listener
-        speakBtn.addEventListener("click", () => {
-          if (!window.speechSynthesis) {
-            speakBtn.disabled = true;
-            speakBtn.textContent = "TTS not supported";
-            return;
-          }
-          
-          // Stop any other speaking
-          speechSynthesis.cancel();
-          
-          // Remove 'speaking' from all other buttons
-          document.querySelectorAll('.speak-btn.speaking').forEach(btn => {
-              if (btn !== speakBtn) btn.classList.remove('speaking');
-          });
-
-          // Toggle speaking state for this button
-          if (speakBtn.classList.contains('speaking')) {
-              speakBtn.classList.remove('speaking');
-              // Speech is already cancelled
-          } else {
-              speakBtn.classList.add('speaking');
-              const utter = new SpeechSynthesisUtterance(msgText);
-              utter.lang = "en-US";
-              utter.rate = 1;
-              utter.onend = () => speakBtn.classList.remove('speaking');
-              utter.onerror = (e) => {
-                  speakBtn.classList.remove('speaking');
-                  console.error("Speech synthesis error:", e);
-              };
-              speechSynthesis.speak(utter);
-          }
-        }); 
-        // Add a copy button as well
-        const copyBtn = document.createElement('button');
-        // *** MODIFICATION HERE ***
-        copyBtn.className = 'speak-btn'; // Use same style as speak-btn
-        
-        copyBtn.innerHTML = '📋'; // Copy emoji
-        copyBtn.setAttribute("data-tooltip", "Copy Response"); 
-        
-        
-        copyBtn.onclick = () => {
-            const textToCopy = msg.text || '';
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = textToCopy;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            try {
-                document.execCommand('copy');
-                showToast('Message Copied!');
-            } catch (err) {
-                console.error('Fallback: Failed to copy text: ', err);
-                showToast('Copy Failed!');
-            }
-            document.body.removeChild(tempTextArea);
-        };
-        
+        // Add Speak and Copy Buttons (Only if there is text)
         if (msg.text) {
-            actionsDiv.append(speakBtn, likeBtn, dislikeBtn, copyBtn);
-        } else {
-            actionsDiv.append(likeBtn, dislikeBtn); // Don't show speak/copy if no text
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'speak-btn'; // Use same base style
+            copyBtn.innerHTML = '📋'; // Copy emoji
+            copyBtn.setAttribute("data-tooltip", "Copy Response"); 
+            
+            copyBtn.onclick = () => {
+                const textToCopy = msg.text || '';
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = textToCopy;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Message Copied!');
+                } catch (err) {
+                    console.error('Fallback: Failed to copy text: ', err);
+                    showToast('Copy Failed!');
+                }
+                document.body.removeChild(tempTextArea);
+            };
+            actionsDiv.prepend(speakBtn); // Add Speak button to the start
+            actionsDiv.append(copyBtn); // Add Copy button to the end
         }
+
+        // Add NEW Delete Button (Always added)
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'speak-btn user-delete-btn'; 
+        deleteBtn.innerHTML = '🗑️'; // Bin emoji
+        deleteBtn.setAttribute("data-tooltip", "Delete Message");
+        
+        deleteBtn.onclick = () => {
+            if (!msg.id) {
+                console.error('Message ID is missing, cannot delete.');
+                return;
+            }
+            messageToDeleteId = msg.id;
+            deleteMessageModal.classList.add('visible');
+        };
+
+        actionsDiv.append(deleteBtn); // Add delete button to the end
         
         wrapper.appendChild(actionsDiv);
     }
-    // --- NEW: Add Copy Button for User Messages ---
-    else if (msg.sender === 'user' && msg.text) {
+    // --- Action Buttons for User Messages ---
+    else if (msg.sender === 'user') {
         const actionsDiv = document.createElement('div');
         actionsDiv.className = 'message-actions';
-
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'user-copy-btn'; // <-- CHANGED from 'speak-btn copy-btn'
-        copyBtn.innerHTML = '📋'; // Copy emoji
-        copyBtn.setAttribute("data-tooltip", "Copy Message"); 
         
-        copyBtn.onclick = () => {
-            const textToCopy = msg.text || '';
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = textToCopy;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            try {
-                document.execCommand('copy');
-                showToast('Message Copied!');
-            } catch (err) {
-                console.error('Fallback: Failed to copy text: ', err);
-                showToast('Copy Failed!');
+        // 1. Add Copy Button (only if there is text)
+        if (msg.text) {
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'user-copy-btn';
+            copyBtn.innerHTML = '📋'; // Copy emoji
+            copyBtn.setAttribute("data-tooltip", "Copy Message"); 
+            
+            copyBtn.onclick = () => {
+                const textToCopy = msg.text || '';
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = textToCopy;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Message Copied!');
+                } catch (err) {
+                    console.error('Fallback: Failed to copy text: ', err);
+                    showToast('Copy Failed!');
+                }
+                document.body.removeChild(tempTextArea);
+            };
+            actionsDiv.appendChild(copyBtn);
+        }
+
+        // 2. Add Delete Button (always add for user messages)
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'user-copy-btn user-delete-btn'; 
+        deleteBtn.innerHTML = '🗑️'; // Bin emoji
+        deleteBtn.setAttribute("data-tooltip", "Delete Message");
+        
+        deleteBtn.onclick = () => {
+            if (!msg.id) {
+                console.error('Message ID is missing, cannot delete.');
+                return;
             }
-            document.body.removeChild(tempTextArea);
+            messageToDeleteId = msg.id;
+            deleteMessageModal.classList.add('visible');
         };
         
-        actionsDiv.appendChild(copyBtn);
-        wrapper.appendChild(actionsDiv);
+        actionsDiv.appendChild(deleteBtn);
+        
+        // Add the actions div to the wrapper if it has any buttons
+        if (actionsDiv.hasChildNodes()) {
+            wrapper.appendChild(actionsDiv);
+        }
     }
-    // --- End of User Copy Button Logic ---
+    // --- End of User Action Buttons Logic ---
     
     fragment.appendChild(wrapper);
   }
-  
   // --- Voice Input (Speech Recognition) Logic ---
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SpeechRecognition) {
@@ -4315,6 +4395,35 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
         }
         deleteConfirmModal.classList.remove('visible');
     });
+    // --- NEW: Delete Single Message Modal Listeners ---
+  confirmDeleteMessageBtn.addEventListener('click', async () => {
+    if (messageToDeleteId && currentUserId && currentSessionId) {
+      try {
+        // Construct the doc ref to this specific message
+        const msgRef = doc(db, 'chats', currentUserId, 'sessions', currentSessionId, 'messages', messageToDeleteId);
+        // Delete the document from Firestore
+        await deleteDoc(msgRef);
+        // onSnapshot will automatically handle removing it from the UI
+      } catch (error) {
+        console.error("Error deleting message:", error);
+        showToast('Error: Could not delete message.');
+      }
+    }
+    deleteMessageModal.classList.remove('visible');
+    messageToDeleteId = null;
+  });
+
+  cancelDeleteMessageBtn.addEventListener('click', () => {
+    deleteMessageModal.classList.remove('visible');
+    messageToDeleteId = null;
+  });
+
+  deleteMessageModal.addEventListener('click', (e) => {
+    if (e.target.id === 'delete-message-modal') {
+      deleteMessageModal.classList.remove('visible');
+      messageToDeleteId = null;
+    }
+  });
 
     async function deleteSession(uid, sessionId) {
         const sessionDocRef = doc(db, 'chats', uid, 'sessions', sessionId);
