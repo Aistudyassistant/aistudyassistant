@@ -154,20 +154,11 @@
       gap: 10px;
     }
     
+    /* Credits are now in the sidebar */
     .credits {
-      position: absolute;
-      top: 27px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: var(--text-color-light);
-      font-size: 0.9rem;
-      font-weight: 500;
-      text-shadow: 0 0 5px var(--shadow-color); /* Theme-specific shadow */
-      z-index: 100;
+      display: none;
     }
-    body.light-theme .credits {
-        text-shadow: none;
-    }
+
      /* --- 
       START FEATURE 3: Profile Button Repositioning
       (Hide old greeting btn from header) 
@@ -1002,6 +993,8 @@
         gap: 15px;
     }
     
+    /* --- Scrollbar Styles --- */
+    /* Webkit (Chrome, Safari) */
     .chat-box::-webkit-scrollbar {
       width: 10px;
     }
@@ -1018,6 +1011,14 @@
     }
     body.light-theme .chat-box::-webkit-scrollbar-thumb {
         background: var(--primary-accent);
+    }
+    /* Firefox */
+    .chat-box, #session-list {
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary-accent) rgba(0, 0, 0, 0.1);
+    }
+    body.light-theme .chat-box, body.light-theme #session-list {
+      scrollbar-color: var(--primary-accent) rgba(0, 0, 0, 0.05);
     }
     
     @keyframes slideInFromBottom {
@@ -1110,14 +1111,13 @@
     }
     
     /*
-     * --- NEW: Speak/Like/Dislike Button Styles (from user) ---
+     * --- Message Action Button Styles ---
      */
     .message-actions {
       display: flex;
       justify-content: center;
-      gap: 12px;
-      margin-top: 8px; /* Slightly more margin than user example */
-      /* These styles are for bot messages, user messages will be different */
+      gap: 8px;
+      margin-top: 8px;
     }
     
     .user-message-wrapper .message-actions { 
@@ -1127,139 +1127,156 @@
     .bot-message-wrapper .message-actions { 
       justify-content: flex-start; 
       margin-left: 5px;
-      opacity: 1; /* Ensure bot actions are always visible */
+      opacity: 1; /* Bot actions always visible */
     }
 
-    /* --- NEW: Hide user actions by default, show on hover --- */
+    /* --- User message actions: show only on hover --- */
     .user-message-wrapper .message-actions {
-      opacity: 0; /* Make invisible */
+      opacity: 0;
       transition: opacity 0.2s ease-in-out;
       pointer-events: none;
     }
-
     .user-message-wrapper:hover .message-actions {
-      opacity: 1; /* Show on hover */
+      opacity: 1;
       pointer-events: auto;
     }
-    /* --- End new visibility rules --- */
 
-   .speak-btn, .like-btn, .dislike-btn {
-      background: none; /* <-- CHANGED */
-     color: var(--text-color-light); /* Use lighter text for icons */
-     border: none; /* <-- CHANGED */
-     border-radius: 50px;
-      padding: 6px; /* <-- CHANGED (to look better without a background) */
-       cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 5px; /* Gap between icon and text */
-    }
-    
-    body.light-theme .speak-btn, 
-    body.light-theme .like-btn, 
-    body.light-theme .dislike-btn {
-      background: rgba(0, 0, 0, 0.05);
+    /* Base style for all icon buttons in actions */
+    .action-btn {
+      background: none;
       color: var(--text-color-light);
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .speak-btn:hover, .like-btn:hover, .dislike-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 12px var(--shadow-color);
-      color: var(--text-color);
-    }
-    
-    /* --- FIX: Light mode button hover --- */
-    body.light-theme .speak-btn:hover, 
-    body.light-theme .like-btn:hover, 
-    body.light-theme .dislike-btn:hover {
-        color: var(--primary-accent); /* Use accent color for hover text */
-        background: rgba(0, 123, 255, 0.1); /* Use accent color for bg */
-        border-color: var(--primary-accent); /* Use accent color for border */
-        transform: translateY(-2px); /* Add transform */
-        box-shadow: 0 4px 8px var(--shadow-color); /* Add shadow */
-    }
-
-    .like-btn.active {
-      background: linear-gradient(90deg, #00c2ff, #00ffb3);
-      color: #021;
-      border-color: transparent;
-    }
-
-    .dislike-btn.active {
-      background: linear-gradient(90deg, #ff6b6b, #ff3b3b);
-      color: white;
-      border-color: transparent;
-    }
-    
-    body.light-theme .like-btn.active {
-        background: linear-gradient(90deg, #007bff, #00bfff);
-        color: white;
-    }
-    body.light-theme .dislike-btn.active {
-        background: linear-gradient(90deg, #dc3545, #ff6b6b);
-        color: white;
-    }
-
-    .speak-btn.speaking {
-      animation: pulse-speak 1s infinite;
-      background: rgba(0, 194, 255, 0.2);
-      border-color: var(--primary-accent);
-      color: var(--primary-accent);
-    }
-    
-    body.light-theme .speak-btn.speaking {
-        background: rgba(0, 123, 255, 0.15);
-        color: var(--primary-accent);
-    }
-
-    @keyframes pulse-speak {
-      0%, 100% { box-shadow: 0 0 0 var(--shadow-color); }
-      50% { box-shadow: 0 0 10px var(--shadow-color); }
-    }
-    
-    /* --- NEW: User-specific copy button style --- */
-    .user-copy-btn {
-      background: none; /* <-- CHANGED */
-       color: var(--text-color-light);
-     border: none; /* <-- CHANGED */
-     border-radius: 8px;
-     padding: 4px; /* <-- CHANGED (to look better without a background) */
-     /* ...etc... */
-
+      border: none;
+      border-radius: 50px;
+      padding: 6px;
       cursor: pointer;
       font-size: 14px;
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
       gap: 5px;
-      position: relative; /* For tooltip */
+      line-height: 1;
+    }
+    .action-btn svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
     }
     
-    body.light-theme .user-copy-btn {
-      background: rgba(0, 0, 0, 0.05);
+    body.light-theme .action-btn {
       color: var(--text-color-light);
-      border-color: rgba(0, 0, 0, 0.1);
     }
 
-    .user-copy-btn:hover {
+    .action-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 0 12px var(--shadow-color);
       color: var(--text-color);
     }
-
-    body.light-theme .user-copy-btn:hover {
-        color: var(--primary-accent);
-        background: rgba(0, 123, 255, 0.1);
-        border-color: var(--primary-accent);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px var(--shadow-color);
-    }
-    /* --- End user-copy-btn style --- */
     
-    /* --- End of user-provided button styles --- */
+    body.light-theme .action-btn:hover {
+        color: var(--primary-accent);
+    }
+
+    .like-btn.active {
+      color: #00ffb3;
+    }
+    .dislike-btn.active {
+      color: #ff6b6b;
+    }
+    body.light-theme .like-btn.active {
+        color: #28a745;
+    }
+    body.light-theme .dislike-btn.active {
+        color: #dc3545;
+    }
+
+    /* --- Styled User Delete Button --- */
+    .user-delete-btn {
+        padding: 6px 8px;
+        border-radius: 8px !important;
+    }
+    .user-delete-btn:hover {
+        background: rgba(255, 71, 87, 0.1);
+        color: var(--danger-red);
+    }
+     body.light-theme .user-delete-btn:hover {
+        background: rgba(220, 53, 69, 0.1);
+    }
+    
+    /* --- AI Message Menu Styles --- */
+    .message-actions .actions-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .message-menu-btn {
+        background: none;
+        border: none;
+        color: var(--text-color-light);
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+    .message-menu-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-color);
+    }
+    body.light-theme .message-menu-btn:hover {
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    .message-actions-popover {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(100% + 10px); /* Position above the button */
+        background: var(--background-primary);
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        z-index: 10;
+        overflow: hidden;
+        display: none;
+        width: 150px; 
+        padding: 5px 0;
+        animation: fadeIn 0.2s ease-out;
+    }
+    body.light-theme .message-actions-popover {
+        background: var(--background-tertiary);
+    }
+
+    .message-actions-popover.visible { display: block; }
+
+    .message-actions-popover button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%; 
+        text-align: left;
+        background: none; 
+        border: none; 
+        color: var(--text-color-light);
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        box-sizing: border-box;
+    }
+    body.light-theme .message-actions-popover button {
+        color: var(--text-color);
+    }
+    .message-actions-popover button:hover { 
+        background: var(--background-secondary); 
+        color: var(--text-color);
+    }
+    .message-actions-popover svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        fill: currentColor;
+    }
 
     .chat-input { 
         display: flex; 
@@ -1284,6 +1301,7 @@
         color: var(--text-color); 
         font-family: 'Poppins', sans-serif; 
         transition: color 0.3s; 
+        min-width: 0; /* UI FIX: Prevents input from overflowing flex container */
     }
     .chat-input input:focus { box-shadow: none; }
     .chat-input input::placeholder { color: var(--text-color-light); opacity: 0.8; }
@@ -1890,6 +1908,16 @@
         border-color: var(--primary-accent);
         background: rgba(0, 123, 255, 0.05);
     }
+    /* UI FIX: Credits relocated to sidebar */
+    #session-panel .credits {
+        padding-top: 15px;
+        margin-top: auto; /* Pushes to bottom of flex container */
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--text-color-light);
+        flex-shrink: 0;
+        display: block; /* Ensure it's visible */
+    }
     /* --- Toast Notification --- */
     .toast {
       position: fixed;
@@ -2003,17 +2031,6 @@
             width: 100%;
         }
 
-        /* --- FIX: Made credits visible on mobile --- */
-        .credits {
-            display: block; /* Make it visible */
-            top: 100px; /* <-- CHANGED: Position it below the new 90px fixed header */
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem; /* Make it a bit smaller on mobile */
-            color: var(--text-color-light);
-            z-index: 50; /* Below header but above content */
-        }
-
         /* --- MOBILE UI FIXES --- */
         .site-header {
             position: fixed;
@@ -2107,7 +2124,7 @@
             width: 100%;
             height: 100%;
             border-radius: 0;
-            padding-top: 90px; /* <-- CHANGED: Adjusted for new 2-row header height */
+            /* UI FIX: Removed fixed padding-top, JS will handle it */
             box-sizing: border-box;
             border: none;
             box-shadow: none;
@@ -2145,21 +2162,24 @@
         .chat-input label {
             margin-left: 5px;
         }
+        /* UI FIX: Make user message actions visible on mobile */
+        .user-message-wrapper .message-actions {
+            opacity: 1;
+            pointer-events: auto;
+        }
     }
 /* === Tooltip Base Style === */
-.speak-btn, .like-btn, .dislike-btn, .user-copy-btn {
+.action-btn {
   position: relative;
 }
 
-/* ===== 🔊 Speak Tooltip ===== */
-.speak-btn::after {
+/* Base Tooltip Style */
+.action-btn::after {
   content: attr(data-tooltip);
   position: absolute;
-  top: 130%; /* shows below the button */
+  top: 130%;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 194, 255, 0.2); /* light blue background */
-  color: #00c2ff; /* blue text */
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 12px;
@@ -2167,116 +2187,35 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease, transform 0.25s ease;
-  box-shadow: 0 0 10px rgba(0,194,255,0.5);
 }
-.speak-btn:hover::after {
+.action-btn:hover::after {
   opacity: 1;
   transform: translate(-50%, 5px);
 }
 
-/* ===== 👍 Like Tooltip (Light Green) ===== */
+/* Tooltip Colors */
 .like-btn::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  top: 130%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 255, 150, 0.15); /* soft green background */
-  color: #00ffb3; /* bright green text */
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  box-shadow: 0 0 10px rgba(0,255,150,0.5); /* green glow */
+  background: rgba(0, 255, 150, 0.15);
+  color: #00ffb3;
+  box-shadow: 0 0 10px rgba(0,255,150,0.5);
 }
-.like-btn:hover::after {
-  opacity: 1;
-  transform: translate(-50%, 5px);
-}
-
-/* ===== 👎 Dislike Tooltip (Red) ===== */
 .dislike-btn::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  top: 130%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 90, 90, 0.15); /* soft red background */
-  color: #ff5c6c; /* red text */
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  background: rgba(255, 90, 90, 0.15);
+  color: #ff5c6c;
   box-shadow: 0 0 10px rgba(255,90,90,0.4);
 }
-.dislike-btn:hover::after {
-  opacity: 1;
-  transform: translate(-50%, 5px);
+.action-btn[data-tooltip="Copy"]::after {
+   background: rgba(200, 200, 200, 0.15);
+   color: #ddd;
+   box-shadow: 0 0 10px rgba(200,200,200,0.4);
+}
+.user-delete-btn::after {
+    background: rgba(255, 90, 90, 0.15);
+    color: #ff5c6c;
+    box-shadow: 0 0 10px rgba(255,90,90,0.4);
 }
 
-/* ===== 📋 Copy Tooltip (Neutral) ===== */
-.user-copy-btn::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  top: 130%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(200, 200, 200, 0.15); /* soft neutral background */
-  color: #ddd; /* light text */
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  box-shadow: 0 0 10px rgba(200,200,200,0.4);
-}
-.user-copy-btn:hover::after {
-  opacity: 1;
-  transform: translate(-50%, 5px);
-}
-/* ===== 🗑️ Delete Tooltip (Red) ===== */
-    .user-delete-btn::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      top: 130%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 90, 90, 0.15); /* soft red background */
-      color: #ff5c6c; /* red text */
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-      box-shadow: 0 0 10px rgba(255,90,90,0.4);
-    }
-    .user-delete-btn:hover::after {
-      opacity: 1;
-      transform: translate(-50%, 5px);
-    }
 
-    /* Red hover color for the delete button */
-    .user-delete-btn:hover {
-      color: var(--danger-red);
-      border-color: var(--danger-red);
-      background: rgba(255, 71, 87, 0.1);
-    }
-    
-    body.light-theme .user-delete-btn:hover {
-      color: var(--danger-red);
-      background: rgba(220, 53, 69, 0.1);
-      border-color: var(--danger-red);
-    }
 /* --- NEW: Contact Manager Modal Content Styles --- */
 .contact-intro {
     font-size: 0.95rem;
@@ -2419,6 +2358,8 @@
     <div id="profile-section-footer">
       <button id="userGreeting" class="user-greeting-btn" title="Open Profile"></button>
     </div>
+    <!-- UI FIX: Credits relocated here from main chat area -->
+    <div class="credits">Made By Hamza</div>
   </aside>
 
   <div class="chat-area">
@@ -2448,8 +2389,6 @@
             <button id="logoutBtn" title="Logout">Logout</button>
         </div>
       </header>
-      
-      <div class="credits">Made By Hamza</div>
       
       <button id="historyBtn">History</button>
       
@@ -2676,7 +2615,7 @@
               <h4>AI_Automation</h4>
               <a href="https://www.instagram.com/aiautomation01?igsh=M2xuNHgzZm90d2Nu&utm_source=qr" target="_blank" rel="noopener noreferrer" class="contact-btn">
                   <!-- Instagram SVG -->
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.225-1.664 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.149-3.227 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.441c-3.179 0-3.543.01-4.792.069-2.926.134-4.043 1.258-4.177 4.177-.059 1.25-.069 1.614-.069 4.792s.01 3.543.069 4.792c.134 2.919 1.251 4.043 4.177 4.177 1.249.058 1.613.069 4.792.069s3.543-.01 4.792-.069c2.926-.134 4.043-1.258 4.177-4.177.059-1.25.069-1.614.069-4.792s-.01-3.543-.069-4.792c-.134-2.919-1.251-4.043-4.177-4.177-1.249-.058-1.613-.069-4.792-.069zm0 3.193c-3.403 0-6.155 2.752-6.155 6.155S8.597 19.107 12 19.107 18.155 16.355 18.155 12 15.403 6.797 12 6.797zm0 1.441c2.6 0 4.713 2.113 4.713 4.713s-2.113 4.713-4.713 4.713-4.713-2.113-4.713-4.713 2.113-4.713 4.713-4.713zm4.708-2.305c0 .718-.582 1.3-1.3 1.3s-1.3-.582-1.3-1.3.582-1.3 1.3-1.3 1.3.582 1.3 1.3z" fill="currentColor"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.225-1.664 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.149-3.227 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.441c-3.179 0-3.543.01-4.792.069-2.926.134-4.043 1.258-4.177 4.177-.059 1.25-.069 1.614-.069 4.792s.01 3.543.069 4.792c.134 2.919 1.251 4.043 4.177 4.177 1.249.058 1.613.069 4.792.069s3.543-.01 4.792-.069c2.926-.134 4.043-1.258 4.177-4.177.059-1.25.069-1.614-.069-4.792s-.01-3.543-.069-4.792c-.134-2.919-1.251-4.043-4.177-4.177-1.249-.058-1.613-.069-4.792-.069zm0 3.193c-3.403 0-6.155 2.752-6.155 6.155S8.597 19.107 12 19.107 18.155 16.355 18.155 12 15.403 6.797 12 6.797zm0 1.441c2.6 0 4.713 2.113 4.713 4.713s-2.113 4.713-4.713 4.713-4.713-2.113-4.713-4.713 2.113-4.713 4.713-4.713zm4.708-2.305c0 .718-.582 1.3-1.3 1.3s-1.3-.582-1.3-1.3.582-1.3 1.3-1.3 1.3.582 1.3 1.3z" fill="currentColor"/></svg>
                   Business Instagram
               </a>
           </div>
@@ -2684,7 +2623,7 @@
               <h4>Direct Contact</h4>
               <a href="https://www.instagram.com/_hamza__.a?igsh=YzhkbGpvbDU2ZGVh&utm_source=qr" target="_blank" rel="noopener noreferrer" class="contact-btn">
                   <!-- Instagram SVG -->
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.225-1.664 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.149-3.227 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.441c-3.179 0-3.543.01-4.792.069-2.926.134-4.043 1.258-4.177 4.177-.059 1.25-.069 1.614-.069 4.792s.01 3.543.069 4.792c.134 2.919 1.251 4.043 4.177 4.177 1.249.058 1.613.069 4.792.069s3.543-.01 4.792-.069c2.926-.134 4.043-1.258 4.177-4.177.059-1.25.069-1.614.069-4.792s-.01-3.543-.069-4.792c-.134-2.919-1.251-4.043-4.177-4.177-1.249-.058-1.613-.069-4.792-.069zm0 3.193c-3.403 0-6.155 2.752-6.155 6.155S8.597 19.107 12 19.107 18.155 16.355 18.155 12 15.403 6.797 12 6.797zm0 1.441c2.6 0 4.713 2.113 4.713 4.713s-2.113 4.713-4.713 4.713-4.713-2.113-4.713-4.713 2.113-4.713 4.713-4.713zm4.708-2.305c0 .718-.582 1.3-1.3 1.3s-1.3-.582-1.3-1.3.582-1.3 1.3-1.3 1.3.582 1.3 1.3z" fill="currentColor"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.225-1.664 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.149-3.227 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.441c-3.179 0-3.543.01-4.792.069-2.926.134-4.043 1.258-4.177 4.177-.059 1.25-.069 1.614-.069 4.792s.01 3.543.069 4.792c.134 2.919 1.251 4.043 4.177 4.177 1.249.058 1.613.069 4.792.069s3.543-.01 4.792-.069c2.926-.134 4.043-1.258 4.177-4.177.059-1.25.069-1.614-.069-4.792s-.01-3.543-.069-4.792c-.134-2.919-1.251-4.043-4.177-4.177-1.249-.058-1.613-.069-4.792-.069zm0 3.193c-3.403 0-6.155 2.752-6.155 6.155S8.597 19.107 12 19.107 18.155 16.355 18.155 12 15.403 6.797 12 6.797zm0 1.441c2.6 0 4.713 2.113 4.713 4.713s-2.113 4.713-4.713 4.713-4.713-2.113-4.713-4.713 2.113-4.713 4.713-4.713zm4.708-2.305c0 .718-.582 1.3-1.3 1.3s-1.3-.582-1.3-1.3.582-1.3 1.3-1.3 1.3.582 1.3 1.3z" fill="currentColor"/></svg>
                   M.Hamza
               </a>
               <a href="https://wa.me/923097719166" target="_blank" rel="noopener noreferrer" class="contact-btn">
@@ -2880,10 +2819,12 @@
     'chat': 'https://hamza3210.app.n8n.cloud/webhook/chat'
   };
   
-  // --- NEW: Icon SVGs ---
-  const iconCopy = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>`;
-  const iconCheck = `✓`; // Simple checkmark
-
+  // --- Icon SVGs ---
+  const iconCopy = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2Zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6ZM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1H2Z"/></svg>`;
+  const iconBin = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3V2h11v1z"/></svg>`;
+  const iconMenu = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/></svg>`;
+  const iconSpeak = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-1.414 1.414A6.47 6.47 0 0 1 12.025 8a6.47 6.47 0 0 1-1.903 4.596zM10.12 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.903-4.596L8.708 4.83A4.48 4.48 0 0 1 10.025 8a4.48 4.48 0 0 1-1.317 3.17zM7.875 11.18a3 3 0 0 0 0-6.36L6.46 6.23A4.5 4.5 0 0 1 8.025 8a4.5 4.5 0 0 1-1.565 3.394zM6.025 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/></svg>`;
+  
   // Eye icons
   const iconEyeOpen = `<svg class="eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></svg>`;
   const iconEyeClosed = `<svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="display: none;"><path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.94 5.94 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.707z"/><path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"/><path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.88 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.707z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>`;
@@ -3095,6 +3036,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
       
       formContainer.classList.remove('flipped');
     }
+    adjustChatContainerPadding(); // UI FIX: Adjust padding after UI changes
     startIntroAnimation();
   }
 
@@ -3587,6 +3529,22 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
 
 
   // --- Helpers ---
+  // UI FIX: Add function to dynamically adjust header padding on mobile
+  function adjustChatContainerPadding() {
+    const header = document.querySelector('.site-header');
+    const chatContainer = document.querySelector('.chat-container');
+    if (window.innerWidth <= 768 && header && chatContainer) {
+        // Use a slight delay to ensure the DOM has been painted and height is accurate
+        setTimeout(() => {
+            const headerHeight = header.offsetHeight;
+            chatContainer.style.paddingTop = `${headerHeight + 5}px`;
+        }, 100);
+    } else if (chatContainer) {
+        // Reset for desktop
+        chatContainer.style.paddingTop = ''; 
+    }
+  }
+
   function formatDate(timestamp) {
     if (!timestamp || typeof timestamp.toDate !== 'function') return '';
     const d = timestamp.toDate();
@@ -4020,9 +3978,6 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
     }
   }
 
-
-  // --- REPLACED: Old handleFeedback function removed ---
-
   function appendMessage(fragment, msg, isLastMessage) {
     const wrapper = document.createElement('div');
     wrapper.className = `message-wrapper ${msg.sender}-message-wrapper`;
@@ -4089,185 +4044,122 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
         textDiv.textContent = msg.text;
         messageElement.appendChild(textDiv);
     }
-    // --- End of Unchanged Logic ---
     
-    wrapper.appendChild(messageElement); // Add the message bubble first
+    wrapper.appendChild(messageElement);
 
-    // --- Action Buttons for AI Bot Messages ---
+    const actionsDiv = document.createElement('div');
+    actionsDiv.className = 'message-actions';
+    const msgId = msg.id;
+    const msgText = msg.text || "This message contains no text to speak.";
+
     if (msg.sender === 'bot') {
-        const actionsDiv = document.createElement('div');
-        actionsDiv.className = 'message-actions';
-        
-        const msgText = msg.text || "This message contains no text to speak.";
-        const msgId = msg.id; // msg.id is passed from loadMessages
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'action-btn';
+        copyBtn.innerHTML = iconCopy;
+        copyBtn.setAttribute('data-tooltip', 'Copy');
+        copyBtn.onclick = () => {
+            navigator.clipboard.writeText(msgText).then(() => showToast('Message Copied!'));
+        };
 
-        // 1. Speak Button (created here, added later if msg.text exists)
-        const speakBtn = document.createElement('button');
-        speakBtn.className = 'speak-btn';
-        speakBtn.dataset.text = msgText;
-        speakBtn.innerHTML = '🔊'; 
-        speakBtn.setAttribute("data-tooltip", "Speak Message");
-       
-        // Speak button (TTS) listener
-        speakBtn.addEventListener("click", () => {
-          if (!window.speechSynthesis) {
-            speakBtn.disabled = true;
-            speakBtn.textContent = "TTS not supported";
-            return;
-          }
-          speechSynthesis.cancel();
-          document.querySelectorAll('.speak-btn.speaking').forEach(btn => {
-              if (btn !== speakBtn) btn.classList.remove('speaking');
-          });
-          if (speakBtn.classList.contains('speaking')) {
-              speakBtn.classList.remove('speaking');
-          } else {
-              speakBtn.classList.add('speaking');
-              const utter = new SpeechSynthesisUtterance(msgText);
-              utter.lang = "en-US";
-              utter.rate = 1;
-              utter.onend = () => speakBtn.classList.remove('speaking');
-              utter.onerror = (e) => {
-                  speakBtn.classList.remove('speaking');
-                  console.error("Speech synthesis error:", e);
-              };
-              speechSynthesis.speak(utter);
-          }
-        }); 
-        
-        // 2. Like Button
         const likeBtn = document.createElement('button');
-        likeBtn.className = 'like-btn';
-        likeBtn.dataset.id = msgId;
+        likeBtn.className = 'action-btn like-btn';
         likeBtn.innerHTML = '👍';
-        likeBtn.setAttribute("data-tooltip", "Good Response");
-
-        // 3. Dislike Button
-        const dislikeBtn = document.createElement('button');
-        dislikeBtn.className = 'dislike-btn';
-        dislikeBtn.dataset.id = msgId;
-        dislikeBtn.innerHTML = '👎';
-        dislikeBtn.setAttribute("data-tooltip", "Bad Response");
-        
-        // Restore saved feedback state
-        if (feedback[msgId] === "like") likeBtn.classList.add("active");
-        if (feedback[msgId] === "dislike") dislikeBtn.classList.add("active");
-
-        // Like button listener
+        likeBtn.setAttribute('data-tooltip', 'Good Response');
+        if (feedback[msgId] === 'like') likeBtn.classList.add('active');
         likeBtn.addEventListener("click", () => {
           feedback[msgId] = feedback[msgId] === "like" ? null : "like";
           localStorage.setItem("feedback", JSON.stringify(feedback));
           updateFeedbackUI(likeBtn, dislikeBtn, feedback[msgId]);
         });
-
-        // Dislike button listener
+        
+        const dislikeBtn = document.createElement('button');
+        dislikeBtn.className = 'action-btn dislike-btn';
+        dislikeBtn.innerHTML = '👎';
+        dislikeBtn.setAttribute('data-tooltip', 'Bad Response');
+        if (feedback[msgId] === 'dislike') dislikeBtn.classList.add('active');
         dislikeBtn.addEventListener("click", () => {
           feedback[msgId] = feedback[msgId] === "dislike" ? null : "dislike";
           localStorage.setItem("feedback", JSON.stringify(feedback));
           updateFeedbackUI(likeBtn, dislikeBtn, feedback[msgId]);
         });
         
-        // Add Like and Dislike Buttons (Always added)
-        actionsDiv.append(likeBtn, dislikeBtn);
+        const menuContainer = document.createElement('div');
+        menuContainer.className = 'actions-container';
 
-        // Add Speak and Copy Buttons (Only if there is text)
-        if (msg.text) {
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'speak-btn'; // Use same base style
-            copyBtn.innerHTML = '📋'; // Copy emoji
-            copyBtn.setAttribute("data-tooltip", "Copy Response"); 
-            
-            copyBtn.onclick = () => {
-                const textToCopy = msg.text || '';
-                const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = textToCopy;
-                document.body.appendChild(tempTextArea);
-                tempTextArea.select();
-                try {
-                    document.execCommand('copy');
-                    showToast('Message Copied!');
-                } catch (err) {
-                    console.error('Fallback: Failed to copy text: ', err);
-                    showToast('Copy Failed!');
-                }
-                document.body.removeChild(tempTextArea);
-            };
-            actionsDiv.prepend(speakBtn); // Add Speak button to the start
-            actionsDiv.append(copyBtn); // Add Copy button to the end
-        }
-
-        // Add NEW Delete Button (Always added)
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'speak-btn user-delete-btn'; 
-        deleteBtn.innerHTML = '🗑️'; // Bin emoji
-        deleteBtn.setAttribute("data-tooltip", "Delete Message");
+        const menuBtn = document.createElement('button');
+        menuBtn.className = 'message-menu-btn action-btn';
+        menuBtn.innerHTML = iconMenu;
         
-        deleteBtn.onclick = () => {
-            if (!msg.id) {
-                console.error('Message ID is missing, cannot delete.');
-                return;
+        const popover = document.createElement('div');
+        popover.className = 'message-actions-popover';
+
+        const popoverSpeakBtn = document.createElement('button');
+        popoverSpeakBtn.innerHTML = iconSpeak + 'Speak';
+
+        const popoverDeleteBtn = document.createElement('button');
+        popoverDeleteBtn.innerHTML = iconBin + 'Delete';
+
+        popover.append(popoverSpeakBtn, popoverDeleteBtn);
+        menuContainer.append(menuBtn, popover);
+        
+        // Menu logic
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.message-actions-popover.visible').forEach(p => p.classList.remove('visible'));
+            popover.classList.toggle('visible');
+        });
+
+        // Speak/Stop logic
+        popoverSpeakBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (!window.speechSynthesis) return;
+
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+                popoverSpeakBtn.innerHTML = iconSpeak + 'Speak';
+            } else {
+                const utter = new SpeechSynthesisUtterance(msgText);
+                utter.lang = "en-US";
+                utter.onend = () => { popoverSpeakBtn.innerHTML = iconSpeak + 'Speak'; };
+                utter.onerror = () => { popoverSpeakBtn.innerHTML = iconSpeak + 'Speak'; };
+                speechSynthesis.speak(utter);
+                popoverSpeakBtn.innerHTML = iconSpeak + 'Stop';
             }
-            messageToDeleteId = msg.id;
+            popover.classList.remove('visible');
+        });
+
+        // Delete logic
+        popoverDeleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            messageToDeleteId = msgId;
             deleteMessageModal.classList.add('visible');
+            popover.classList.remove('visible');
         };
 
-        actionsDiv.append(deleteBtn); // Add delete button to the end
+        actionsDiv.append(copyBtn, likeBtn, dislikeBtn, menuContainer);
+        wrapper.appendChild(actionsDiv);
+
+    } else if (msg.sender === 'user') {
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'action-btn';
+        copyBtn.innerHTML = iconCopy;
+        copyBtn.setAttribute('data-tooltip', 'Copy');
+        copyBtn.onclick = () => {
+            navigator.clipboard.writeText(msgText).then(() => showToast('Message Copied!'));
+        };
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'action-btn user-delete-btn'; 
+        deleteBtn.innerHTML = iconBin;
+        deleteBtn.setAttribute("data-tooltip", "Delete Message");
+        deleteBtn.onclick = () => {
+            messageToDeleteId = msgId;
+            deleteMessageModal.classList.add('visible');
+        };
         
+        actionsDiv.append(copyBtn, deleteBtn);
         wrapper.appendChild(actionsDiv);
     }
-    // --- Action Buttons for User Messages ---
-    else if (msg.sender === 'user') {
-        const actionsDiv = document.createElement('div');
-        actionsDiv.className = 'message-actions';
-        
-        // 1. Add Copy Button (only if there is text)
-        if (msg.text) {
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'user-copy-btn';
-            copyBtn.innerHTML = '📋'; // Copy emoji
-            copyBtn.setAttribute("data-tooltip", "Copy Message"); 
-            
-            copyBtn.onclick = () => {
-                const textToCopy = msg.text || '';
-                const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = textToCopy;
-                document.body.appendChild(tempTextArea);
-                tempTextArea.select();
-                try {
-                    document.execCommand('copy');
-                    showToast('Message Copied!');
-                } catch (err) {
-                    console.error('Fallback: Failed to copy text: ', err);
-                    showToast('Copy Failed!');
-                }
-                document.body.removeChild(tempTextArea);
-            };
-            actionsDiv.appendChild(copyBtn);
-        }
-
-        // 2. Add Delete Button (always add for user messages)
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'user-copy-btn user-delete-btn'; 
-        deleteBtn.innerHTML = '🗑️'; // Bin emoji
-        deleteBtn.setAttribute("data-tooltip", "Delete Message");
-        
-        deleteBtn.onclick = () => {
-            if (!msg.id) {
-                console.error('Message ID is missing, cannot delete.');
-                return;
-            }
-            messageToDeleteId = msg.id;
-            deleteMessageModal.classList.add('visible');
-        };
-        
-        actionsDiv.appendChild(deleteBtn);
-        
-        // Add the actions div to the wrapper if it has any buttons
-        if (actionsDiv.hasChildNodes()) {
-            wrapper.appendChild(actionsDiv);
-        }
-    }
-    // --- End of User Action Buttons Logic ---
     
     fragment.appendChild(wrapper);
   }
@@ -4522,12 +4414,6 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
       applyTheme(theme);
   });
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    applyTheme(savedTheme);
-  });
-
-
   // --- General Event Listeners (Including Responsive Sidebar Logic) ---
   userInput.addEventListener("keypress", (e) => { if (e.key === "Enter" && !(e.ctrlKey || e.metaKey)) { e.preventDefault(); sendMessage(); } });
   
@@ -4602,9 +4488,15 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
       }
       
       // Close session action popovers
-      const openPopover = document.querySelector('.actions-popover.visible');
-      if(openPopover && !openPopover.parentElement.contains(e.target)) {
-          openPopover.classList.remove('visible');
+      const openSessionPopover = document.querySelector('.actions-popover.visible');
+      if(openSessionPopover && !openSessionPopover.parentElement.contains(e.target)) {
+          openSessionPopover.classList.remove('visible');
+      }
+
+      // Close message action popovers
+      const openMessagePopover = document.querySelector('.message-actions-popover.visible');
+      if(openMessagePopover && !openMessagePopover.parentElement.contains(e.target)) {
+          openMessagePopover.classList.remove('visible');
       }
   });
 // --- NEW: Contact Manager Modal Logic (ADD THIS BLOCK) ---
@@ -4627,7 +4519,16 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
     }
   });
   // --- END OF NEW BLOCK ---
+  
+  // UI FIX: Adjust padding on load and resize
+  window.addEventListener('resize', adjustChatContainerPadding);
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    applyTheme(savedTheme);
+    adjustChatContainerPadding(); // Adjust on initial load
+  });
 </script>
 
 </body>
 </html>
+
