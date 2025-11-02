@@ -1129,7 +1129,82 @@
       margin-left: 5px;
       opacity: 1; /* Bot actions always visible */
     }
+/* --- AI Message Menu Styles --- */
+    .message-actions .actions-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
 
+    .message-menu-btn {
+        background: none;
+        border: none;
+        color: var(--text-color-light);
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+    .message-menu-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-color);
+    }
+    body.light-theme .message-menu-btn:hover {
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    .message-actions-popover {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(100% + 10px); /* Position above the button */
+        background: var(--background-primary);
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        z-index: 10;
+        overflow: hidden;
+        display: none;
+        width: 150px; 
+        padding: 5px 0;
+        animation: fadeIn 0.2s ease-out;
+    }
+    body.light-theme .message-actions-popover {
+        background: var(--background-tertiary);
+    }
+
+    .message-actions-popover.visible { display: block; }
+
+    .message-actions-popover button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%; 
+        text-align: left;
+        background: none; 
+        border: none; 
+        color: var(--text-color-light);
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        box-sizing: border-box;
+    }
+    body.light-theme .message-actions-popover button {
+        color: var(--text-color);
+    }
+    .message-actions-popover button:hover { 
+        background: var(--background-secondary); 
+        color: var(--text-color);
+    }
+    .message-actions-popover svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        fill: currentColor;
+    }
     /* --- User message actions: show only on hover --- */
     .user-message-wrapper .message-actions {
       opacity: 0;
@@ -1149,17 +1224,17 @@
       border-radius: 50px;
       padding: 6px;
       cursor: pointer;
-      font-size: 14px;
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 5px;
       line-height: 1;
     }
     .action-btn svg {
         width: 16px;
         height: 16px;
-        fill: currentColor;
+        stroke-width: 2;
     }
     
     body.light-theme .action-btn {
@@ -1167,7 +1242,7 @@
     }
 
     .action-btn:hover {
-      transform: translateY(-2px);
+      transform: scale(1.1);
       color: var(--text-color);
     }
     
@@ -1175,18 +1250,17 @@
         color: var(--primary-accent);
     }
 
-    .like-btn.active {
-      color: #00ffb3;
-    }
-    .dislike-btn.active {
-      color: #ff6b6b;
-    }
-    body.light-theme .like-btn.active {
-        color: #28a745;
-    }
-    body.light-theme .dislike-btn.active {
-        color: #dc3545;
-    }
+    .like-btn:hover { color: #00ffb3; }
+    .dislike-btn:hover { color: #ff6b6b; }
+
+    .like-btn.active { color: #00ffb3; }
+    .dislike-btn.active { color: #ff6b6b; }
+    
+    body.light-theme .like-btn:hover { color: #28a745; }
+    body.light-theme .dislike-btn:hover { color: #dc3545; }
+
+    body.light-theme .like-btn.active { color: #28a745; }
+    body.light-theme .dislike-btn.active { color: #dc3545; }
 
     /* --- Styled User Delete Button --- */
     .user-delete-btn {
@@ -2187,6 +2261,7 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 10;
 }
 .action-btn:hover::after {
   opacity: 1;
@@ -2213,6 +2288,11 @@
     background: rgba(255, 90, 90, 0.15);
     color: #ff5c6c;
     box-shadow: 0 0 10px rgba(255,90,90,0.4);
+}
+.action-btn[data-tooltip="Edit Message"]::after {
+   background: rgba(0, 170, 255, 0.15);
+   color: #00aaff;
+   box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
 }
 
 
@@ -2820,10 +2900,13 @@
   };
   
   // --- Icon SVGs ---
-  const iconCopy = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2Zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6ZM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1H2Z"/></svg>`;
-  const iconBin = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3V2h11v1z"/></svg>`;
+  const iconCopy = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+  const iconBin = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
   const iconMenu = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/></svg>`;
   const iconSpeak = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-1.414 1.414A6.47 6.47 0 0 1 12.025 8a6.47 6.47 0 0 1-1.903 4.596zM10.12 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.903-4.596L8.708 4.83A4.48 4.48 0 0 1 10.025 8a4.48 4.48 0 0 1-1.317 3.17zM7.875 11.18a3 3 0 0 0 0-6.36L6.46 6.23A4.5 4.5 0 0 1 8.025 8a4.5 4.5 0 0 1-1.565 3.394zM6.025 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/></svg>`;
+  const iconLike = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>`;
+  const iconDislike = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>`;
+  const iconEdit = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
   
   // Eye icons
   const iconEyeOpen = `<svg class="eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></svg>`;
@@ -4050,7 +4133,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
     const actionsDiv = document.createElement('div');
     actionsDiv.className = 'message-actions';
     const msgId = msg.id;
-    const msgText = msg.text || "This message contains no text to speak.";
+    const msgText = msg.text || "This message contains no text.";
 
     if (msg.sender === 'bot') {
         const copyBtn = document.createElement('button');
@@ -4063,7 +4146,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
 
         const likeBtn = document.createElement('button');
         likeBtn.className = 'action-btn like-btn';
-        likeBtn.innerHTML = '👍';
+        likeBtn.innerHTML = iconLike;
         likeBtn.setAttribute('data-tooltip', 'Good Response');
         if (feedback[msgId] === 'like') likeBtn.classList.add('active');
         likeBtn.addEventListener("click", () => {
@@ -4074,7 +4157,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
         
         const dislikeBtn = document.createElement('button');
         dislikeBtn.className = 'action-btn dislike-btn';
-        dislikeBtn.innerHTML = '👎';
+        dislikeBtn.innerHTML = iconDislike;
         dislikeBtn.setAttribute('data-tooltip', 'Bad Response');
         if (feedback[msgId] === 'dislike') dislikeBtn.classList.add('active');
         dislikeBtn.addEventListener("click", () => {
@@ -4082,61 +4165,63 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
           localStorage.setItem("feedback", JSON.stringify(feedback));
           updateFeedbackUI(likeBtn, dislikeBtn, feedback[msgId]);
         });
-        
         const menuContainer = document.createElement('div');
-        menuContainer.className = 'actions-container';
+    menuContainer.className = 'actions-container';
 
-        const menuBtn = document.createElement('button');
-        menuBtn.className = 'message-menu-btn action-btn';
-        menuBtn.innerHTML = iconMenu;
-        
-        const popover = document.createElement('div');
-        popover.className = 'message-actions-popover';
+    const menuBtn = document.createElement('button');
+    menuBtn.className = 'message-menu-btn action-btn';
+    menuBtn.innerHTML = iconMenu;
+    menuBtn.setAttribute('data-tooltip', 'More'); // Added tooltip
 
-        const popoverSpeakBtn = document.createElement('button');
-        popoverSpeakBtn.innerHTML = iconSpeak + 'Speak';
+    const popover = document.createElement('div');
+    popover.className = 'message-actions-popover';
 
-        const popoverDeleteBtn = document.createElement('button');
-        popoverDeleteBtn.innerHTML = iconBin + 'Delete';
+    const popoverSpeakBtn = document.createElement('button');
+    popoverSpeakBtn.innerHTML = iconSpeak + 'Speak';
 
-        popover.append(popoverSpeakBtn, popoverDeleteBtn);
-        menuContainer.append(menuBtn, popover);
-        
-        // Menu logic
-        menuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.querySelectorAll('.message-actions-popover.visible').forEach(p => p.classList.remove('visible'));
-            popover.classList.toggle('visible');
+    const popoverDeleteBtn = document.createElement('button');
+    popoverDeleteBtn.innerHTML = iconBin + 'Delete'; // iconBin already exists in H2.html
+
+    popover.append(popoverSpeakBtn, popoverDeleteBtn);
+    menuContainer.append(menuBtn, popover);
+
+    // Menu logic
+    menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Close other open popovers
+        document.querySelectorAll('.message-actions-popover.visible').forEach(p => {
+            if (p !== popover) p.classList.remove('visible');
         });
+        popover.classList.toggle('visible');
+    });
 
-        // Speak/Stop logic
-        popoverSpeakBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            if (!window.speechSynthesis) return;
+    // Speak/Stop logic
+    popoverSpeakBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (!window.speechSynthesis) return;
 
-            if (speechSynthesis.speaking) {
-                speechSynthesis.cancel();
-                popoverSpeakBtn.innerHTML = iconSpeak + 'Speak';
-            } else {
-                const utter = new SpeechSynthesisUtterance(msgText);
-                utter.lang = "en-US";
-                utter.onend = () => { popoverSpeakBtn.innerHTML = iconSpeak + 'Speak'; };
-                utter.onerror = () => { popoverSpeakBtn.innerHTML = iconSpeak + 'Speak'; };
-                speechSynthesis.speak(utter);
-                popoverSpeakBtn.innerHTML = iconSpeak + 'Stop';
-            }
-            popover.classList.remove('visible');
-        });
+        if (speechSynthesis.speaking) {
+            speechSynthesis.cancel();
+            popoverSpeakBtn.innerHTML = iconSpeak + 'Speak';
+        } else {
+            const utter = new SpeechSynthesisUtterance(msgText);
+            utter.lang = "en-US";
+            utter.onend = () => { popoverSpeakBtn.innerHTML = iconSpeak + 'Speak'; };
+            utter.onerror = () => { popoverSpeakBtn.innerHTML = iconSpeak + 'Speak'; };
+            speechSynthesis.speak(utter);
+            popoverSpeakBtn.innerHTML = iconSpeak + 'Stop'; // This is the "Stop" button text you wanted
+        }
+        popover.classList.remove('visible');
+    });
 
-        // Delete logic
-        popoverDeleteBtn.onclick = (e) => {
-            e.stopPropagation();
-            messageToDeleteId = msgId;
-            deleteMessageModal.classList.add('visible');
-            popover.classList.remove('visible');
-        };
-
-        actionsDiv.append(copyBtn, likeBtn, dislikeBtn, menuContainer);
+    // Delete logic
+    popoverDeleteBtn.onclick = (e) => {
+        e.stopPropagation();
+        messageToDeleteId = msgId;
+        deleteMessageModal.classList.add('visible'); // This modal already exists in H2.html
+        popover.classList.remove('visible');
+    };
+        actionsDiv.append(copyBtn, likeBtn, dislikeBtn,menuContainer);
         wrapper.appendChild(actionsDiv);
 
     } else if (msg.sender === 'user') {
@@ -4148,6 +4233,15 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
             navigator.clipboard.writeText(msgText).then(() => showToast('Message Copied!'));
         };
 
+        const editBtn = document.createElement('button');
+        editBtn.className = 'action-btn edit-btn';
+        editBtn.innerHTML = iconEdit;
+        editBtn.setAttribute('data-tooltip', 'Edit Message');
+        editBtn.onclick = () => {
+            userInput.value = msgText;
+            userInput.focus();
+        };
+
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'action-btn user-delete-btn'; 
         deleteBtn.innerHTML = iconBin;
@@ -4157,7 +4251,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
             deleteMessageModal.classList.add('visible');
         };
         
-        actionsDiv.append(copyBtn, deleteBtn);
+        actionsDiv.append(copyBtn, editBtn, deleteBtn);
         wrapper.appendChild(actionsDiv);
     }
     
@@ -4531,4 +4625,3 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
 
 </body>
 </html>
-
