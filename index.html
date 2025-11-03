@@ -4062,6 +4062,64 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
     actionsDiv.className = 'message-actions';
     const msgId = msg.id;
     const msgText = msg.text || "This message contains no text.";
+    // --- START: Add this new code block ---
+const menuContainer = document.createElement('div');
+menuContainer.className = 'actions-container';
+
+const menuBtn = document.createElement('button');
+menuBtn.className = 'message-menu-btn action-btn';
+menuBtn.innerHTML = iconMenu;
+menuBtn.setAttribute('data-tooltip', 'More'); // Added tooltip
+
+const popover = document.createElement('div');
+popover.className = 'message-actions-popover';
+
+const popoverSpeakBtn = document.createElement('button');
+popoverSpeakBtn.innerHTML = iconSpeak + 'Speak';
+
+const popoverDeleteBtn = document.createElement('button');
+popoverDeleteBtn.innerHTML = iconBin + 'Delete';
+
+popover.append(popoverSpeakBtn, popoverDeleteBtn);
+menuContainer.append(menuBtn, popover);
+
+// Menu logic
+menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    // Close other open popovers
+    document.querySelectorAll('.message-actions-popover.visible').forEach(p => {
+        if (p !== popover) p.classList.remove('visible');
+    });
+    popover.classList.toggle('visible');
+});
+
+// Speak/Stop logic
+popoverSpeakBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!window.speechSynthesis) return;
+
+    if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+        popoverSpeakBtn.innerHTML = iconSpeak + 'Speak';
+    } else {
+        const utter = new SpeechSynthesisUtterance(msgText);
+        utter.lang = "en-US";
+        utter.onend = () => { popoverSpeakBtn.innerHTML = iconSpeak + 'Speak'; };
+        utter.onerror = () => { popoverSpeakBtn.innerHTML = iconSpeak + 'Speak'; };
+        speechSynthesis.speak(utter);
+        popoverSpeakBtn.innerHTML = iconSpeak + 'Stop'; 
+    }
+    popover.classList.remove('visible');
+});
+
+// Delete logic
+popoverDeleteBtn.onclick = (e) => {
+    e.stopPropagation();
+    messageToDeleteId = msgId;
+    deleteMessageModal.classList.add('visible');
+    popover.classList.remove('visible');
+};
+// --- END: New code block ---
 
     if (msg.sender === 'bot') {
         const copyBtn = document.createElement('button');
@@ -4094,7 +4152,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
           updateFeedbackUI(likeBtn, dislikeBtn, feedback[msgId]);
         });
         
-        actionsDiv.append(copyBtn, likeBtn, dislikeBtn);
+        actionsDiv.append(copyBtn, likeBtn, dislikeBtn,menuContainer );
         wrapper.appendChild(actionsDiv);
 
     } else if (msg.sender === 'user') {
