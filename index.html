@@ -864,7 +864,8 @@
     }
    
     #closeFeedbackModal,
-    #closeContactManagerModal { /* <-- ADD THIS LINE */
+    #closeContactManagerModal,
+    #closeShareModal { /* <-- ADDED SHARE MODAL */
       /* Re-use profile close button style */
       font-size: 2.5rem;
       color: var(--icon-color);
@@ -876,7 +877,8 @@
       transition: color 0.2s, transform 0.2s;
     }
     #closeFeedbackModal:hover,
-    #closeContactManagerModal:hover { /* <-- ADD THIS LINE */
+    #closeContactManagerModal:hover,
+    #closeShareModal:hover { /* <-- ADDED SHARE MODAL */
       color: var(--text-color);
       transform: rotate(90deg);
     }
@@ -959,6 +961,92 @@
         margin-top: 15px;
     }
     /* --- End Feedback Modal Styles --- */
+
+    /* --- NEW: Share Modal Styles --- */
+    .share-modal-content {
+      /* Re-use profile modal styles */
+      position: relative;
+      background: var(--background-secondary);
+      border-radius: 20px;
+      border: 1px solid var(--primary-accent);
+      box-shadow: 0 0 25px var(--shadow-color), 0 0 40px rgba(212, 0, 255, 0.2);
+      width: 90%;
+      max-width: 500px;
+      padding: 30px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+    body.light-theme .share-modal-content {
+      background: var(--background-tertiary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-color: var(--border-color);
+    }
+    #share-modal .profile-modal-header h2 { /* Reuse header style */
+        font-size: 2rem;
+    }
+    .share-modal-content p {
+        color: var(--text-color-light);
+        margin: 0 0 20px 0;
+        line-height: 1.6;
+    }
+    .share-link-container {
+        display: flex;
+        align-items: center;
+        background: var(--background-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 5px;
+        margin-bottom: 25px;
+    }
+    #shareLinkInput {
+        flex-grow: 1;
+        background: none;
+        border: none;
+        outline: none;
+        color: var(--text-color);
+        font-family: 'Poppins', sans-serif;
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+    #shareLinkInput:read-only {
+        color: var(--text-color-light);
+    }
+    #copyShareLinkBtn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+        /* Re-use form-btn style */
+        border: 1px solid var(--primary-accent);
+        background: transparent;
+        color: var(--primary-accent);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s, transform 0.2s;
+        font-weight: 500;
+        text-shadow: 0 0 5px var(--shadow-color);
+    }
+    #copyShareLinkBtn:hover {
+        background: var(--primary-accent);
+        color: white;
+        box-shadow: 0 0 10px var(--shadow-color);
+        text-shadow: none;
+    }
+    #copyShareLinkBtn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    #unshareBtn {
+        background: var(--danger-red);
+        border-color: var(--danger-red);
+        color: white;
+    }
+    #unshareBtn:hover {
+        background: #ff2d41;
+        box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+    }
+
+    /* --- End Share Modal Styles --- */
 
 
     /* --- Main App Section --- */
@@ -1754,30 +1842,63 @@
 
     .actions-popover {
         position: absolute;
-        right: 5px;
-        top: 25px;
+        right: 0; /* Align to the right of the three-dot menu */
+        top: 30px; /* Position below the menu button */
         background: var(--background-primary);
-        border-radius: 6px;
+        border-radius: 8px;
         border: 1px solid var(--border-color);
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         z-index: 10;
         overflow: hidden;
         display: none;
-        width: 120px; 
+        width: 140px; /* Increased width for icons */
         padding: 5px 0;
+        animation: fadeIn 0.15s ease-out;
+    }
+    body.light-theme .actions-popover {
+        background: var(--background-tertiary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .actions-popover.visible { display: block; }
     .actions-popover.up { top: auto; bottom: 25px; }
     .actions-popover button {
-        display: block; width: 100%; text-align: left;
-        background: none; border: none; color: var(--text-color); 
-        padding: 8px 15px;
+        display: flex; /* Changed to flex for icon alignment */
+        align-items: center;
+        gap: 10px;
+        width: 100%; 
+        text-align: left;
+        background: none; 
+        border: none; 
+        color: var(--text-color); 
+        padding: 10px 15px;
         cursor: pointer;
         font-size: 0.9rem;
+        box-sizing: border-box; /* Added for consistent padding */
+        transition: background-color 0.2s ease, color 0.2s ease;
     }
-    .actions-popover button:hover { background: var(--background-secondary); }
+    .actions-popover button:hover { 
+        background: var(--background-secondary); 
+        color: var(--primary-accent);
+    }
+    body.light-theme .actions-popover button:hover {
+        background: var(--background-secondary);
+        color: var(--primary-accent);
+    }
+    .actions-popover button svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        stroke-width: 2;
+        color: var(--icon-color);
+    }
+    .actions-popover button:hover svg {
+        color: var(--primary-accent);
+    }
+
     .actions-popover .delete-action { color: var(--danger-red); }
+    .actions-popover .delete-action:hover { color: #ff6b6b; }
+    .actions-popover .delete-action:hover svg { color: #ff6b6b; }
     
     #session-list li.active {
         background: var(--background-secondary);
@@ -1923,7 +2044,8 @@
     .toast {
       position: fixed;
       bottom: 20px;
-      left: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       background: var(--primary-accent);
       color: white;
       padding: 12px 20px;
@@ -1931,7 +2053,7 @@
       box-shadow: 0 4px 15px var(--shadow-color);
       z-index: 2000;
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(20px) translateX(-50%);
       transition: opacity 0.3s ease-out, transform 0.3s ease-out;
       font-weight: 500;
       pointer-events: none;
@@ -1941,13 +2063,13 @@
     }
     .toast.show {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) translateX(-50%);
     }
 
 
     /* Keyframe Animations */
     @keyframes gradient-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    @keyframes fadeIn { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
+    @keyframes fadeIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
     @keyframes pulse {
       0% { transform: scale(1); text-shadow: 0 0 5px var(--shadow-color); }
       50% { transform: scale(1.1); text-shadow: 0 0 15px var(--primary-accent); }
@@ -2136,12 +2258,14 @@
         #closeHistoryBtn { display: none !important; } /* Always hide close '<<' button */
         
         .profile-modal-content,
+        .share-modal-content, /* NEW */
         .feedback-modal-content { /* --- NEW: Added feedback modal --- */
           width: 95%;
           max-height: 95vh;
           padding: 20px;
         }
         .profile-modal-header h2,
+        #share-modal .profile-modal-header h2, /* NEW */
         .feedback-modal-content .profile-modal-header h2 { /* --- NEW: Added feedback modal --- */
           font-size: 1.8rem;
         }
@@ -2728,6 +2852,25 @@
     </div>
   </div>
   
+  <!-- NEW: Share Chat Modal -->
+  <div id="share-chat-modal" class="modal-overlay">
+    <div class="share-modal-content">
+      <div class="profile-modal-header">
+        <h2 id="shareModalTitle">Share Chat</h2>
+        <button id="closeShareModal" title="Close">&times;</button>
+      </div>
+      <p>Anyone with the link will be able to view this chat. This does not grant them access to your account.</p>
+      
+      <div class="share-link-container">
+        <input type="text" id="shareLinkInput" readonly value="Generating link...">
+        <button id="copyShareLinkBtn" title="Copy Link" disabled>Copy</button>
+      </div>
+
+      <button id="unshareBtn" class="form-btn" style="display: none;">Unshare and disable link</button>
+
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toast-notification" class="toast">
     Message Copied!
@@ -2835,7 +2978,8 @@
   const iconLike = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>`;
   const iconDislike = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>`;
   const iconEdit = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
-  
+  const iconShare = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>`;
+
   // Eye icons
   const iconEyeOpen = `<svg class="eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></svg>`;
   const iconEyeClosed = `<svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="display: none;"><path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.94 5.94 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.707z"/><path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"/><path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.88 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.707z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>`;
@@ -2923,6 +3067,14 @@
 const contactManagerModal = document.getElementById('contact-manager-modal');
 const contactManagerBtn = document.getElementById('contactManagerBtn');
 const closeContactManagerModalBtn = document.getElementById('closeContactManagerModal');
+
+  // --- NEW: Share Modal Selectors ---
+  const shareChatModal = document.getElementById('share-chat-modal');
+  const closeShareModalBtn = document.getElementById('closeShareModal');
+  const shareModalTitle = document.getElementById('shareModalTitle');
+  const shareLinkInput = document.getElementById('shareLinkInput');
+  const copyShareLinkBtn = document.getElementById('copyShareLinkBtn');
+  const unshareBtn = document.getElementById('unshareBtn');
 
 
   // --- Animation ---
@@ -3642,15 +3794,23 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
         popover.className = 'actions-popover';
         
         const renameBtn = document.createElement('button');
-        renameBtn.textContent = 'Rename';
+        renameBtn.innerHTML = iconEdit + 'Rename';
         renameBtn.title = 'Rename Chat';
         renameBtn.onclick = (e) => {
             e.stopPropagation();
             startRename(li, doc.id);
         };
 
+        const shareBtn = document.createElement('button');
+        shareBtn.innerHTML = iconShare + 'Share';
+        shareBtn.title = 'Share Chat';
+        shareBtn.onclick = (e) => {
+            e.stopPropagation();
+            openShareModal(doc.id, session.title);
+        };
+
         const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Delete';
+        deleteBtn.innerHTML = iconBin + 'Delete';
         deleteBtn.title = 'Delete Chat';
         deleteBtn.className = 'delete-action';
         deleteBtn.onclick = (e) => {
@@ -3659,7 +3819,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
             deleteConfirmModal.classList.add('visible');
         };
 
-        popover.append(renameBtn, deleteBtn);
+        popover.append(renameBtn, shareBtn, deleteBtn);
         actionsDiv.appendChild(menuBtn);
         actionsDiv.appendChild(popover);
         li.append(infoDiv, actionsDiv);
@@ -3671,7 +3831,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
             });
             
             const rect = menuBtn.getBoundingClientRect();
-            if (window.innerHeight - rect.bottom < 100) { 
+            if (window.innerHeight - rect.bottom < 120) { // Increased threshold
                 popover.classList.add('up');
             } else {
                 popover.classList.remove('up');
@@ -4419,6 +4579,104 @@ popoverDeleteBtn.onclick = (e) => {
         input.addEventListener('blur', blurHandler);
         input.addEventListener('keydown', keydownHandler);
     }
+  
+  // --- NEW: Share Chat Logic ---
+  function generateSimpleUID() {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+  }
+
+  async function openShareModal(sessionId, sessionTitle) {
+    if (!currentUserId) return;
+    
+    // Reset modal state
+    shareModalTitle.textContent = `Share "${sessionTitle}"`;
+    shareLinkInput.value = 'Checking status...';
+    copyShareLinkBtn.textContent = 'Copy';
+    copyShareLinkBtn.disabled = true;
+    unshareBtn.style.display = 'none';
+    
+    // Set up one-time listeners for this specific session
+    copyShareLinkBtn.onclick = () => copyShareLink();
+    unshareBtn.onclick = () => unshareChat(sessionId);
+    
+    shareChatModal.classList.add('visible');
+    
+    // Get session data from Firestore
+    try {
+        const sessionDocRef = doc(db, 'chats', currentUserId, 'sessions', sessionId);
+        const docSnap = await getDoc(sessionDocRef);
+        
+        if (docSnap.exists()) {
+            const sessionData = docSnap.data();
+            if (sessionData.isShared && sessionData.shareId) {
+                // Already shared
+                const shareUrl = `${window.location.origin}${window.location.pathname}?share=${sessionData.shareId}`;
+                shareLinkInput.value = shareUrl;
+                copyShareLinkBtn.disabled = false;
+                unshareBtn.style.display = 'block';
+            } else {
+                // Not shared yet, create a share link
+                const shareId = generateSimpleUID();
+                await updateDoc(sessionDocRef, {
+                    isShared: true,
+                    shareId: shareId
+                });
+                const shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
+                shareLinkInput.value = shareUrl;
+                copyShareLinkBtn.disabled = false;
+                unshareBtn.style.display = 'block';
+            }
+        } else {
+            shareLinkInput.value = 'Error: Chat not found.';
+        }
+    } catch (error) {
+        console.error("Error handling share functionality:", error);
+        shareLinkInput.value = 'Error: Could not process request.';
+    }
+  }
+
+  function copyShareLink() {
+    navigator.clipboard.writeText(shareLinkInput.value).then(() => {
+        copyShareLinkBtn.textContent = 'Copied!';
+        showToast('Share link copied!');
+        setTimeout(() => {
+            copyShareLinkBtn.textContent = 'Copy';
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        showToast('Failed to copy link.');
+    });
+  }
+  
+  async function unshareChat(sessionId) {
+      if (!currentUserId) return;
+      
+      unshareBtn.disabled = true;
+      unshareBtn.textContent = 'Disabling...';
+      
+      try {
+          const sessionDocRef = doc(db, 'chats', currentUserId, 'sessions', sessionId);
+          await updateDoc(sessionDocRef, {
+              isShared: false
+          });
+          showToast('Chat is no longer shared.');
+          shareChatModal.classList.remove('visible');
+      } catch (error) {
+          console.error("Error unsharing chat:", error);
+          showToast('Error: Could not unshare.');
+      } finally {
+          unshareBtn.disabled = false;
+          unshareBtn.textContent = 'Unshare and disable link';
+      }
+  }
+  
+  closeShareModalBtn.addEventListener('click', () => shareChatModal.classList.remove('visible'));
+  shareChatModal.addEventListener('click', (e) => {
+    if (e.target.id === 'share-chat-modal') {
+      shareChatModal.classList.remove('visible');
+    }
+  });
+  // --- End Share Chat Logic ---
 
   // --- Theme Switcher ---
   function applyTheme(theme) {
