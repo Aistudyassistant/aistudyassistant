@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>AI Study Assistant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,18 +70,19 @@
     /* Base Body Styles */
     html {
       height: 100%;
+      overflow-x: hidden; /* Prevent horizontal scroll */
     }
     body {
       margin: 0;
       padding: 0;
       font-family: 'Poppins', sans-serif;
       display: flex;
-      min-height: 100vh;
+      min-height: 100dvh; /* Use dynamic viewport height */
       background: var(--background-primary);
       color: var(--text-color);
       box-sizing: border-box;
-      overflow: hidden;
-      height: 100%;
+      overflow-x: hidden; /* Prevent horizontal scroll */
+      height: 100dvh; /* Use dynamic viewport height */
       transition: background 0.4s ease, color 0.4s ease;
     }
     
@@ -100,7 +101,7 @@
         position: relative;
         padding: 20px;
         box-sizing: border-box;
-        height: 100vh;
+        height: 100dvh; /* Use dynamic viewport height */
     }
 
     /* Tooltip for Clear Chat */
@@ -975,6 +976,7 @@
       flex-grow: 1;
       display: flex;
       flex-direction: column;
+      -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
     }
     
     .chat-box-limiter {
@@ -1129,82 +1131,7 @@
       margin-left: 5px;
       opacity: 1; /* Bot actions always visible */
     }
-/* --- AI Message Menu Styles --- */
-    .message-actions .actions-container {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
 
-    .message-menu-btn {
-        background: none;
-        border: none;
-        color: var(--text-color-light);
-        cursor: pointer;
-        padding: 6px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-    }
-    .message-menu-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: var(--text-color);
-    }
-    body.light-theme .message-menu-btn:hover {
-        background: rgba(0, 0, 0, 0.1);
-    }
-
-    .message-actions-popover {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: calc(100% + 10px); /* Position above the button */
-        background: var(--background-primary);
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        z-index: 10;
-        overflow: hidden;
-        display: none;
-        width: 150px; 
-        padding: 5px 0;
-        animation: fadeIn 0.2s ease-out;
-    }
-    body.light-theme .message-actions-popover {
-        background: var(--background-tertiary);
-    }
-
-    .message-actions-popover.visible { display: block; }
-
-    .message-actions-popover button {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        width: 100%; 
-        text-align: left;
-        background: none; 
-        border: none; 
-        color: var(--text-color-light);
-        padding: 10px 15px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        box-sizing: border-box;
-    }
-    body.light-theme .message-actions-popover button {
-        color: var(--text-color);
-    }
-    .message-actions-popover button:hover { 
-        background: var(--background-secondary); 
-        color: var(--text-color);
-    }
-    .message-actions-popover svg {
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
-        fill: currentColor;
-    }
     /* --- User message actions: show only on hover --- */
     .user-message-wrapper .message-actions {
       opacity: 0;
@@ -2226,6 +2153,7 @@
         }
         .chat-input input[type="text"] {
             padding: 8px;
+            font-size: 16px; /* Prevents iOS auto-zoom */
         }
         .chat-input button {
             padding: 8px 12px;
@@ -4165,63 +4093,8 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
           localStorage.setItem("feedback", JSON.stringify(feedback));
           updateFeedbackUI(likeBtn, dislikeBtn, feedback[msgId]);
         });
-        const menuContainer = document.createElement('div');
-    menuContainer.className = 'actions-container';
-
-    const menuBtn = document.createElement('button');
-    menuBtn.className = 'message-menu-btn action-btn';
-    menuBtn.innerHTML = iconMenu;
-    menuBtn.setAttribute('data-tooltip', 'More'); // Added tooltip
-
-    const popover = document.createElement('div');
-    popover.className = 'message-actions-popover';
-
-    const popoverSpeakBtn = document.createElement('button');
-    popoverSpeakBtn.innerHTML = iconSpeak + 'Speak';
-
-    const popoverDeleteBtn = document.createElement('button');
-    popoverDeleteBtn.innerHTML = iconBin + 'Delete'; // iconBin already exists in H2.html
-
-    popover.append(popoverSpeakBtn, popoverDeleteBtn);
-    menuContainer.append(menuBtn, popover);
-
-    // Menu logic
-    menuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        // Close other open popovers
-        document.querySelectorAll('.message-actions-popover.visible').forEach(p => {
-            if (p !== popover) p.classList.remove('visible');
-        });
-        popover.classList.toggle('visible');
-    });
-
-    // Speak/Stop logic
-    popoverSpeakBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (!window.speechSynthesis) return;
-
-        if (speechSynthesis.speaking) {
-            speechSynthesis.cancel();
-            popoverSpeakBtn.innerHTML = iconSpeak + 'Speak';
-        } else {
-            const utter = new SpeechSynthesisUtterance(msgText);
-            utter.lang = "en-US";
-            utter.onend = () => { popoverSpeakBtn.innerHTML = iconSpeak + 'Speak'; };
-            utter.onerror = () => { popoverSpeakBtn.innerHTML = iconSpeak + 'Speak'; };
-            speechSynthesis.speak(utter);
-            popoverSpeakBtn.innerHTML = iconSpeak + 'Stop'; // This is the "Stop" button text you wanted
-        }
-        popover.classList.remove('visible');
-    });
-
-    // Delete logic
-    popoverDeleteBtn.onclick = (e) => {
-        e.stopPropagation();
-        messageToDeleteId = msgId;
-        deleteMessageModal.classList.add('visible'); // This modal already exists in H2.html
-        popover.classList.remove('visible');
-    };
-        actionsDiv.append(copyBtn, likeBtn, dislikeBtn,menuContainer);
+        
+        actionsDiv.append(copyBtn, likeBtn, dislikeBtn);
         wrapper.appendChild(actionsDiv);
 
     } else if (msg.sender === 'user') {
