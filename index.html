@@ -2964,10 +2964,10 @@
   
   // NEW: Webhook URL map
   const modeWebhooks = {
-    'normal': 'https://hamza3210.app.n8n.cloud/webhook/normal',
-    'deep': 'https://hamza3210.app.n8n.cloud/webhook/Deep',
-    'test': 'https://hamza3210.app.n8n.cloud/webhook/test',
-    'chat': 'https://hamza3210.app.n8n.cloud/webhook/chat'
+    'normal':'https://n8n-cbpu.onrender.com/webhook/normal',
+    'deep': 'https://n8n-cbpu.onrender.com/webhook/Deep',
+    'test': 'http://n8n-cbpu.onrender.com/webhook/test',
+    'chat': 'http://n8n-cbpu.onrender.com/webhook/chat'
   };
   
   // --- Icon SVGs ---
@@ -3612,7 +3612,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
     submitFeedbackBtn.textContent = 'Sending...';
     
     // 3. Prepare and send data
-    const webhookURL = 'https://hamza3210.app.n8n.cloud/webhook/feedback'
+    const webhookURL = 'https://n8n-cbpu.onrender.com/webhook/feedback'
     const payload = {
       name: name,
       email: email,
