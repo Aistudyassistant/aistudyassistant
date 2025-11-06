@@ -2964,10 +2964,7 @@
   
   // NEW: Webhook URL map
   const modeWebhooks = {
-    'normal':'https://n8n-cbpu.onrender.com/webhook/normal',
-    'deep': 'https://n8n-cbpu.onrender.com/webhook/Deep',
-    'test': 'http://n8n-cbpu.onrender.com/webhook/test',
-    'chat': 'http://n8n-cbpu.onrender.com/webhook/chat'
+   'base_url': 'https://n8n-cbpu.onrender.com/webhook/normal',
   };
   
   // --- Icon SVGs ---
@@ -4070,19 +4067,23 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
     stopGeneratingBtn.style.display = 'block';
 
 
-    try {
-      const webhookUrl = modeWebhooks[currentSessionMode] || modeWebhooks['normal'];
-      let res;
-      
+   try {
+      // 1. Get the single webhook URL (must be manually set in N8N)
+      const webhookUrl = 'https://n8n-cbpu.onrender.com/webhook/all'; // Use your new single endpoint
+
+      // 2. Prepare Form Data
       const formData = new FormData();
       formData.append("text", messageText);
       formData.append("userId", currentUserId);
+      // CRITICAL CHANGE: Pass the selected mode here!
+      formData.append("mode", currentSessionMode); 
 
       filesToUpload.forEach((file, index) => {
           formData.append(`file_${index}`, file, file.name); 
       });
       
-      res = await fetch(webhookUrl, { 
+      // 3. Send the Request
+      let res = await fetch(webhookUrl, { 
           method: "POST", 
           body: formData, 
           signal: fetchController.signal 
@@ -4090,6 +4091,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
 
       if (!res.ok) throw new Error(`Webhook failed with status: ${res.status}`);
       
+      // 4. Process Response (rest of the original logic is mostly fine)
       const contentType = res.headers.get("content-type");
       let botMessageData = { sender: 'bot', timestamp: serverTimestamp() };
 
@@ -4130,7 +4132,7 @@ const closeContactManagerModalBtn = document.getElementById('closeContactManager
       }
       await addDoc(messagesRef, botMessageData);
 
-    } catch (err) {
+    } catch (err) { 
       if (err.name !== 'AbortError') {
         console.error("Webhook error:", err);
         await addDoc(messagesRef, { text: "Error: Could not connect to the AI assistant.", sender: 'bot', timestamp: serverTimestamp() });
